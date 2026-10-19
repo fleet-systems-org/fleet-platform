@@ -27,6 +27,7 @@ Out of scope: deployment, branch-protection settings (repository administration 
 6. No fixed ports: PostgreSQL uses a Testcontainers-mapped port and the application a port allocated by the operating system.
 7. Documentation explains how to run unit, coverage and integration tests locally, the Docker and browser prerequisites, and how to start the disposable instance for agent-browser.
 8. Test data are synthetic; logs do not expose connection strings.
+9. Every integration test automatically saves a screenshot named after the test to `integration-evidence/`, passed or failed, plus the application log; CI uploads the directory as the `integration-evidence` artifact on every run, including failed runs; the directory is ignored by Git.
 
 ## Tasks and verification
 
@@ -38,6 +39,7 @@ Out of scope: deployment, branch-protection settings (repository administration 
 | T4 | agent-browser helper and page tests for `/` and `/admin`, including navigation between them. | Integration tests pass locally and in CI. |
 | T5 | `pnpm app:ephemeral` command for manual agent-browser testing. | Command prints a URL; the page opens through agent-browser; Ctrl+C removes the container and process. |
 | T6 | GitHub Actions workflow for pull requests. | All checks green on the pull request for this change. |
+| T8 | Evidence: automatic per-test screenshot and application log in `integration-evidence/`, CI artifact on every run, `.gitignore`, AGENTS.md evidence rule. | Local run produces one screenshot per test, including a deliberately failing test; artifact present on the PR's CI run. |
 | T7 | AGENTS.md coverage rule; README and engineering-standards command table updated. | Diff review; referenced commands exist. |
 
 ## Acceptance criteria
@@ -49,6 +51,7 @@ Out of scope: deployment, branch-protection settings (repository administration 
 5. **Cleanup:** containers, application processes and browser sessions are stopped after successful and failed runs.
 6. **No fixed ports:** neither the database nor the application binds a hard-coded port during tests or the disposable instance.
 7. **Run documentation:** README documents the test commands, prerequisites and disposable instance.
+8. **Integration evidence:** every integration test leaves a screenshot named after the test in `integration-evidence/`, also when it fails, together with the application log; CI uploads the directory as the `integration-evidence` artifact on every run including failed runs; `.gitignore` excludes it; AGENTS.md requires such evidence for every user-visible page and flow.
 
 ## Validation plan
 

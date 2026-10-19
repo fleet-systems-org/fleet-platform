@@ -31,6 +31,8 @@ export default defineConfig({
           include: ["packages/*/integration/**/*.integration.test.ts"],
           environment: "node",
           globalSetup: ["packages/app/integration/global-setup.ts"],
+          // Opens a browser per test and saves its screenshot to integration-evidence/, pass or fail.
+          setupFiles: ["packages/app/integration/setup.ts"],
           fileParallelism: false,
           testTimeout: 60_000,
           hookTimeout: 180_000,

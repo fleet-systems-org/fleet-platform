@@ -20,6 +20,7 @@ fleet-platform is a micro-ERP for trading and transport companies, starting with
 - Reuse the implemented `makeCrudRoute` (CRUD only), `apiHandler` (business operations), `apiCall`, `CrudForm`, `DataTable` and feedback components. Reject hand-written CRUD routes and copied infrastructure in review. Trusted company scope must reach every repository query; changes to isolation require two-tenant tests.
 - Every new feature must have 100% unit-test coverage: statements, branches, functions and lines, all at 100%, measured by `pnpm test:coverage` over `packages/*/src`. A pull request that lowers coverage below 100% is incomplete and must not be merged. Do not meet the threshold by excluding files, adding ignore comments or lowering thresholds; any exclusion requires the owner's explicit approval recorded in the pull request.
 - User-visible pages and flows get integration tests (`pnpm test:integration`: Testcontainers PostgreSQL, a disposable application instance and agent-browser). Every pull request must pass the CI checks in `.github/workflows/ci.yml`.
+- Every user-visible page and flow has an integration test that leaves a screenshot in the `integration-evidence` CI artifact. A pull request without this evidence for the pages and flows it adds or changes is incomplete.
 - These shared foundations are authorized before the first domain feature. Add further abstractions only when needed; domain models, authentication choices and financial policies still require approved requirements.
 
 ## Working rules

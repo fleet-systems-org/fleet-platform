@@ -1,5 +1,5 @@
 import { execFile, spawn, type ChildProcess } from "node:child_process";
-import { existsSync } from "node:fs";
+import { createWriteStream, existsSync, type WriteStream } from "node:fs";
 import { createRequire } from "node:module";
 import { createServer } from "node:net";
 import { fileURLToPath } from "node:url";
@@ -19,22 +19,30 @@ const database = { image: "postgres:18", name: "fleet_platform_test", user: "fle
 /**
  * Start PostgreSQL through Testcontainers, apply reviewed migrations and serve the existing
  * production build on a free loopback port. Everything started here is stopped by `stop`,
- * including when startup fails part-way.
+ * including when startup fails part-way. With `logFile`, migration and application output is
+ * written there as it happens (database URL masked), so it survives crashes.
  */
-export async function startEphemeralApp(): Promise<EphemeralApp> {
+export async function startEphemeralApp(options: { logFile?: string } = {}): Promise<EphemeralApp> {
   if (!existsSync(`${appDir}/.next/BUILD_ID`)) throw new Error("No production build found. Run `pnpm build` first.");
   let container: StartedPostgreSqlContainer | undefined;
   let app: ChildProcess | undefined;
   const output: string[] = [];
+  const log: WriteStream | undefined = options.logFile ? createWriteStream(options.logFile) : undefined;
+  let secret: string | undefined;
+  const record = (text: string) => log?.write(secret ? mask(text, secret) : text);
   const stop = once(async () => {
     await stopProcess(app);
     await container?.stop();
+    record(`[harness] stopped ${new Date().toISOString()}\n`);
+    await new Promise(resolve => log ? log.end(resolve) : resolve(undefined));
   });
   try {
     container = await new PostgreSqlContainer(database.image)
       .withDatabase(database.name).withUsername(database.user).withPassword(database.password).start();
     const databaseUrl = container.getConnectionUri();
-    await migrate(databaseUrl);
+    secret = databaseUrl;
+    record(`[harness] PostgreSQL ${database.image} started ${new Date().toISOString()}\n`);
+    record(await migrate(databaseUrl));
     const port = await freePort();
     const url = `http://127.0.0.1:${port}`;
     app = spawn(process.execPath, [nextBin, "start", "--hostname", "127.0.0.1", "--port", String(port)], {
@@ -42,11 +50,16 @@ export async function startEphemeralApp(): Promise<EphemeralApp> {
       detached: true, stdio: ["ignore", "pipe", "pipe"],
     });
     for (const stream of [app.stdout, app.stderr]) {
-      stream?.on("data", chunk => { output.push(...String(chunk).split("\n")); output.splice(0, output.length - 200); });
+      stream?.on("data", chunk => {
+        record(String(chunk));
+        output.push(...String(chunk).split("\n")); output.splice(0, output.length - 200);
+      });
     }
+    record(`[harness] next start on ${url}\n`);
     await waitForHealth(url, app, () => mask(output.slice(-40).join("\n"), databaseUrl));
     return { url, databaseUrl, stop };
   } catch (error) {
+    record(`[harness] startup failed: ${error instanceof Error ? error.message : String(error)}\n`);
     await stop();
     throw error;
   }
@@ -55,9 +68,10 @@ export async function startEphemeralApp(): Promise<EphemeralApp> {
 // Same migration configuration and CLI as `pnpm db:migrate`.
 async function migrate(databaseUrl: string) {
   try {
-    await run("pnpm", ["--filter", "@fleet-platform/db", "orm", "migration:up"], {
+    const { stdout, stderr } = await run("pnpm", ["--filter", "@fleet-platform/db", "orm", "migration:up"], {
       cwd: repoDir, env: { ...process.env, DATABASE_URL: databaseUrl }, timeout: 120_000,
     });
+    return `[harness] migration:up\n${mask(`${stdout}${stderr}`, databaseUrl)}\n`;
   } catch (error) {
     const { stdout = "", stderr = "" } = error as { stdout?: string; stderr?: string };
     throw new Error(`Migration failed:\n${mask(`${stdout}\n${stderr}`, databaseUrl)}`);
