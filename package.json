@@ -1,0 +1,30 @@
+{
+  "name": "fleet-platform",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "dotenv -e .env -- pnpm --filter @fleet-platform/app dev",
+    "build": "pnpm --filter @fleet-platform/app build",
+    "start": "dotenv -e .env -- pnpm --filter @fleet-platform/app start",
+    "typecheck": "pnpm --filter @fleet-platform/app exec next typegen && pnpm -r typecheck",
+    "lint": "eslint packages",
+    "test": "vitest run",
+    "db:check": "dotenv -e .env -- pnpm --filter @fleet-platform/db check",
+    "db:debug": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm debug",
+    "db:migrate": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm migration:up",
+    "db:migration:create": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm migration:create"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "@types/node": "24.19.2",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.2",
+    "tsx": "4.23.15",
+    "dotenv-cli": "11.0.0",
+    "vitest": "5.0.5"
+  }
+}

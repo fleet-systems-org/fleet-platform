@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles.css",
+    "baseColor": "neutral",
+    "cssVariables": true
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@fleet-platform/ui/components",
+    "utils": "@fleet-platform/ui/lib/utils",
+    "ui": "@fleet-platform/ui/components",
+    "lib": "@fleet-platform/ui/lib",
+    "hooks": "@fleet-platform/ui/hooks"
+  }
+}
