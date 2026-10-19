@@ -14,6 +14,12 @@ fleet-platform is a micro-ERP for trading and transport companies, starting with
 - Keep business calculations in packages/core as pure functions without database access, framework dependencies or dependency-injection containers. Keep persistence and orchestration at the edges.
 - This phase is infrastructure only. Do not introduce business entities or rules before requirements analysis and an approved domain specification.
 
+## Engineering standards
+
+- Follow [.ai/specs/engineering-standards.md](.ai/specs/engineering-standards.md) fully for every new feature and use its technical review checklist. Concept names and target folders remain provisional until feature requirements confirm them.
+- Reuse the implemented `makeCrudRoute` (CRUD only), `apiHandler` (business operations), `apiCall`, `CrudForm`, `DataTable` and feedback components. Reject hand-written CRUD routes and copied infrastructure in review. Trusted company scope must reach every repository query; changes to isolation require two-tenant tests.
+- These shared foundations are authorized before the first domain feature. Add further abstractions only when needed; domain models, authentication choices and financial policies still require approved requirements.
+
 ## Working rules
 
 - Read this file, .ai/lessons.md, relevant lesson entries and the applicable specification before making changes.
