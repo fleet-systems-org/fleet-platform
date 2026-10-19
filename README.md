@@ -66,7 +66,7 @@ pnpm start
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm test` | Unit tests (Vitest) under `packages/*/src`. UI and page tests use Testing Library with jsdom. |
+| `pnpm test` | Unit tests (Vitest) under `packages/*/src` and `scripts/`. UI and page tests use Testing Library with jsdom. |
 | `pnpm test:coverage` | Unit tests with v8 coverage; fails below 100% statements, branches, functions or lines. The HTML report is written to `coverage/`. |
 | `pnpm test:integration` | Builds the app, starts PostgreSQL 18 through Testcontainers, applies migrations, serves the build on a free loopback port and runs `packages/*/integration/**/*.integration.test.ts`. Pages are tested in a real browser through the agent-browser CLI. |
 | Evidence | Every integration test saves `integration-evidence/<test-name>.png` after it finishes, passed or failed, together with `integration-evidence/app.log` (migration and application output, database URL masked). The directory is recreated on each run, ignored by Git and uploaded by CI as the `integration-evidence` artifact. Tests get the browser from `browser()`; `setup.ts` opens and captures it automatically. |

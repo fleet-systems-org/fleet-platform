@@ -14,3 +14,4 @@
   4. Neither database nor Docker: stopped at "Check database" with instructions, exit 1.
   Cleanup: the worktree's Compose container, volume and network were removed; the main checkout's container was restarted.
 - Not run: `pnpm test:integration` (unchanged application flows; CI runs it). The installer is not exercised by CI. Windows was covered only by a unit test, not a live run.
+- Review follow-up (`om-code-review` on PR #7, owner: "yes fix it"): README, engineering standards, CODE_REVIEW.md and, with the owner's approval, AGENTS.md now state that unit tests and the 100% coverage gate cover `packages/*/src` and `scripts/`; `bootstrap` joins the protected root commands in BACKWARD_COMPATIBILITY.md §8; the Compose-mismatch hint mentions `docker compose down`; the lesson no longer names machine-specific Docker access details.

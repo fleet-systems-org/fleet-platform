@@ -56,7 +56,7 @@ function bootstrap() {
       return fail("Start PostgreSQL", "Check the Docker Compose output above.");
     }
     if (!run("pnpm", ["db:check"])) {
-      return fail("Check database", "PostgreSQL started, but DATABASE_URL in .env does not match it. Keep DATABASE_URL and the POSTGRES_* values consistent.");
+      return fail("Check database", "Docker Compose started PostgreSQL, but the database at DATABASE_URL still does not respond. Keep DATABASE_URL and the POSTGRES_* values in .env consistent, or stop the unused container with docker compose down.");
     }
   }
 

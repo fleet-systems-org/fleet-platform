@@ -84,7 +84,7 @@ describe("bootstrap installer", () => {
     [["pnpm install --frozen-lockfile"], "Install dependencies", "Use Node.js 24 and pnpm 11.10.0, then re-run pnpm bootstrap."],
     [["pnpm db:check", "docker info"], "Check database", "The database at DATABASE_URL does not respond and Docker is not available. Start Docker, or set DATABASE_URL in .env to a running PostgreSQL database, then re-run pnpm bootstrap."],
     [["pnpm db:check", "docker compose up -d --wait postgres"], "Start PostgreSQL", "Check the Docker Compose output above."],
-    [["pnpm db:check", "pnpm db:check"], "Check database", "PostgreSQL started, but DATABASE_URL in .env does not match it. Keep DATABASE_URL and the POSTGRES_* values consistent."],
+    [["pnpm db:check", "pnpm db:check"], "Check database", "Docker Compose started PostgreSQL, but the database at DATABASE_URL still does not respond. Keep DATABASE_URL and the POSTGRES_* values in .env consistent, or stop the unused container with docker compose down."],
     [["pnpm db:migrate"], "Apply migrations", "Check the migration output above."],
   ])("stops with a non-zero exit code when %j fails", async (failing, name, hint) => {
     commands(failing);
