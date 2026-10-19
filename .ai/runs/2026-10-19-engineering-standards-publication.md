@@ -7,4 +7,4 @@
 - Scope: publish all previously reviewed standard-adoption changes, API/UI foundations, pure contracts, package-boundary lint checks, tests and supporting documentation. No domain feature or production authentication is represented as implemented.
 - Validation passed in this session: 63 tests across 7 files, typecheck in four packages, lint, production build, 50 import/re-export probes and diff whitespace checks. Frozen-lockfile install passed again before publication.
 - Limitations: no live PostgreSQL or browser validation; tenant tests use synthetic in-memory services and UI tests use jsdom. SQL isolation and production identity remain feature work. CI is not configured in the repository.
-- Publication: commit and push this branch, then open a PR against main. Merge is reserved for the owner.
+- Publication completed: implementation commit 63a39f3 pushed to origin/feat/engineering-standards; opened [PR #2](https://github.com/fleet-systems-org/fleet-platform/pull/2) against main and registered it with the T3 thread. Merge is reserved for the owner.
