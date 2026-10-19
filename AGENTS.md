@@ -4,6 +4,16 @@
 
 fleet-platform is a micro-ERP for trading and transport companies, starting with trip profitability. Read README.md before working. GitHub is the source of truth for code, issues, pull requests and CI. Keep repository documentation in English.
 
+## Stack
+
+- Use Next.js App Router, TypeScript and React. Start from current stable releases; keep exact dependency versions and the pnpm lockfile for reproducible installs.
+- Use a pnpm workspace monorepo: packages/app is the application and composition root; packages/core holds reusable, framework-independent logic; packages/db owns PostgreSQL access and MikroORM configuration, connection pooling and migrations; packages/ui holds reusable interface components.
+- Use Awilix for server-side dependency injection at application boundaries, with an isolated EntityManager per request. Never import database access or server dependencies into client components.
+- Use Tailwind CSS for frontend styling and shadcn/ui for administrative (back-office) interfaces, with shared components in packages/ui.
+- Money amounts and fuel quantities must never use JavaScript number. Use PostgreSQL numeric and decimal.js in code; transfer exact values as decimal strings and do not convert them through number. Obtain the owner's approval for precision and rounding rules.
+- Keep business calculations in packages/core as pure functions without database access, framework dependencies or dependency-injection containers. Keep persistence and orchestration at the edges.
+- This phase is infrastructure only. Do not introduce business entities or rules before requirements analysis and an approved domain specification.
+
 ## Working rules
 
 - Read this file, .ai/lessons.md, relevant lesson entries and the applicable specification before making changes.

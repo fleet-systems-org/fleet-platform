@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "name": "@fleet-platform/core",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "decimal.js": "10.6.0"
+  }
+}

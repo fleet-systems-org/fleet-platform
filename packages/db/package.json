@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "name": "@fleet-platform/db",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "tsx src/check.ts",
+    "orm": "mikro-orm"
+  },
+  "dependencies": {
+    "@mikro-orm/core": "7.2.5",
+    "@mikro-orm/postgresql": "7.2.5",
+    "@mikro-orm/migrations": "7.2.5"
+  },
+  "devDependencies": {
+    "@mikro-orm/cli": "7.2.5",
+    "tsx": "4.23.15"
+  }
+}
