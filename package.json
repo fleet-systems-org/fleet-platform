@@ -7,11 +7,12 @@
     "node": ">=24 <25"
   },
   "scripts": {
+    "bootstrap": "node scripts/bootstrap.ts",
     "dev": "dotenv -e .env -- pnpm --filter @fleet-platform/app dev",
     "build": "pnpm --filter @fleet-platform/app build",
     "start": "dotenv -e .env -- pnpm --filter @fleet-platform/app start",
-    "typecheck": "pnpm --filter @fleet-platform/app exec next typegen && pnpm -r typecheck",
-    "lint": "eslint packages",
+    "typecheck": "pnpm --filter @fleet-platform/app exec next typegen && pnpm -r typecheck && tsc -p scripts",
+    "lint": "eslint packages scripts",
     "test": "vitest run --project unit",
     "test:coverage": "vitest run --project unit --coverage",
     "test:integration": "pnpm build && vitest run --project integration",
