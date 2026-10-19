@@ -371,7 +371,10 @@ The stack is fixed by AGENTS.md. Current baseline: Node.js 24, pnpm 11.10.0, Nex
 | `pnpm dev` | Load root environment and run the app on loopback. |
 | `pnpm typecheck` | Generate Next route types and type-check all workspaces. |
 | `pnpm lint` | Lint product packages. |
-| `pnpm test` | Run Vitest product suites under `packages/*/src/`. |
+| `pnpm test` | Run Vitest unit suites under `packages/*/src/`. |
+| `pnpm test:coverage` | Run unit suites with the enforced 100% coverage threshold. |
+| `pnpm test:integration` | Build, then run integration suites against Testcontainers PostgreSQL and a disposable app instance through agent-browser. |
+| `pnpm app:ephemeral` | Start the disposable instance for manual agent-browser checks. |
 | `pnpm build` | Production application build, without requiring database connectivity. |
 | `pnpm start` | Run the production build with root environment. |
 | `pnpm db:check` | Execute a database connectivity query. |
@@ -380,7 +383,7 @@ The stack is fixed by AGENTS.md. Current baseline: Node.js 24, pnpm 11.10.0, Nex
 | `pnpm db:migrate` | Apply reviewed migrations to the explicitly configured database. |
 | `docker compose up -d --wait postgres` | Start the optional local PostgreSQL service after local environment setup. |
 
-Use the existing environment example for disposable development, never production credentials. A raw MikroORM schema-update command is not the migration workflow. The repository has no CI workflow or separate integration-test command yet; do not claim those exist. Dependency/security inspection such as `pnpm audit` is an available manual investigation, not an existing scripted gate or permission to upgrade the stack. Keep shadcn CLI aliases consistent with the current UI package.
+Use the existing environment example for disposable development, never production credentials. A raw MikroORM schema-update command is not the migration workflow. The pull-request CI workflow and integration-test framework are defined in [the CI and testing specification](2026-10-19-pull-request-ci-and-testing.md). Dependency/security inspection such as `pnpm audit` is an available manual investigation, not an existing scripted gate or permission to upgrade the stack. Keep shadcn CLI aliases consistent with the current UI package.
 
 **Origin and reason — Current repository, not trainer commands:** contributors must be able to run what is actually present, and distinguish the skeleton from the standards' future adoption work.
 

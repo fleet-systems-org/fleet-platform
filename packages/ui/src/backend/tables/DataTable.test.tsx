@@ -15,6 +15,12 @@ it("renders configured columns, exact strings, pagination and row actions", () =
   fireEvent.click(screen.getByText("Next")); expect(base.onPageChange).toHaveBeenCalledWith(2);
   fireEvent.click(screen.getByText("Inspect")); expect(action).toHaveBeenCalledWith(row.id);
 });
+it("moves to the previous page and reports the total page count", () => {
+  const onPageChange = vi.fn(); render(<DataTable {...base} page={2} onPageChange={onPageChange} />);
+  expect(screen.getByText("2/2")).toBeTruthy();
+  expect((screen.getByText("Next") as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByText("Previous")); expect(onPageChange).toHaveBeenCalledWith(1);
+});
 it("uses distinct feedback for loading, errors and empty data", () => {
   const { rerender } = render(<DataTable {...base} loading />);
   expect(screen.getByRole("status").textContent).toBe("Loading");

@@ -10,3 +10,6 @@ coverage/
 .DS_Store
 
 .claude/handoff/
+
+# Integration-test screenshots and application log (uploaded by CI as an artifact)
+integration-evidence/

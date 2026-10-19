@@ -121,6 +121,25 @@ describe("centralized tenant-scoped CRUD", () => {
     expect(service.list).not.toHaveBeenCalled();
     expect((await (await routes.collection.GET(request("GET", undefined, "session-a", "?offset=1&limit=1"))).json()).data).toEqual({ items: [], total: 1 });
   });
+  it("rejects query parameters on item routes before the service", async () => {
+    const { routes, service } = fixture();
+    const item = (method: string) => request(method, method === "PATCH" ? { label: "Changed" } : undefined, "session-a", "?tenantId=company-b");
+    for (const response of [await routes.item.GET(item("GET"), context("a")), await routes.item.PATCH(item("PATCH"), context("a")), await routes.item.DELETE(item("DELETE"), context("a"))]) {
+      expect(response.status).toBe(400);
+      expect((await response.json()).error).toMatchObject({ code: "INVALID_QUERY", messageKey: "api.validation" });
+    }
+    expect(service.get).not.toHaveBeenCalled(); expect(service.update).not.toHaveBeenCalled(); expect(service.remove).not.toHaveBeenCalled();
+  });
+  it.each(["tenantId", "tenant_id", "id"])("refuses to build a route whose schema exposes the protected field %s", field => {
+    const { service, dependencies } = fixture();
+    const unsafe = input.extend({ [field]: z.string() });
+    type Schema = z.ZodObject<z.ZodRawShape, z.core.$strict>;
+    const build = (createSchema: Schema, updateSchema: Schema) => () => makeCrudRoute({ model: { name: "synthetic", output },
+      createSchema, updateSchema, service: service as unknown as CrudService<Row, Record<string, unknown>, Record<string, unknown>>, dependencies,
+      permissions: { list: "l", get: "g", create: "c", update: "u", remove: "r" } });
+    expect(build(unsafe, input)).toThrow("Protected CRUD schema field");
+    expect(build(input, unsafe)).toThrow("Protected CRUD schema field");
+  });
   it("maps malformed JSON, method mismatch and field errors consistently", async () => {
     const { routes } = fixture();
     const malformed = new Request(request("POST"), { body: "{" });

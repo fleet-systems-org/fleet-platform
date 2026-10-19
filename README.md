@@ -51,13 +51,29 @@ pnpm build
 pnpm start
 ```
 
+### Tests
+
+| Command | Purpose |
+| --- | --- |
+| `pnpm test` | Unit tests (Vitest) under `packages/*/src`. UI and page tests use Testing Library with jsdom. |
+| `pnpm test:coverage` | Unit tests with v8 coverage; fails below 100% statements, branches, functions or lines. The HTML report is written to `coverage/`. |
+| `pnpm test:integration` | Builds the app, starts PostgreSQL 18 through Testcontainers, applies migrations, serves the build on a free loopback port and runs `packages/*/integration/**/*.integration.test.ts`. Pages are tested in a real browser through the agent-browser CLI. |
+| Evidence | Every integration test saves `integration-evidence/<test-name>.png` after it finishes, passed or failed, together with `integration-evidence/app.log` (migration and application output, database URL masked). The directory is recreated on each run, ignored by Git and uploaded by CI as the `integration-evidence` artifact. Tests get the browser from `browser()`; `setup.ts` opens and captures it automatically. |
+| `pnpm app:ephemeral` | Starts the same disposable instance and prints its URL for manual checks, e.g. `pnpm exec agent-browser open <url>`. Ctrl+C stops the app and removes the database container. |
+
+Integration tests need a running Docker daemon reachable by the current user and a browser for agent-browser: run `pnpm exec agent-browser install` once (`--with-deps` also installs Linux system libraries), or point `AGENT_BROWSER_EXECUTABLE_PATH` at an existing Chrome/Chromium. Ports are never fixed: Testcontainers maps the database port and the app port is allocated by the operating system. Containers, the app process and browser sessions are stopped after every run, including failed runs; the Testcontainers Ryuk sidecar removes containers if the test process is killed. Neither command needs `.env`.
+
+### Continuous integration
+
+`.github/workflows/ci.yml` runs on every pull request with separate checks: Lint, Typecheck, Unit tests (100% coverage), Build and Integration tests (Testcontainers + agent-browser).
+
 Database commands load the root `.env`: `pnpm db:debug` inspects ORM setup, `pnpm db:migration:create` generates a migration after entities are defined, and `pnpm db:migrate` applies reviewed migrations. Do not create business tables yet. Review debug output locally before sharing it because configuration diagnostics may contain connection details.
 
 Shared packages export TypeScript source and are transpiled by Next.js. The shadcn/ui configuration routes shared components to `packages/ui`; run its CLI from `packages/app` when adding components. UI text is currently Polish and kept in a separate messages module.
 
 ## Tools
 
-Claude Code and Codex are the coding agents. Shared instructions live in AGENTS.md; CLAUDE.md imports them. GitHub is the single source of truth for code, issues, pull requests and CI. CI automation is not configured yet.
+Claude Code and Codex are the coding agents. Shared instructions live in AGENTS.md; CLAUDE.md imports them. GitHub is the single source of truth for code, issues, pull requests and CI. CI runs on every pull request (see Tests).
 
 ## Data
 
