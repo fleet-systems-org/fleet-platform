@@ -1,6 +1,6 @@
 # Pull-request CI and testing
 
-Status: **approved by explicit owner request (2026-10-19); in progress**.
+Status: **approved by explicit owner request (2026-10-19); all acceptance criteria met, awaiting owner review and merge of [PR #3](https://github.com/fleet-systems-org/fleet-platform/pull/3)**. Move to `implemented/` after merge.
 
 ## Problem
 
@@ -56,4 +56,14 @@ Run lint, typecheck, `pnpm test:coverage`, `pnpm build` and `pnpm test:integrati
 
 ## Validation result
 
-Pending.
+Verified 2026-10-19 on the agents VPS and in GitHub Actions run 39248433621 for PR #3. Details: [run log](../runs/2026-10-19-ci-and-test-frameworks.md).
+
+| # | Criterion | Status | Evidence |
+| --- | --- | --- | --- |
+| 1 | PR checks | ✅ Met | Five separate checks on PR #3 all passed: Lint 31 s, Typecheck 31 s, Unit tests (100% coverage) 29 s, Build 36 s, Integration tests 1 min 11 s. Making them required for merge is a branch-protection setting outside this change. |
+| 2 | Coverage 100% | ✅ Met | Threshold failed at 77.57% lines before new tests; now 100% statements (269), branches (151), functions (74) and lines (214), 97 tests in 18 files, locally and in CI. AGENTS.md rule added. No exclusions beyond test files. |
+| 3 | Testcontainers with migration | ✅ Met | `postgres:18` container; `pnpm --filter @fleet-platform/db orm migration:up` with the repository configuration; test asserts the `mikro_orm_migrations` table exists and `/api/health` returns 200. The repository has no migration files yet, so only the migrator itself is exercised. |
+| 4 | agent-browser on home and admin | ✅ Met | `pages.integration.test.ts`: title, heading, text and links on `/` and `/admin`, navigation in both directions, isolated session per test. Passed locally and in CI. |
+| 5 | Cleanup | ✅ Met | After a passing run, a deliberately failing run and Ctrl+C on `pnpm app:ephemeral`: 0 Testcontainers containers, 0 app processes, no agent-browser sessions. Startup failures stop already-started resources; Ryuk covers a killed test process (not exercised). |
+| 6 | No fixed ports | ✅ Met | Database port mapped by Testcontainers; app port allocated by the OS (observed e.g. 39799). |
+| 7 | Run documentation | ✅ Met | README "Tests" and "Continuous integration" sections; engineering-standards command table updated. |
