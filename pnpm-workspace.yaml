@@ -2,6 +2,12 @@ packages:
   - packages/*
 
 allowBuilds:
+  # Not needed: the agent-browser wrapper marks its bundled binary executable; ssh2/cpu-features
+  # fall back to JavaScript; protobufjs only prints a notice.
+  agent-browser: false
+  cpu-features: false
+  protobufjs: false
+  ssh2: false
   esbuild: true
   sharp: true
   unrs-resolver: true

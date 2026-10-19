@@ -12,19 +12,26 @@
     "start": "dotenv -e .env -- pnpm --filter @fleet-platform/app start",
     "typecheck": "pnpm --filter @fleet-platform/app exec next typegen && pnpm -r typecheck",
     "lint": "eslint packages",
-    "test": "vitest run",
+    "test": "vitest run --project unit",
+    "test:coverage": "vitest run --project unit --coverage",
+    "test:integration": "pnpm build && vitest run --project integration",
+    "app:ephemeral": "pnpm build && tsx packages/app/integration/start-ephemeral.ts",
     "db:check": "dotenv -e .env -- pnpm --filter @fleet-platform/db check",
     "db:debug": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm debug",
     "db:migrate": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm migration:up",
     "db:migration:create": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm migration:create"
   },
   "devDependencies": {
-    "typescript": "6.0.3",
+    "@testcontainers/postgresql": "12.2.1",
     "@types/node": "24.19.2",
+    "@vitest/coverage-v8": "5.0.5",
+    "agent-browser": "0.39.1",
+    "dotenv-cli": "11.0.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.2",
+    "testcontainers": "12.2.1",
     "tsx": "4.23.15",
-    "dotenv-cli": "11.0.0",
+    "typescript": "6.0.3",
     "vitest": "5.0.5"
   }
 }

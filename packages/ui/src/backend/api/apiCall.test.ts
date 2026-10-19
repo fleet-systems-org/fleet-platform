@@ -33,6 +33,15 @@ describe("apiCall", () => {
     vi.stubGlobal("fetch", vi.fn(async () => response()));
     expect(await apiCall("/api/synthetic", { parser })).toMatchObject({ ok: false, error: { code: "PROTOCOL_ERROR" } });
   });
+  it("treats a throwing response parser as a protocol failure", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ ok: true, data: { amount: "1.00" } })));
+    const throwing = { safeParse: () => { throw new Error("synthetic parser failure"); } };
+    expect(await apiCall("/api/synthetic", { parser: throwing })).toEqual({ ok: false, error: { code: "PROTOCOL_ERROR", messageKey: "api.protocol" } });
+  });
+  it("returns validated data from apiCallOrThrow on success", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ ok: true, data: { amount: "0.10" } })));
+    expect(await apiCallOrThrow("/api/synthetic", { parser })).toEqual({ amount: "0.10" });
+  });
   it("handles network errors and cancellation without throwing", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("offline"); }));
     expect(await apiCall("/api/synthetic", { parser })).toMatchObject({ ok: false, error: { code: "NETWORK_ERROR" } });

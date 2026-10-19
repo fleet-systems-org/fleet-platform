@@ -66,6 +66,46 @@ describe("CrudForm", () => {
     const savedUnload = new Event("beforeunload", { cancelable: true });
     window.dispatchEvent(savedUnload); expect(savedUnload.defaultPrevented).toBe(false);
   });
+  it("reports form-level schema issues without calling the server", async () => {
+    const onSubmit = vi.fn(async (): Promise<ApiResult<unknown>> => ({ ok: true, data: null }));
+    render(<CrudForm schema={schema.refine(() => false)} fields={[{ name: "amount", label: "Amount" }]} initialValues={{ amount: "1.00" }}
+      onSubmit={onSubmit} onCancel={vi.fn()} confirmDiscard={() => false} messages={messages} />);
+    fireEvent.click(screen.getByText("Save"));
+    await screen.findByText("api.validation"); expect(onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Amount").getAttribute("aria-invalid")).toBe("false");
+  });
+  it("shows a server failure without field errors", async () => {
+    setup(vi.fn(async () => ({ ok: false, error: { code: "CONFLICT", messageKey: "api.conflict" } })));
+    fireEvent.click(screen.getByText("Save"));
+    await screen.findByText("api.conflict");
+    expect(screen.getByLabelText("Amount").getAttribute("aria-invalid")).toBe("false");
+  });
+  it("renders textarea and email fields and starts missing values empty", () => {
+    render(<CrudForm schema={z.strictObject({ note: z.string(), contact: z.string() })} initialValues={{}}
+      fields={[{ name: "note", label: "Note", type: "textarea" }, { name: "contact", label: "Contact", type: "email", required: true }]}
+      onSubmit={vi.fn()} onCancel={vi.fn()} confirmDiscard={() => false} messages={messages} />);
+    const note = screen.getByLabelText("Note"); const contact = screen.getByLabelText("Contact") as HTMLInputElement;
+    expect(note.tagName).toBe("TEXTAREA"); expect((note as HTMLTextAreaElement).value).toBe("");
+    expect(contact.type).toBe("email"); expect(contact.required).toBe(true); expect(contact.value).toBe("");
+  });
+  it("ignores unrelated keys and leaves nested overlays in control of their keyboard", async () => {
+    const { container, onSubmit, onCancel } = setup();
+    fireEvent.keyDown(screen.getByLabelText("Amount"), { key: "a" });
+    fireEvent.keyDown(screen.getByLabelText("Amount"), { key: "Enter" });
+    const overlay = document.createElement("div"); overlay.setAttribute("role", "dialog");
+    const overlayInput = document.createElement("input"); overlay.append(overlayInput);
+    container.querySelector("fieldset")!.append(overlay);
+    fireEvent.keyDown(overlayInput, { key: "Escape" }); fireEvent.keyDown(overlayInput, { key: "Enter", ctrlKey: true });
+    await act(async () => {});
+    expect(onCancel).not.toHaveBeenCalled(); expect(onSubmit).not.toHaveBeenCalled();
+  });
+  it("still handles shortcuts when the whole form is rendered inside a dialog", () => {
+    const onCancel = vi.fn();
+    render(<div role="dialog"><CrudForm schema={schema} fields={[{ name: "amount", label: "Amount" }]} initialValues={{ amount: "1.00" }}
+      onSubmit={vi.fn()} onCancel={onCancel} confirmDiscard={() => false} messages={messages} /></div>);
+    fireEvent.keyDown(screen.getByLabelText("Amount"), { key: "Escape" });
+    expect(onCancel).toHaveBeenCalledOnce();
+  });
   it("turns thrown submit failures into shared feedback", async () => {
     setup(vi.fn(async () => { throw new Error("private detail"); }));
     fireEvent.click(screen.getByText("Save"));
