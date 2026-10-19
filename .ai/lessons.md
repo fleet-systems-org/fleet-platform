@@ -10,3 +10,5 @@ Index of reusable findings, bug fixes and improvements. Read relevant entries be
 - [Foundation verification is not specification completion](lessons/2026-10-19-foundation-versus-spec-completion.md): map requirements to implemented behavior and evidence before declaring the overall specification complete.
 
 - [Check local services before assuming they are unavailable](lessons/2026-10-19-check-local-services-before-assuming-unavailable.md): identify the port owner and try `sg docker` before planning around a missing database or Docker.
+
+- [agent-browser needs a local Chromium on Linux ARM64](lessons/2026-10-19-agent-browser-linux-arm64.md): Chrome for Testing has no Linux ARM64 build; point `AGENT_BROWSER_EXECUTABLE_PATH` at a local Chromium outside the repository.
