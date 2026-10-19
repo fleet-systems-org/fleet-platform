@@ -67,7 +67,7 @@ Required path: update `.env.example`, `compose.yaml`, `README.md` and any CI usa
 
 ### 8. Root commands and CI checks
 
-The root `package.json` scripts (`dev`, `build`, `start`, `typecheck`, `lint`, `test`, `test:coverage`, `test:integration`, `app:ephemeral`, `db:*`), the job names in `.github/workflows/ci.yml` and the `integration-evidence` and `coverage-report` artifact names are referenced by `AGENTS.md`, `SDLC.md`, `.ai/agentic.config.json` and the agent skills.
+The root `package.json` scripts (`dev`, `build`, `start`, `typecheck`, `lint`, `test`, `test:coverage`, `test:integration`, `app:ephemeral`, `bootstrap`, `db:*`), the job names in `.github/workflows/ci.yml` and the `integration-evidence` and `coverage-report` artifact names are referenced by `AGENTS.md`, `SDLC.md`, `.ai/agentic.config.json` and the agent skills.
 
 Breaking: renaming or removing a script, a CI job or an artifact.
 Required path: update every reference (`AGENTS.md`, `SDLC.md`, `CODE_REVIEW.md`, `.ai/agentic.config.json`, branch protection's required checks) in the same PR.

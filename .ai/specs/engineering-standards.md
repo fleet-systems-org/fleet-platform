@@ -371,7 +371,7 @@ The stack is fixed by AGENTS.md. Current baseline: Node.js 24, pnpm 11.10.0, Nex
 | `pnpm dev` | Load root environment and run the app on loopback. |
 | `pnpm typecheck` | Generate Next route types and type-check all workspaces. |
 | `pnpm lint` | Lint product packages. |
-| `pnpm test` | Run Vitest unit suites under `packages/*/src/`. |
+| `pnpm test` | Run Vitest unit suites under `packages/*/src/` and `scripts/`. |
 | `pnpm test:coverage` | Run unit suites with the enforced 100% coverage threshold. |
 | `pnpm test:integration` | Build, then run integration suites against Testcontainers PostgreSQL and a disposable app instance through agent-browser. |
 | `pnpm app:ephemeral` | Start the disposable instance for manual agent-browser checks. |

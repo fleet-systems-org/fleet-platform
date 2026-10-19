@@ -66,7 +66,7 @@ Review in this order and report findings in the same order:
 
 ## Tests and evidence
 
-- `pnpm test:coverage` must stay at 100% for statements, branches, functions and lines over `packages/*/src`. Excluding files, adding ignore comments or lowering thresholds without the owner's approval recorded in the PR is a **blocker**.
+- `pnpm test:coverage` must stay at 100% for statements, branches, functions and lines over `packages/*/src` and `scripts/`. Excluding files, adding ignore comments or lowering thresholds without the owner's approval recorded in the PR is a **blocker**.
 - Every user-visible page or flow that a PR adds or changes needs an integration test (`pnpm test:integration`) and a screenshot in the `integration-evidence` CI artifact. Missing evidence makes the PR incomplete.
 - A behavior-relevant bug fix needs a regression test that reproduces the original failure.
 - Run `pnpm typecheck` after writing tests: `next build` type-checks application tests, and Vitest does not (see `.ai/lessons/2026-10-19-next-build-typechecks-tests.md`).

@@ -1,0 +1,17 @@
+# Local bootstrap installer (issue #6)
+
+- Objective: add a one-command, idempotent local installer (`pnpm bootstrap`) that runs the README Local setup steps plus `pnpm db:migrate`, and document it in README.md with the manual steps kept as an alternative.
+- Agent: Claude Code (`om-fix`); machine: agents VPS; branch: feat/6-local-bootstrap; starting commit: 4bc7b1c (origin/main).
+- Authority: owner brief in the T3 thread; issue #6 (filed by `om-prepare-issue`, its implementation notes used as the analysis because no `om-root-cause` brief existed); AGENTS.md; lessons index, test-discovery and build-typecheck lessons. No specification covers this tooling change; the issue names none as required.
+- Owner decisions: command name `bootstrap` (`pnpm setup` is a pnpm built-in); the installer prints `pnpm dev` as the next step instead of starting the dev server.
+- Implementation: `scripts/bootstrap.ts` (Node built-ins only, run by `node` through type stripping, so it works before `pnpm install`), `scripts/bootstrap.test.ts`, `scripts/tsconfig.json`; root `package.json` adds `bootstrap` and extends `lint` and `typecheck` to `scripts/`; `vitest.config.ts` adds `scripts/` to unit discovery and coverage; README documents `pnpm bootstrap` and adds `pnpm db:migrate` to the manual steps.
+- Owner correction (same day): check the database at `DATABASE_URL` first and use it when it responds; start Docker Compose only when it does not respond and Docker is available; fail with instructions when neither is available. This avoids a second Compose database competing for port 5432 from another worktree. The first draft started Compose whenever Docker was available. The owner also corrected the test environment: port 5432 is this project's own Compose PostgreSQL and Docker is reachable through `sg docker -c "..."` (see lesson 2026-10-19-check-local-services-before-assuming-unavailable).
+- Validation passed: `pnpm lint`, `pnpm typecheck` (including `tsc -p scripts`, confirmed to reject a deliberate type error), `pnpm test:coverage` (100% statements, branches, functions and lines), `pnpm build`, `git diff --check`.
+- Live runs in the fresh worktree `feat/6-local-bootstrap` (logs kept outside the repository, sanitized summary in the PR):
+  1. Database responds, Docker inaccessible to the shell: Docker skipped, `migration:up` succeeded, exit 0.
+  2. Main checkout's Compose container stopped, Docker via `sg docker`: Compose created `fleet-platform-6-bootstrap-postgres-1`, healthy, `db:check` PASS, migrations succeeded, exit 0.
+  3. Immediate re-run with Docker available: dependencies up to date, `.env` and Compose skipped, migrations no-op, exit 0.
+  4. Neither database nor Docker: stopped at "Check database" with instructions, exit 1.
+  Cleanup: the worktree's Compose container, volume and network were removed; the main checkout's container was restarted.
+- Not run: `pnpm test:integration` (unchanged application flows; CI runs it). The installer is not exercised by CI. Windows was covered only by a unit test, not a live run.
+- Review follow-up (`om-code-review` on PR #7, owner: "yes fix it"): README, engineering standards, CODE_REVIEW.md and, with the owner's approval, AGENTS.md now state that unit tests and the 100% coverage gate cover `packages/*/src` and `scripts/`; `bootstrap` joins the protected root commands in BACKWARD_COMPATIBILITY.md §8; the Compose-mismatch hint mentions `docker compose down`; the lesson no longer names machine-specific Docker access details.

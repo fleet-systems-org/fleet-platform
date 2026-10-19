@@ -9,7 +9,7 @@ export default defineConfig({
   test: {
     coverage: {
       provider: "v8",
-      include: ["packages/*/src/**/*.{ts,tsx}"],
+      include: ["packages/*/src/**/*.{ts,tsx}", "scripts/**/*.ts"],
       exclude: ["**/*.test.{ts,tsx}"],
       reporter: ["text", "html"],
       // Every product source file counts, including files no test imports.
@@ -20,7 +20,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: "unit",
-          include: ["packages/*/src/**/*.test.{ts,tsx}"],
+          include: ["packages/*/src/**/*.test.{ts,tsx}", "scripts/**/*.test.ts"],
           environment: "node",
         },
       },
