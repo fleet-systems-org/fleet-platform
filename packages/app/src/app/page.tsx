@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { messages } from "@/messages/pl";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-8 px-6 py-16">
       <p className="text-sm font-semibold tracking-wide">fleet-platform</p>

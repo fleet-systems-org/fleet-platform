@@ -1,0 +1,13 @@
+# Implement the engineering standard adoption step
+
+- Objective: implement the engineering-standard specification as the course adoption step, rather than equating it with either documentation alone or the complete future ERP.
+- Agent: Codex; branch: main; starting commit: cde35e3273b4986a30318589c1351abc706803b3; execution: agents VPS.
+- Owner clarification: the screenshot identifies the specification, not a PR. The owner requests the sequence demonstrated in Coding Standards: write the specification, then implement it. No PR identification is needed.
+- Guidance: current engineering standard sections 5, 11–12, 16 and 18; AGENTS.md; lessons index and foundation-completion correction; previous adoption/foundation/verification runs.
+- Reference checked: course repository origin/main after fetch, lesson 02 recording 06 and the trainer engineering standard, particularly migration instructions. The lesson expects agent instructions, linked durable conventions, adjusted existing structure and shared helpers. Concept names remain provisional; business features follow later. The course reference is not authority to copy its domain or dependency graph.
+- Plan: map adoption requirements to current code; implement the missing package-import checks; verify allowed/refused imports with ESLint itself and run lint/typecheck; clarify the adoption record and correction lesson. Preserve existing work and the owner's no-commit instruction.
+- Existing implementation retained: instruction/document links, named pages, API/UI helpers, synthetic route/UI tests and four-package structure. No existing domain entities require migration.
+- Change: enforce core/db/ui package boundaries for static imports and re-exports via ESLint, including direct relative cross-package imports. Restrict framework/ORM/DI dependencies in layers that must not own them. No runtime abstraction or business feature added.
+- Validation passed: 50 ESLint probes covering allowed/refused imports and re-exports; pnpm lint; pnpm typecheck (all four packages). Inspected the ESLint diff. The probe emitted a React-version autodetection warning when run from the workspace root; boundary assertions passed.
+- Earlier session evidence remains applicable to unchanged runtime code: 34 tests across 5 files and production build passed. Not rerun after this lint-only change. No live SQL/browser validation claimed.
+- Outcome: added executable package-boundary enforcement and an explicit adoption acceptance map; the course implementation step is delivered locally. No commit, push or PR. Business capabilities are still future work under these standards, not prerequisites for adopting the standard.

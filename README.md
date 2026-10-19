@@ -23,6 +23,10 @@ The application connects these packages; core never imports app, db or ui. Postg
 
 Money and fuel quantities use PostgreSQL `numeric` and `decimal.js`, never JavaScript `number`. Exact values cross JSON boundaries as decimal strings. Precision and rounding policy will be agreed before implementing calculations.
 
+## Engineering standards
+
+[Engineering standards](.ai/specs/engineering-standards.md) define the mandatory conventions for new features: package boundaries, tenant isolation, exact decimal values, shared API/UI patterns and technical review. AGENTS.md requires every coding agent to follow them. Shared API/UI foundations now exist: Zod contracts (including exact decimal strings), framework-independent application errors, `apiHandler` with safe diagnostic correlation IDs, tenant-scoped `makeCrudRoute`, `apiCall`, `CrudForm`, `DataTable` and feedback. Synthetic tests exercise them without domain entities or public demo routes. Real authentication, database repositories and business calculations are not implemented.
+
 ## Local setup
 
 Requires Node.js 24, pnpm 11.10.0 and PostgreSQL (the optional Compose service uses PostgreSQL 18). Install the declared pnpm version using Corepack or `npm install --global pnpm@11.10.0`.
