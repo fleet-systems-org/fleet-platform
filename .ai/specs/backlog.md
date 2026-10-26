@@ -4,7 +4,9 @@
 Backlog source: .ai/specs/product-brief.md
 Last filed: 2026-10-24
 
-One specification covers the whole E01 epic (D19, D29). #22 authors it using the #27 review; later stories link it. Then #21 produces a synthetic-data mockup from that specification to check it, before implementation. Build in phases, trip entry and the quote first. No dispatcher session gates the build.
+Two linked specifications cover the whole E01 epic (D33): [foundations](2026-10-26-e01-foundations.md) and [feature](2026-10-26-e01-trip-entry-and-quotation.md). #22 authors them together using the #27 review; later stories link both. No framework-first build phase. Then #21 produces a synthetic-data mockup from that specification to check it, before implementation. Build in phases, trip entry and the quote first. No dispatcher session gates the build.
+
+E3 + E4 (actual post-trip costs) is the next specification after E01 (D37); the order of other remaining Must items remains open. Read-only dated quote-input providers in E01 (D30) are distinct from E4 settlement.
 
 The #22 specification milestone precedes #21; only #22 implementation depends on #21. The dependencies below distinguish those milestones to avoid a circular dependency.
 

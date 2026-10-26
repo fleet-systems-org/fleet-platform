@@ -6,6 +6,10 @@
 - Authority: [product brief](../specs/product-brief.md), especially R02–R08 and D07, D10, D16–D18, D22–D24, D28–D29.
 - Evidence: read-only findings and synthetic execution results recorded on 2026-10-23, reconsidered against subsequent owner decisions. The earlier audit reported 18 quotes on each of two source versions, eight chain comparisons and 13 boundary assertions. Those executions were not rerun for this documentation change. Examples below are independently recalculated illustrations, not new executions of the older module. No source code or operational records are copied.
 
+## Policy update after this review
+
+Owner decisions of 2026-10-26 at the E01 specification gate supersede parts of the comparison below: D30 selects operational quote inputs; D31/R09 removes client-paid wash (all wash is carrier cost); D32/R10 defines trip/month views; D35 selects directed town matching; D36/R11/R12 selects elapsed time, rounding, no verdict and frozen acceptance. Historical examples below remain illustrations of the previously compared policies, **not current acceptance fixtures**. See the [feature specification](../specs/2026-10-26-e01-trip-entry-and-quotation.md) and its [foundation companion](../specs/2026-10-26-e01-foundations.md). Weekend labour, authentication method and additional financial semantics remain explicit design blockers, not defaults.
+
 ## Inputs
 
 The older quote accepts loading and unloading places, optional coordinates, a vehicle reference, optional explicit approach kilometres (including zero), a next destination, loading/unloading times, freight in EUR, wash responsibility and amount, weekend handling and a per-tonne payment flag. An optional calculation date defaults to the day of calculation; consumption overrides may be supplied per country.
@@ -61,4 +65,4 @@ Float/rounding defects, lost country splits, omitted detours, missing-approach f
 
 The invoice → unloading → fuel join is **not measured**. Readable/repeating invoice routes do not establish matching coverage or estimate accuracy (A03, A05). D28 allows invoice date and price as an estimate for the same route pair and direction; past results and empty kilometres come only from entered trips. This review makes no new data-access or join claim.
 
-Owner questions: precision, rounding stage and tie-breaking (R03); overhead/target/verdict semantics; time and waiting allocation; treatment of terminal/open approaches at period boundaries; wash detours and actual-cost provenance. Specification questions include timezone, initial truck position, place normalisation, missing-input behaviour and source freshness. No domain implementation is included. The future E01 specification must link this record; no such specification exists yet, so the brief's Next section and #22 provide the handoff link.
+Owner questions: precision, rounding stage and tie-breaking (R03); overhead/target/verdict semantics; time and waiting allocation; treatment of terminal/open approaches at period boundaries; wash detours and actual-cost provenance. Specification questions include timezone, initial truck position, place normalisation, missing-input behaviour and source freshness. No domain implementation is included. The E01 draft specifications now link this record and distinguish owner decisions from remaining policy questions.
