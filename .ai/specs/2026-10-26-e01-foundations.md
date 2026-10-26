@@ -78,7 +78,7 @@ Known shape: `{ value: DecimalString, unit, currency?, certainty, reasonCodes, s
 
 Derived values retain all effective source/rate revisions; any estimated required input makes the derived value estimated. User confirmation of a planner number does not turn it into measured distance. A validated card amount is not proof of litres consumed by a trip. A source may support one field and not another. No driver-based consumption is introduced. UI `ValueWithSource` renders exact value/unit/currency, Polish certainty text, source date/reason and accessible details; its props are structural, supplied by app. Missing/conflicting/partial is never a zero or a color-only badge.
 
-### P03 — Dated provider inputs
+### P03 — Dated inputs
 
 Core ports: `RouteEstimatePort`, `QuoteInputPort` and `InvoiceHistoryPort` (Phase 3); provider DTOs are validated by adapters. `QuoteInputPort.resolve(scope, request)` requests vehicle, country, load state, required metric and segment/business date; returns evidence values plus explicit coverage and method versions. It is not an open SQL/query endpoint.
 
@@ -94,7 +94,7 @@ Fetch outside write transactions with bounded timeout/retry and cancellation; ca
 
 `Place` belongs to one Town and may retain full address and geocoded coordinates for routing. Directed town pair is the history key; exact Place IDs are route endpoints. A town alias edit changes future projections/reviews, not accepted endpoint snapshots. Route-note parsing yields loading/unloading candidates with confidence/reason, never bag-of-words matching. A district/site must be resolved to its town by a person if uncertain. Expose suggestions and mapping actions through the owner capability, not raw cross-module writes.
 
-### P05/P06 — Company scope, authentication and roles
+### P05 — Scoped access / P06 — Authentication
 
 Every company-owned row, join, evidence, import batch, audit record and business revision has non-null tenantId. Every read/count/lookup/write filters by tenant; tenant-qualified constraints prevent foreign-company references. Reuse immutable `RequestScope {tenantId, actorId}` and isolated EntityManager. Missing identity, membership or permission denies access on HTTP, server components and background operations. Tests must attack both tenants and child/source references.
 

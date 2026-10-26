@@ -28,3 +28,11 @@
 - F4: made all P01–P09 primitive names identical in both phase tables.
 - FQ3–FQ5 remain new owner questions, not accepted policies; final gate report must offer options/recommendations. FQ1/FQ2 remain owner-deferred questions.
 - Follow-up scope review: pending on this revision. No application tests run; docs only.
+
+## Final document verification — 2026-10-26
+
+- Scope re-review e3d38be1, Claude Opus 5.5, approved b1f7cf1: all four findings resolved, D29/D33 phases aligned, no framework-first or actual-settlement/monthly-report expansion. Validated quoted passages and zero child branch diff; no child commit to merge.
+- Applied the non-blocking section-heading naming nit after approval; no design or phase behavior changed. All changed files remain Markdown. Review approval is for scope cohesion, not final owner approval or implementation readiness.
+- Final checks: relative link targets, Markdown fences/table shape, sequential unique D01–D37/R01–R12 records, shared P01–P09 names, mandatory design sections/Mermaid blocks, publication-text checks and independently recomputed synthetic money/fuel/rounding examples; git diff whitespace check. Passed. No live-data or runtime guarantee is inferred.
+- Application lint/typecheck/coverage/build/integration not run: documentation-only change. No implementation, schema migration, production connection, PR or base-branch merge performed.
+- Handoff state: linked design drafts complete for owner review, published on the task branch. Await FQ1–FQ5 policy decisions; FQ1/FQ2 explicitly deferred by the owner, FQ3–FQ5 newly raised and not defaulted. Next after specification decisions/approval is #21 synthetic mockup, then Phase 1; E3/E4 is the next specification under D37.
