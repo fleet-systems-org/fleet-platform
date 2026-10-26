@@ -1,93 +1,50 @@
 # E01 — Trip entry, quotation and the truck’s next move
 
-Status: **ready for owner approval — all E01 owner policy questions resolved; not approved and not implemented**. Date: 2026-10-26.
-Subject: #18. Specification milestone: #22; delivery stories #22–#26 and #28. Companion: [E01 foundations](2026-10-26-e01-foundations.md). Both documents are reviewed together, share one research base and have aligned phases (D33).
+Status: **ready for owner approval; not approved and not implemented**. Date: 2026-10-26.
+Subject: #18. Specification milestone: #22; delivery stories #22–#26 and #28. Companion: [E01 foundations](2026-10-26-e01-foundations.md), which defines the shared rules `FIN-*`, `EV-*`, `SRC-*`, `ROUTE-*`, `PLACE-*`, `AUTH-*` and `TIME-*` referenced here. Binding: [product brief](product-brief.md) R02–R19 and active D16–D47; [backlog](backlog.md) maps #18–#31. The [older pricing review](../analysis/2026-10-26-older-pricing-review.md) lists failures to avoid, not defaults.
 
 ## 📝 TLDR
 
-The dispatcher currently quotes with a kilometre rate and plans around each truck’s next unloading. The proposed E01 flow records a truck’s trip, estimates its whole-approach single-trip profitability from dated operational inputs, freezes the accepted quote, and shows next availability and comparable town-pair history. First finish both specifications, then check their synthetic mockup in #21, then build trip entry and quotation as the first clickable phase; later phases complete availability/checks/history (D29).
+The dispatcher records each truck’s trip, gets a whole-approach single-trip profitability estimate from dated inputs, accepts and freezes the shown quote, and sees where and when the truck becomes free and comparable past trips. Build order (D29): synthetic mockup in #21, then Phase 1 trip entry and quote, Phase 2 availability and kilometre check, Phase 3 similar trips from invoice history.
 
-## Open Questions
+## 📝 Scope
 
-No owner policy gate remains for the agreed E01 scope. D38–D43 resolve financial sources, weekend/full-day/calendar and future midnight-split rules. D44/R18 closes FQ2/Q21: owner-invited personal company email and password, initial password setup from the invitation, email reset and a maintained authentication library. D45/R19 closes late-data Q24: E7 separates the allocation cutoff from provisional month completion and explicit owner closure; later corrections enter the next open month referencing the closed month.
+Include manual trip entry for every truck (#22), future availability (#23), whole-approach allocation and completeness check (#24), single-trip quotation and recorded acceptance (#25), directed-town historical comparison (#26) and its read-only accounting source (#28). Quote inputs are read under D30; actual trip settlement is E3/E4, the next specification (D37).
 
-The reaffirmed Warsaw weekend is already D43 and is not duplicated. Provider thresholds, operational values, technical library/version selection and secure deployment configuration are implementation readiness tasks under these contracts, not remaining owner policy choices. Other brief questions outside E01 remain unchanged. Both specifications are ready for owner approval; no implementation or PR is authorized by this status.
+Exclude chain verdicts, live GPS, driver app, multi-trip order entry, email extraction, monthly reports and month closure (E7), general component editing (E5), refuelling optimization, per-driver consumption (Q04 open) and other company modules. Manual inputs only fill missing sources (SRC-7). Do not port tank-half-full assumptions, cheapest-country procurement or fuel-purchase planning: purchased fuel and costed consumed litres are different quantities.
 
-## 📝 Problem Statement and Scope
+## 📝 User Flow
 
-The binding record is [product brief](product-brief.md): R02–R05, R07 and R09–R19; R08 refined by R10; active D16–D45. [Backlog](backlog.md) maps #18–#31. The [older pricing review](../analysis/2026-10-26-older-pricing-review.md) supplies failures to avoid, not approved defaults. Existing code and [engineering standards](engineering-standards.md) constrain boundaries and shared helpers; [backward compatibility](../../BACKWARD_COMPATIBILITY.md) protects them.
+The dispatcher selects a truck, enters one trip with exact loading and unloading times, answers the mandatory wash question and requests a quote. The server resolves the predecessor (or the explicit first start), routes the whole approach and loaded leg through declared stops, loads dated inputs, and returns either a complete estimate or the specific missing/conflicting inputs. A missing next load does not make the quote incomplete; a missing initial approach does.
 
-Include manual trip entry for every truck (#22), future availability (#23), whole-approach allocation and completeness status (#24), single-trip quotation/recorded acceptance (#25), directed-town historical comparison (#26) and its read-only accounting source (#28). Cost-estimate source reads are in E01 under D30; automatic **actual** trip settlement is not. E3/E4 actual costs is the next specification (D37), not a hidden fourth E01 phase.
-
-Exclude chain verdicts, live GPS monitoring, driver app, multi-trip order entry, email extraction, monthly reports, component editing as a general feature, refuelling optimization and other company modules. Manual quote-input replacement is limited to missing-source fallback and is not approval of E5 arbitrary component edits. R01/Q04 remains unresolved: no per-driver consumption enters these calculations. A01/A06 adoption and A03/A05 data accuracy/join coverage remain untested; real dispatcher observation D21 happens only with the first built phase, outside Git/public evidence.
-
-## 📝 Owner Answers and Decision Mapping
-
-- Q1 → D33: two linked documents, shared research, no framework-first phase.
-- Q2/Q3 → D36: one accepted order = one truck trip; explicit initial place/time; missing start/approach remains unknown/incomplete.
-- Q4 → D36/R02: planner route and country split, editable estimates, odometer optional, evidence check separate.
-- Q5 → D35 refining D28: same directed town pair, person-confirmed aliases, no automatic fuzzy merge.
-- Q6/Q7 → D30/D36, refined by D39/D40: read-only dated operational inputs; EUR net with original source currency/amount/rate.
-- Q8/Q9 → R11/D36: exact intermediates, one final half-up publication; elapsed time and separate vehicle/labour rates; D38 now requires a three-case weekend choice and D39 supplies measured vehicle-day rates.
-- Q10/Q11 → D36/D31/R09, refined by D39: revenue, source-covered cost breakdown/result and explicit exclusions, no percentage overhead or verdict; wash always carrier cost, detours included once.
-- Q12/Q13 → R12/D32/R10: frozen acceptance/corrections, mandatory loss reason; trip/month views share timestamped segments, no monthly report in E01.
-- Q14/Q15 → D28/D34, refined by D44/R18: restricted read-only accounting replica and invited personal company email/password. D45/R19 resolves late frozen-month evidence; E7 implements it later.
-
-D35 records the town decision as a new row rather than editing D28’s old text or reusing brief Q05 (which concerns the co-owner). D30–D34 plus D35–D37 are owner decisions of 2026-10-26 in a T3 thread. Older R06/D17 payment choices are superseded by R09/D31; D29 sequencing is retained.
-
-## 📝 Proposed Solution
-
-The dispatcher selects a truck, enters one trip and exact loading/unloading schedule, answers the mandatory wash question, and requests a quote. The application resolves the predecessor (or explicit first start), routes the whole approach and loaded leg including declared stops, loads dated cost assumptions, and returns either a complete estimated result or the specific missing/conflicting inputs. A missing next load does not make this single-trip quote incomplete. A missing initial approach does.
-
-Acceptance is an explicit action on the shown quote version. It records the order/trip association and immutable input/rate/policy/calculation snapshot; a negative displayed result requires a short reason. There is no accept/negotiate/reject suggestion and no chain result. The next loading search uses where/when this trip ends, without charging a following empty leg to this quote.
-
-After the first phase, a fleet list shows future availability and the kilometre check; historical invoice/entered-trip comparisons follow in Phase 3. Partial E01 rollout is labelled as such: the first clickable phase is not completion of the entire epic or proof of regular adoption. The mockup represents all agreed E01 states before any build.
+Acceptance is an explicit action on the shown quote version; it freezes inputs, rates, policy and calculation version. A negative rounded result requires a short reason. There is no accept/negotiate/reject suggestion and no chain result. The next free place and time is the end of unloading; a following empty leg is never charged to this quote.
 
 ## 📝 Architecture
 
-`trips` owns trip intent, ordered segment allocations, draft/accepted quote revisions, calculation/acceptance commands and read projections. Minimal `assets` owns vehicle reference/profile; `counterparties` owns Town/Place identity without introducing a customer CRM. The historical invoice adapter owns normalized invoice projections, not accounting totals or trip settlement. Tenant-qualified IDs cross capabilities; services call the owner’s contract rather than writing foreign tables.
-
-Core: `concepts/trips` pure quote/reconciliation functions, `validators/trips` input/output schemas and `ports/trips` scoped repository/route/input contracts. DB: tenant-owned records/migrations/repositories. App/server: explicit use cases and provider adapters, authentication and Awilix bindings using the existing per-request EntityManager. UI: shared string-decimal/date/place/value widgets; page-specific quote/schedule composition stays in app until a second consumer needs it. No new workspace package, module loader or service inheritance layer.
-
-Read providers outside transactions, persist immutable normalized observations and calculation snapshot, then accept atomically with schedule/version checks. A DB read projection may join tenant-scoped tables but must not mutate foreign-owned records. No automatic imports of source rows into business acceptance and no events without an E01 consumer.
-
-### Which foundation primitive is introduced in which phase
-
-| Primitive | First consumer | Phase |
-|---|---|---|
-| P01 Exact values | Quote | 1 |
-| P02 Value evidence | Quote | 1 |
-| P03 Dated inputs | Quote | 1 |
-| P04 Place identity | Entry, routing | 1 |
-| P05 Scoped access | Stored trips | 1 |
-| P06 Authentication | Real-data entry | 1 |
-| P07 Timed segments | Quote duration | 1 |
-| P08 Revision commands | Acceptance | 1 |
-| P09 Import identity | Invoice history | 3 |
-
-Phase 2 reuses P01–P08 for availability/checks. Definitions, future backlog consumers and shared research live in the companion. Every primitive ships with its consuming story slice; all nine are not built in advance.
+- `trips` owns trip intent, plan revisions, segment allocations, quote revisions, acceptance/correction/cancellation commands and read projections. Minimal `assets` owns vehicles; `counterparties` owns towns and places (no CRM). The invoice-history adapter owns normalized invoice projections only. Capabilities exchange tenant-qualified IDs and call each other’s contracts, never write foreign tables.
+- Core: `concepts/trips` pure quote and reconciliation functions, `validators/trips` Zod schemas, `ports/trips` repository/route/input contracts. DB: tenant-owned records, migrations and repositories. App/server: use cases, provider adapters, authentication and Awilix bindings on the per-request EntityManager. UI: shared widgets from the companion; quote and schedule composition stays in app until a second consumer exists. No new package, module loader or service hierarchy.
+- Read providers outside transactions, persist normalized observations and the calculation snapshot, then accept atomically under schedule/version checks.
+- Primitive-to-phase mapping: the single table in the companion (P01–P08 in Phase 1, P09 in Phase 3).
 
 ## 📝 Data Model
 
-All following records are proposed, not existing entities. Every business record has tenantId, stable opaque ID, createdAt/actor and optimistic revision where mutable. Monetary snapshots use the foundation’s exact input/output rules; public IDs confer no access. Cross-record constraints include tenant in every reference.
+All records are proposed. Every business record has `tenantId`, a stable opaque ID, `createdAt`, actor and an optimistic revision where mutable; every reference includes tenant (AUTH-1).
 
-- **VehicleStart:** vehicle, exact start instant, place and source, version. Enter only when the first trip lacks a predecessor. No start + no trip means unknown; no invented free position.
-- **Trip:** vehicle, chronological status (`draft|accepted|cancelled`), current plan revision and schedule version; one accepted commercial order reference per trip, no separate generic order engine. Draft is a persisted proposal, not an accepted commercial order. Optional order reference is opaque text, not required customer/contact data.
-- **TripPlanRevision:** immutable version of place IDs plus address/town snapshots, loading instant and unloading-end instant, weekendCase, own-wash choice/amount/time, declared stops, segment IDs/allocations and predecessor revision. Latest revision describes the operational plan; earlier accepted versions remain readable.
-- **MovementSegment:** vehicle, ordered endpoints, exact UTC start/end, timezone metadata, country-distance parts, load state (`empty|loaded`), kind (drive/wait/load/unload/wash/refuel/rest), planned/observed axis and evidence. Stationary segments have known zero movement, not unknown. Travel country parts sum exactly to the selected travel distance; gaps/overlaps remain explicit. Keep a canonical physical segment identity distinct from a revision’s planned copy: several quote revisions may reference snapshots, but the current distance ledger counts only its single effective segment/version. A terminal empty segment has no trip allocation until the next trip; zero or unknown must be distinguished.
-- **SegmentAllocation:** scoped segment → trip revision relation, active allocation/version. Enforce one current owning trip per physical movement segment; split segments at evidenced load/country/temporal boundaries as necessary. Old allocations remain linked to historical revisions, not counted in the current ledger. Cancelling an allocation never deletes its underlying movement evidence.
-- **QuoteRevision:** trip plan/predecessor/schedule versions, exact normalized request, selected route and country vectors, dated source observation/policy revisions and tenant-qualified document references, calculatedAt, formula/rounding version, missing/conflict list, published revenue/covered-cost/result EUR, fixed-cost source month/category breakdown, uncovered-category list, weekendCase/flat-rate revision, precision and certainty. A complete estimate means required in-scope inputs are present, not that excluded business costs disappeared. Status `incomplete|complete|stale`; no provider can change a stored quote.
-- **TripAcceptance:** accepted quote/plan IDs, order reference, actor/time, idempotency receipt, negative-result reason, optional superseded acceptance ID. Only one current effective acceptance per trip; earlier acceptance is never overwritten.
-- **DistanceEvidence:** optional odometer/timed movement evidence, interval, reading/value/source/validation status. E01 allows authorized manual odometer evidence; automatic GPS collection belongs to E4. Endpoint readings alone do not establish the distribution of distance at midnight.
-- **InvoiceHistoryRevision:** source account/ID/revision, date, net price/source currency, restricted route note, directed town IDs or explicit unmatched state; current projection marker and import batch. No person/customer/payroll fields. Raw route-note access is restricted and sanitized from public logs. Original evidence remains private in authorized DB storage.
-- **HistoryImportBatch:** scoped query/cursor bounds, started/completed timestamps, counts, failures and revision keys; never raw operational rows in logs.
-
-New foundation records and company-qualified integrity rules are in the companion. Invoice-history date is a date, not a guessed unloading timestamp. Full endpoints can be stored for entered trips even though history matching is town-level.
+- **VehicleStart** — vehicle, exact start instant, place, source, version. Entered only when the first trip has no predecessor. No start and no trip means unknown.
+- **Trip** — vehicle; status `draft|accepted|cancelled`; current plan revision; schedule version; `scheduleReviewRequired` flag; optional opaque `orderRef` (no customer data). One accepted commercial order per trip.
+- **TripPlanRevision** — immutable: place IDs with address/town snapshots, loading instant, unloading-end instant, `weekendCase`, wash choice/amount/time/place, declared stops, segment references, predecessor revision.
+- **MovementSegment** (TIME-1) — vehicle, ordered endpoints, exact UTC start/end, timezone metadata, per-country distance parts, load state `empty|loaded`, kind `drive|wait|load|unload|wash|refuel|rest`, planned/observed axis, evidence. Stationary segments have known zero distance. Country parts sum exactly to the segment distance. A canonical physical segment is distinct from the planned copies referenced by plan revisions; the distance ledger counts only the current effective version.
+- **SegmentAllocation** — segment → trip revision, active/version. Exactly one current owning trip per physical segment; split at evidenced load/country/time boundaries. Historical allocations stay linked to old revisions and are not counted.
+- **QuoteRevision** — immutable: plan revision, predecessor and schedule versions, normalized request, route revision and country vectors, source observation and policy revisions, document references, `calculatedAt`, formula/rounding version, missing/conflict list, published revenue, covered cost and result in EUR, fixed-cost source month and category breakdown, `notIncluded` categories, `weekendCase` and flat-rate revision, certainty. Status `incomplete|complete`. Staleness is derived, never stored: a quote is stale when its plan revision, schedule version or predecessor version differs from the trip’s current ones.
+- **TripAcceptance** — accepted quote and plan IDs, `orderRef`, actor, time, loss reason, optional superseded acceptance ID, `requestKey` and payload hash (TIME-3). One current acceptance per trip; earlier ones are never overwritten.
+- **TripCancellation** — trip, actor, time, reason, `requestKey` and payload hash.
+- **DistanceEvidence** (Phase 2) — optional manual odometer or timed movement evidence: interval, reading, source, validation status. Endpoint readings alone do not locate distance at midnight.
+- **InvoiceHistoryRevision** (Phase 3) — source account/ID/revision, date, net price and source currency, restricted route note, directed town IDs or explicit unmatched state, current-projection marker, import batch. No person, customer or payroll fields.
+- **HistoryImportBatch** (Phase 3) — bounded query/cursor, timestamps, counts, failures, revision keys; never raw rows in logs.
 
 ```mermaid
 flowchart LR
   classDef newEntity fill:#2f6feb,color:#fff,stroke:#1b4fb0
-  classDef existingEntity fill:#e5e7eb,color:#111,stroke:#9ca3af
   entity_1["Vehicle - new foundation"]:::newEntity
   entity_2["VehicleStart - new"]:::newEntity
   entity_3["Trip - new"]:::newEntity
@@ -96,6 +53,7 @@ flowchart LR
   entity_6["SegmentAllocation - new"]:::newEntity
   entity_7["QuoteRevision - new"]:::newEntity
   entity_8["TripAcceptance - new"]:::newEntity
+  entity_13["TripCancellation - new"]:::newEntity
   entity_9["DistanceEvidence - new"]:::newEntity
   entity_10["InvoiceHistoryRevision - new"]:::newEntity
   entity_11["Town - new foundation"]:::newEntity
@@ -103,6 +61,7 @@ flowchart LR
   entity_1 -->|1-n| entity_2
   entity_1 -->|1-n| entity_3
   entity_3 -->|1-n| entity_4
+  entity_3 -->|1-0..1| entity_13
   entity_1 -->|1-n| entity_5
   entity_4 -->|1-n| entity_6
   entity_5 -->|1-n historical| entity_6
@@ -114,195 +73,201 @@ flowchart LR
   entity_12 -->|1-n| entity_10
 ```
 
-All nodes are proposed new data; the existing ORM has no business schema. A predecessor is a same-vehicle, same-tenant revision reference; accepted history is not a cyclic writable ORM graph. The two Town edges represent different role references, never an undirected route.
+A predecessor is a same-vehicle, same-tenant revision reference, not a writable ORM graph. The two Town edges are different roles, never an undirected route.
 
-### Persistence and recovery
-
-Tenant-qualified foreign keys and uniqueness enforce one effective acceptance, source revision deduplication and one active segment assignment. Serialize schedule-affecting writes with a vehicle schedule-row lock/version; lock multiple vehicles in stable ID order if a correction reassigns a truck. Validate predecessor/successor intervals under that lock, not before it. Purely scalar draft CRUD still enforces expected revision. Hard-delete only a never-accepted, unreferenced draft; accepted trips use cancellation/revision commands. Current cancelled segments become unassigned/review-required rather than disappearing.
-
-Introduce additive migrations per phase. Keep accepted snapshots when source/configuration changes; destructive rollback after real acceptance is unsafe. Verify up/down on disposable pre-use data and a forward-recovery/restore procedure for persisted revisions. Do not run migrations during build/render. The implementing PR records new protected routes/schema and backup boundaries.
+**Persistence and recovery.** Tenant-qualified keys and uniqueness enforce one current acceptance, source-revision deduplication and one active segment allocation. Schedule-affecting commands lock the vehicle schedule row and check its version; lock several vehicles in stable ID order; validate predecessor and successor intervals under the lock. Hard-delete only a never-accepted, unreferenced draft; accepted trips change only through correction or cancellation. Cancelled segments become unassigned and review-required, not deleted. Migrations are additive per phase; verify up/down on disposable data and a restore procedure before real data; never migrate during build or render.
 
 ## 📝 Calculation Contract
 
-### Boundary and routing
+### Trip boundary and route
 
-A trip starts at its predecessor’s unloading end/place or the confirmed initial start, includes the entire approach, loading and all declared detours/wait/rest, and ends at its own unloading end. The next trip owns its approach. Do not price half legs or a guessed future destination. Chosen vehicle profile and coordinates route through explicit stops; required wash/refuel timings may not overlap loading/travel impossibly. Availability is a planned projection, not a live position or legal driver-hours assurance.
+- **BND-1 Boundary.** A trip starts at its predecessor’s unloading end and place, or at the confirmed initial start. It includes the whole approach, loading, all declared detours, waits and rests, and ends at its own unloading end. The next trip owns its approach. No half legs and no guessed future destination.
+- **BND-2 Schedule.** The dispatcher enters only schedule anchors and declared stops. Drive intervals come from route durations between fixed anchors; remaining elapsed time is estimated waiting/unclassified time, never observed rest or legal driver-hours compliance. Fixed stop times take precedence; impossible timing makes the schedule incomplete. Availability is a planned projection, not a live position.
+- **BND-3 Route.** Route through the vehicle’s truck profile and explicit stops (ROUTE-1). Optionally prefer a measured-journey median when comparable vehicle, directed endpoints and a coherent country vector exist; never combine a median total with unrelated country averages. Pick one coherent vector or mark the split missing. All route figures are estimates.
+- **BND-4 Route edits.** A dispatcher edit includes country parts and a reason; validate that parts sum to the approach/loaded total, keep the original estimate beside the revision and make the previous quote stale. A total-only edit without a coherent split makes fuel and toll incomplete. An ambiguous geocoding/town result requires choosing an endpoint (PLACE-3). Route cache keys include scope, profile, endpoints, stops and versions.
 
-The user enters only the required schedule anchors and declared stops, not a manual second-by-second itinerary. Construct estimated drive intervals from route durations between fixed anchors; retain remaining elapsed time as estimated waiting/unclassified stationary time, never observed rest or legal driver-hours compliance. Fixed stop times take precedence, and impossible travel/stop timing makes the schedule incomplete. Distinguish exactly stored planned timestamps from certainty of the predicted arrival.
+### Cost formulas
 
-Quote resolution seeks measured-journey median evidence only when comparable vehicle/profile/directed endpoints and a coherent country vector are available (older preference, not independently validated here). Otherwise request the configured truck route; a permitted fallback route must be visibly marked with its profile limitations. No car-route result is silently described as truck-safe. All are estimates for this quote. Do not combine the median total with unrelated country averages; select one coherent vector or mark the split missing and require confirmation/recalculation. Provider selection is technical; the companion identifies a candidate and conformance checks, not a production-ready connection.
+For each country/load-state/time segment: distance `D`, consumption `C` in l/100 km (SRC-3), net fuel price `F` (SRC-1), toll `T` per km (SRC-4).
 
-Dispatcher route edits include country parts and reason; validate sum = approach/loaded total, retain original estimate and revised evidence, and invalidate previous quote. Direct total-only edits without a coherent split make affected fuel/toll cost incomplete. Geocoding/town ambiguity requires choosing an endpoint, never routing to an arbitrary same-named town. Route cache keys include scope/profile/endpoints/stops and versions.
+- `litres = D × C / 100`; `fuel = litres × F`; `toll = D × T`; `adBlue` per SRC-6. Convert each source amount to EUR with its dated rate (SRC-2) before summing.
+- **Vehicle costs:** for each covered category (SRC-5), `vehicleDayRate × elapsedSeconds / 86400` over the whole trip interval, including weekends.
+- **Normal labour:** `driverDayRate × elapsedSeconds / 86400`, adjusted by WKD-1.
+- `coveredCost = fuel + toll + adBlue + ownWash + coveredVehicleCost + labour`
+- `revenue = agreedNetFreight` (wash never creates revenue, R09)
+- `resultWithinCoverage = revenue − coveredCost`
 
-### Inputs and equations
+Show categories absent from the monthly configuration as “Nie uwzględniono” (`notIncluded`), never a percentage or zero. A missing required rate makes the quote incomplete. Do not call a coverage-limited result complete economic profit. No markup target, threshold or verdict. Publish per FIN-3; estimates propagate (EV-3).
 
-Each country/load-state/time segment supplies distance D, consumption C in litres/100 km, net fuel unit price F and net toll T per km. Estimate litres as `D × C / 100`; fuel cost as `litres × F`; toll as `D × T`. Convert each source amount to EUR using its dated rate direction before exact summation; never round an inverse rate. Planner toll information can cross-check card-measured rates but must not add a second toll charge.
-
-AdBlue retains its owner-set, unit-labelled dated rate and original currency. No source value or operational rate is invented in this document. Planner toll information is a separate visible control beside the card-measured cost, never another charge.
-
-Fixed costs use the external existing monthly per-vehicle division calculation for its **last closed month**, not a revenue percentage. The source supplies separate category-level vehicle-day rates for leasing, insurance, telematics, service package, tank rental, division fixed costs and aggregate vehicle-day driver cost, with closure/revision/month and coverage. It owns the existing monthly-to-day conversion; do not divide payroll or replicate that calculation in E01. Labour is never per person in a quote, fixture, log or repository.
-
-For each covered vehicle category use `vehicleDayRate × elapsedSeconds / 86400`, calculated without intermediate rounding. The denominator is the elapsed 24-hour rate unit; local calendar boundaries still locate weekend intervals, including DST-length days. A category already included in the supplied total must not be charged a second time; verify source category totals/bases and reject an ambiguous mixed vehicle/labour total. Normal labour uses the same elapsed-time conversion of the separate aggregate vehicle-day rate. Both retain the source month; missing required monthly rates or separation makes the quote incomplete.
-
-Weekend choice R13 applies when the trip interval includes a weekend: `homePoland` removes weekend-day labour only (vehicle costs continue); `restAbroad` replaces weekend normal labour with the dated owner-set flat per weekend day; `drivingOn` preserves normal elapsed labour. No selection returns incomplete with “Zapytaj o weekend”. Outside weekend intervals use normal labour; never add both normal and replacement labour for the same time. D42/R17 requires the full dated flat amount for every weekend calendar day touched by the trip in restAbroad mode, however brief the overlap; do not prorate. Use half-open trip intervals, so an endpoint exactly at the next day boundary does not touch that next day. D43 fixes the labour calendar to `[Saturday 00:00, Monday 00:00)` Europe/Warsaw, equivalent to Saturday 00:00 through Sunday 24:00 Polish time, regardless of the truck’s location or border crossings. Resolve each local boundary with its actual IANA DST offset before elapsed-time arithmetic; endpoint/segment timezones do not change it. Retain the Europe/Warsaw calendar policy/version in the quote snapshot. One selected weekendCase covers every weekend of this quote under the one-choice-per-quote R13 contract; mixed cases are not expressible in E01 and must not be guessed or replaced by the last choice. This is a cost estimate from a dispatcher choice, not GPS-derived driver-hours/legal compliance.
-
-`coveredCost = fuel + toll + AdBlue + ownWash + coveredVehicleFixedCost + adjustedAggregateLabour`.
-`revenue = agreedNetFreight`; wash never creates revenue.
-`resultWithinCoverage = revenue - coveredCost`.
-
-Show the division fixed-cost category/coverage separately where present, so the earlier overhead presentation request remains explainable, but do not add an independent overhead amount or the older revenue percentage. Categories absent from the monthly calculation display “Nie uwzględniono” / `notIncluded`, never an invented percentage or numeric zero. Explicitly labelled coverage/exclusions accompany the result; do not call a source-covered result complete economic profit when known categories are excluded. An intentionally uncovered category is different from an unavailable required provider value: the latter makes the quote incomplete. No markup target, cash/full/chain threshold or automatic verdict is implemented.
-
-Publish rounded aggregate values using R11. A displayed rounding reconciliation line explains differences between summed displayed components and the exact aggregate; comparisons and the loss-reason check use the rounded `resultWithinCoverage` shown to the dispatcher. Source estimates or allocation estimates propagate to the result.
-
-D40/R15 fixes the source/date hierarchy, with full details in foundation P03: country card fuel price from the last 14 days, litre-weighted over the last three refuelling days; then dated public price minus median same-day card/public discount; then manual country price valid no more than 14 days; else a named missing country price. Central-bank trip-date FX falls back to the last published rate on weekends, holidays or future dates, retaining its date and estimated status for future use. Own-vehicle CAN country/load-state consumption precedes the corresponding fleet average when approved sufficiency is met. Tolls use country card rate/km for the last closed month. Thresholds, selected sample periods, source coverage and rate direction remain versioned owner-approved provider configuration, never hidden constants. Do not use future transactions/publications when estimating a future trip or silently invert a rounded FX rate. Price resolution and mixed-date/country segments retain the evidence behind each estimate.
-
-Do not port tank-half-full assumptions, cheapest-country procurement or physical fuel-purchase planning: purchased fuel and costed consumed litres are different concepts.
+- **WKD-1 Weekend labour (R13, D38, D42, D43).** This is the only full statement of the rule; everything else refers to it.
+  - **Calendar.** The labour weekend is `[Saturday 00:00, Monday 00:00)` Europe/Warsaw, whatever the truck’s location or border crossings. Resolve each boundary with its actual DST offset, so a DST weekend lasts 47 or 49 hours but is still two calendar days. Use half-open trip intervals: an endpoint exactly at a day boundary does not touch the next day.
+  - **Required choice.** If the trip interval overlaps that weekend, the quote needs `weekendCase`. Without it the quote is incomplete with “Zapytaj o weekend”. There is no default.
+  - **`homePoland`:** no labour for the weekend overlap; vehicle costs continue.
+  - **`restAbroad`:** the weekend overlap’s normal labour is replaced by the owner-set dated flat amount (`PolicyRevision`) for every weekend calendar day the trip touches, the full amount however short the overlap.
+  - **`drivingOn`:** normal elapsed-time labour.
+  - Never charge normal and replacement labour for the same time.
+  - **Scope.** One `weekendCase` applies to every weekend in the quote; mixed cases are not expressible in E01.
+  - **Snapshot.** Store the calendar policy version and flat-rate revision in the quote. This is a cost estimate from the dispatcher’s answer, not driver-hours compliance.
 
 ### Revision lifecycle
 
-Draft trip edits create new plan/segment revisions; quoting creates a complete or incomplete immutable QuoteRevision for that plan. Further edits, changed schedule/predecessor or requested input refresh make the previous unaccepted quote stale. Accept verifies the exact quote ID and expected plan/schedule/policy-selection versions; rejects incomplete/stale/conflicting quotes. A retried acceptance with the same key/payload returns the same acceptance; a changed payload with the key conflicts.
-
-Accepted snapshots stay immutable even when a source changes. Correction starts from the accepted record into a proposed revision; on explicit corrected acceptance record supersession and reason. Affected unaccepted successor quotes become stale. Accepted successors retain their historical quote and are flagged `scheduleReviewRequired`; do not silently recompute their accepted figures or present their current projection as verified. A schedule edit introducing overlap is rejected until explicitly corrected; the recorded historical disagreement remains inspectable. Cancellation similarly preserves evidence and invalidates dependent draft quotes.
+- Draft edits create new plan and segment revisions; quoting creates an immutable `complete` or `incomplete` quote for that plan. Further edits, a changed predecessor or schedule, or a requested input refresh make the previous unaccepted quote stale (derived).
+- Accept checks the exact quote ID and the expected plan and schedule versions; it rejects incomplete, stale or conflicting quotes. Replay follows TIME-3.
+- Accepted snapshots never change when sources change.
+- **Correction:** starts from the accepted record as a new proposed plan revision; its acceptance records the superseded acceptance and a reason.
+- **Cancellation:** keeps all evidence and invalidates dependent draft quotes.
+- **Effects on later trips:** after a correction or cancellation, unaccepted successor quotes become stale; accepted successors keep their quote and get `scheduleReviewRequired = true`. A schedule edit that creates overlap is rejected until corrected.
 
 ## 📝 API Contracts
 
-All endpoints are proposed, company-scoped and use the existing envelope. Strict Zod DTOs reject unknown fields; financial values are canonical strings. IDs, bounded text, date intervals and page limits are validated. Tenant/actor/source-trust/status/totals are server-controlled. Domain errors map to existing `VALIDATION_ERROR`, `CONFLICT`, `FORBIDDEN`, `NOT_FOUND`; HTTP never exposes SQL/provider bodies. Return quote incompleteness as successful domain data, not a fabricated zero result.
+All endpoints are company-scoped, use the existing envelope, strict Zod DTOs and canonical decimal strings, and bounded IDs, text, intervals and page limits. Tenant, actor, source trust, status and totals are server-controlled. Quote incompleteness is successful domain data, not an error and not a zero result. Permission names are in AUTH-4.
 
-Reference CRUD (`/api/assets/vehicles`, `/api/counterparties/places`) and draft trip CRUD (`/api/trips`, `/api/trips/:id`) use `makeCrudRoute`; export only allowed methods. Draft create/update delegates to scoped transactional services enforcing scheduling/version rules. Use a backwards-compatible shared `If-Match`/expected-version facility for PATCH/DELETE before adding versioned consumers; do not bypass the factory. Protected accepted records cannot be changed through generic PATCH/DELETE. Standard list filters must be explicit typed extensions of the existing bounded builder, not unchecked query forwarding.
+- **Reference CRUD (`makeCrudRoute`):** vehicles, places, policy revisions (companion). Trips: `makeCrudRoute` exporting only `GET /api/trips` and `GET /api/trips/:id`; all trip writes are commands below.
+- **Trip commands (`apiHandler`, `trips.write`):**
+  - `POST /api/trips` creates a draft from `TripDraftInput`.
+  - `POST /api/trips/:id/plan-revisions` takes `{ expectedPlanRevision, expectedScheduleVersion, draft: TripDraftInput }`.
+  - `POST /api/trips/:id/discard` deletes a never-accepted draft.
+  - `POST /api/assets/vehicles/:id/start` sets the initial start with an expected version.
+- **`TripDraftInput`:**
+  - `vehicleId`, `loadingPlaceId`, `unloadingPlaceId`, `loadingAt`, `unloadingEndAt`, with timezones/offsets;
+  - `wash: {kind:"none"} | {kind:"ours", amount: MoneyInput, at, placeId}`;
+  - `stops`;
+  - `weekendCase?: "homePoland"|"restAbroad"|"drivingOn"`, optional until quotation and validated against the interval there;
+  - optional `orderRef`.
 
-Core request shapes (descriptive contracts; implementation derives types from Zod):
-
-- `TripDraftInput`: `vehicleId`, `loadingPlaceId`, `unloadingPlaceId`, `loadingAt`, `unloadingEndAt`, timezones/offsets, `wash: {kind:"none"}|{kind:"ours",amount:MoneyInput,at,placeId}`, `stops`, optional-until-quotation `weekendCase: "homePoland"|"restAbroad"|"drivingOn"`, segment schedule and optional opaque `orderRef`. Required weekend choice is validated against elapsed time at quotation, without preselecting a case. A date/time is required on save; unknown starting context may be saved but explicitly blocks a complete quote. `MoneyInput` includes decimal-string amount, source currency and net basis.
-- `POST /api/trips/:id/route-estimates`: command `{expectedPlanRevision, expectedScheduleVersion}`; server resolves scoped endpoints/profile/stops and returns `{routeRevisionId, segments, distanceByCountry, evidence, limitations}` or missing fields. Does not create a route using arbitrary outbound URLs supplied by the client.
-- `POST /api/trips/:id/quotes`: `{expectedPlanRevision, expectedScheduleVersion, routeRevisionId, allowedSourceGapInputs?, requestKey}`; server selects dated sources and computes, never accepts client totals. Response `{quoteId, state:"complete"|"incomplete", missingFields, conflicts, planRevision, scheduleVersion, values, freeAt, freePlace, evidenceRefs}`. Incomplete values may show known partial components but no complete final result.
-- `POST /api/trips/:id/acceptances`: `{quoteId, expectedPlanRevision, expectedScheduleVersion, requestKey, lossReason?}`; returns acceptance/revision IDs. Trimmed loss reason required if rounded result < 0; limit 500 characters, instruct no names/personal data. Missing, stale and replay payload conflicts produce safe field/conflict responses.
-- `POST /api/trips/:id/corrections` and `/cancellations`: scoped command with expected version/request key/reason; creates a proposal or cancellation record, never rewrites an accepted quote. Correction acceptance uses the normal acceptance command with the prior acceptance reference.
-- Phase 2 reads: `GET /api/trips/availability?offset&limit` and `GET /api/trips/:id/kilometre-check`; authorized read operations via `apiHandler`. Return source/certainty, free location/time, open-approach known/unknown values and `verification:"verified"|"notVerified"|"conflicting"` with named implicated trip IDs/intervals. No live GPS field.
-- Phase 3 reads: `GET /api/trips/:id/similar?offset&limit`; pair comes from the scoped plan, not client tenant/name filters. Rows distinguish `invoice` and `enteredTrip`, date, direction, estimated source price/currency, optional EUR projection only with dated FX; `result`/`emptyKm` absent for invoice rows. Import and town-mapping commands below use `apiHandler`.
-
-Vehicle initial-start update, town-alias confirmation, source-gap input and invoice-import start are explicit commands with expected version, request key and permission. Invoice import accepts a bounded date range/cursor only; registered server configuration fixes the source/account/field allowlist. No client-supplied SQL/host/password, unrestricted filter or payroll view. A cancellable operator-triggered job uses a durable batch record/cursor and idempotent chunks; no queue framework is needed for this single consumer. Timed-out job resumes from the last committed chunk, not a second concurrent full import.
+  `MoneyInput` = decimal-string amount, source currency, net basis. Exact times are required on save; unknown start context may be saved but blocks a complete quote.
+- **`POST /api/trips/:id/route-estimates`** (`trips.quote`): `{ expectedPlanRevision, expectedScheduleVersion }` → `{ routeRevisionId, segments, distanceByCountry, evidence, limitations }` or `missingFields`. Never routes to client-supplied URLs.
+- **`POST /api/trips/:id/quotes`** (`trips.quote`): `{ expectedPlanRevision, expectedScheduleVersion, routeRevisionId, sourceGapInputs?, requestKey }` → `{ quoteId, state, missingFields, conflicts, planRevision, scheduleVersion, values, freeAt, freePlace, evidenceRefs }`. The server selects sources and never accepts client totals. An incomplete quote may show known components but no final result.
+- **`POST /api/trips/:id/acceptances`** (`trips.accept`): `{ quoteId, expectedPlanRevision, expectedScheduleVersion, requestKey, lossReason?, supersedesAcceptanceId? }`. A trimmed loss reason (max 500 characters, UI hint: no names or personal data) is required when the rounded result is below zero.
+- **`POST /api/trips/:id/corrections`** and **`/cancellations`** (`trips.correct`): expected version, `requestKey`, reason. They never rewrite an accepted quote; a correction is accepted through the normal acceptance command with `supersedesAcceptanceId`.
+- **Other commands:** town-alias confirmation (`towns.confirmAlias`), source-gap value (`sources.fillGap`), invoice import start (`history.import`, Phase 3). Each has an expected version, `requestKey` and permission.
+- **Phase 2 reads (`apiHandler`):** `GET /api/trips/availability?offset&limit` and `GET /api/trips/:id/kilometre-check`. Both return source/certainty, free place/time, open-approach known/unknown, and `verification: "verified"|"notVerified"|"conflicting"` with implicated trip IDs and intervals. No live GPS field.
+- **Phase 3 read:** `GET /api/trips/:id/similar?offset&limit`. The pair comes from the stored plan, never from client filters. Rows are typed `invoice|enteredTrip` with date, direction, source price and currency, and an EUR projection only with a dated FX rate. Invoice rows have no `result` or `emptyKm`.
+- **Invoice import:** accepts a bounded date range/cursor only; server configuration fixes source, account and field allowlist. Chunks are idempotent with a durable cursor; a timed-out job resumes from the last committed chunk. No queue framework.
 
 ## 📝 UI/UX
 
-No accepted prototype exists yet; #21 produces one after specification decisions, using synthetic data. Tailwind/shadcn and existing form/table/feedback are mandatory. Foundation widgets extend `CrudForm` through typed slots; no parallel financial form infrastructure. Polish messages live in the current translation module.
+#21 produces the mockup from this specification with synthetic data. Use Tailwind/shadcn, the shared widgets and feedback components and Polish messages from the translation module.
 
-Phase 1 access flow: owner invites an admitted personal company address → invitation/password-setup screen → email/password sign-in → protected E01. Include expired/revoked/used invitation, failed credentials, email-reset pending/expired/reused and revoked-session states. Show generic login/reset feedback, preserve no password after completion, and never expose public signup. Account/role admission stays owner-only; no external-provider login choice.
+- **Access (Phase 1):** owner invites → set-password screen → email/password sign-in → E01. Show generic feedback for failed sign-in and reset. Cover expired, revoked and used invitation or reset states and the revoked-session state. No public sign-up and no other login option.
+- **Trip entry and quote (Phase 1):** a page composed in app from the shared widgets and `apiCall`, with the same pending, error-focus and dirty-navigation behaviour as `CrudForm`. Steps:
+  1. Select the truck.
+  2. Enter the start if needed.
+  3. Enter places and exact times.
+  4. Explicitly choose “Bez mycia” or “Nasze mycie” with amount, date and place (no preselection).
+  5. Review routed distances and the country split.
+  6. If WKD-1 applies, choose the weekend case.
+  7. Quote.
+  8. Inspect sources and missing inputs.
+  9. Accept, with a loss reason when needed.
 
-Phase 1 screen flow: select truck → enter start if needed → enter loading/unloading places and exact times → explicitly choose “Bez mycia” or “Nasze mycie” with amount/date/place → review routed approach/loaded distances and country split → if a weekend is included, explicitly choose home in Poland, reduced rest abroad or driving on (no default; “Zapytaj o weekend” when unanswered) → quote → inspect sources/missing inputs → accept with loss reason when needed. Show next free place/time alongside result. Missing wash has no preselected default. Changing fields preserves input, marks old quote stale and makes acceptance unavailable until recalculated. Pending/cancel/network/conflict states use shared feedback and retain edits.
+  Show the next free place and time beside the result. Changing a field keeps the input, marks the quote stale and disables acceptance until recalculated. Correction and cancellation reuse this page with one reason and a confirmation; no separate management screen.
+- **Policy configuration (Phase 1, owner):** a `CrudForm` page to add monthly `PolicyRevision` rates (SRC-4/5/6) and a `DataTable` of revisions.
+- **Fleet (Phase 2):** a paginated `DataTable` with truck, next free place/time and open-approach status. Trip detail shows the sequence and any gap or overlap. “Niezweryfikowane”, “Zgodne” and “Brak danych” are distinct; missing odometer never gives a green badge.
+- **History (Phase 3):** beside the quote: loading town → unloading town, date, source price. Invoice rows say “Szacunek” and show no result or empty distance. Entered-trip rows are labelled as plan results until E3/E4. “No history”, “source unavailable” and “unmatched places” are shown differently, and none of them blocks the quote. Unlike currencies are not ranked as EUR.
+- **All figures:** use `ValueWithSource` (EV-4). Validate keyboard, focus, error association and narrow layouts on changed flows.
 
-Phase 2 fleet view is a paginated `DataTable` with truck, next-free place/time and open-approach status; trip detail exposes sequence and implicated gap/overlap. “Niezweryfikowane” is distinct from “Zgodne” and “Brak danych”; missing odometers/GPS never yields a green proof badge. A known last unloading can be shown as planned availability without pretending it is live presence.
+## 📝 Kilometre Check and Month Boundary
 
-Phase 3 history appears beside the quote with loading town → unloading town, date and source price. Invoice rows say “Szacunek”; they show no invented result/empty distance. Entered-trip rows explicitly identify quote-derived planned result/empty km until the next E3/E4 specification supplies actuals. Do not present plans as settled historic profit. Display no history versus source unavailable versus unmatched places differently; all allow the standalone quote to proceed. Prices in unlike currencies are not silently ranked as EUR.
+Allocation and completeness are different checks. Plan topology detects duplicate assignment, predecessor mismatch and overlap. Kilometre completeness needs evidence: with validated, increasing odometer readings at interval boundaries, reconcile assigned empty + loaded distance plus open approach against the measured delta. Verification covers only the evidenced interval; no evidence means `notVerified`, never zero or passed; reset or contradictory readings require review.
 
-All numeric rows use `ValueWithSource`, including distance/consumption/dates relevant to the figure; exact-source details are accessible without relying on color. Keyboard/focus/error associations/dirty navigation and narrow layouts are validated with the changed flows; small screen presentation may stack field groups without adding a new navigation system. Do not design a new visual identity here.
+After the last unloading, the terminal empty segment stays open (unknown travel stays unknown). When a next trip arrives, its allocation changes once, across months if needed, without touching the preceding accepted quote.
 
-## 📝 Empty Kilometres and Month Boundary
-
-Trip allocation and completeness are different checks. Plan topology can detect duplicate assignment, predecessor mismatch and schedule overlap; actual kilometre completeness requires a covered evidence interval. With validated monotonically increasing odometers at interval boundaries, reconcile empty + loaded assigned distance plus open approach against measured delta at the approved precision; detect gaps/overlap and show implicated trips/evidence. A measured total alone cannot validate every intervening leg; verification is scoped to the interval/coverage actually supported. Missing evidence remains notVerified, not zero or passed. Corrected/reset/contradictory odometers require review rather than negative distance arithmetic.
-
-After last unloading, an entered terminal empty segment stays open, with dates and certainty; unknown travel is explicitly unknown. When a next trip arrives, the segment’s current allocation changes to that trip exactly once, even across months. It never changes the preceding accepted quote. Cancelled/reordered trips may leave segments unassigned/review-required and invalidate unaccepted dependent quotes.
-
-D32’s monthly view is a future consumer: preserve exact planned/observed segment timestamps, source distances/cost bases and versions now. Interpret “24:00 last day” as `[monthStart,nextMonthStart)` in Europe/Warsaw, resolving instants in UTC. This cutoff determines which month distance/cost belongs to, not when a month freezes. For future E7, D41/R16 selects the GPS odometer reading at local midnight as “GPS measurement”; when GPS is missing, split total segment distance in proportion to elapsed time and label it “estimate: time-proportional split”. Never leave a hole in the month figures. This fallback is an estimate, not measured completeness. D45/R19 resolves future E7 closure: keep the month `provisional` with a required document/data checklist (fuel-card invoices per source provider, leasing, insurance, payroll aggregate, telematics as applicable) until all required items are present. Only the owner’s explicit close action can freeze a complete month; elapsed time or a midnight scheduler cannot close it automatically. Closed figures never change. A later document or correction enters the next open month as a correction referring to the closed month, without moving the original historical trip/segment to the new month or recalculating closed figures. E7 owns completeness criteria, close-action permission/transaction checks and correction posting; no E7 workflow is built in E01. E01 still only stores exact segment timestamps and tenant-qualified source/document references (including revisions and effective/received dates); it does not collect GPS, execute the monthly split, generate the monthly report, freeze a month, invent observed movement from the planner or double-count a later trip assignment in E01. Trip-result sums and a future frozen month sum are different projections of the same segment evidence, not two additive charges.
+For E7, E01 only stores exact segment timestamps and tenant-qualified source/document references (TIME-2). The month cutoff `[monthStart, nextMonthStart)` Europe/Warsaw, the GPS-or-time-proportional split (D41) and provisional months closed only by the owner (D45) are E7 work.
 
 ## 📝 Invoice History (#28 → #26)
 
-Read the already-available accounting replica (owner-provided availability, not a connection tested in this run), with a dedicated read-only identity/view permitting only invoice date, price, currency, source ID/revision and route note. Never read payroll tables or copy accounting entities into product code. Preserve the permitted source/document identity and revision with effective/received dates; this is evidence linkage for future E7, not a general document or payroll import. A correction marker/revision must be supplied or derived from allowed row content to make replay deterministic; source deletion is not inferred from absence in a partial import.
+- **Source.** Read the existing accounting replica through a dedicated read-only identity limited to invoice date, price, currency, source ID/revision and route note. No payroll tables and no copied accounting entities. A correction marker or revision must make replay deterministic; absence from a partial import is not deletion (TIME-4).
+- **Projection.** Parser version, source revision and confirmed directed town mapping produce a new projection (PLACE-2). Unparseable direction, several possible pairs, invalid net/currency and disputed corrections go to a review state and count as unmatched, never as fake similar trips. Duplicate replays do not duplicate history.
+- **Display.** Invoice rows are estimated price context (D28, EV-2). Entered-trip history starts empty and shows quote-based plan results and empty kilometres. Reverse direction is excluded. An invoice and an entered trip are linked only through an explicit verified link, never by matching date and towns, and their prices are never added.
+- **Data.** No source records or real addresses in fixtures, screenshots or logs.
 
-Parser version, source revision and confirmed directed town mapping produce a new projection. Normalize spelling to candidate keys; a person confirms aliases and ambiguous place context once. Unknown country is preserved, not guessed. Import rows with unparseable direction, multiple possible town pairs, invalid net/currency or disputed corrections enter an explicit review state and contribute to aggregate unmatched counts, not fake similar trips. Duplicate correction replays do not duplicate history.
+## 📝 Test Scenarios
 
-Invoice rows show date/invoiced price as estimated context per D28, not an actual trip-cost result. Entered-trip history starts empty and can provide recorded quote-based plan results and empty kilometres labelled as plan; actual results await E3/E4. Reverse direction is excluded. Deduplicate an invoice and entered trip only when a verified explicit link exists; do not infer a join from same date/towns or add their prices together. No source records or real addresses enter fixtures, screenshots or logs.
+Synthetic fixtures; each line names the rule it proves.
 
-## 📝 Edge Cases & Failure Scenarios
-
-Acceptance scenarios to verify with synthetic fixtures, beyond standard CRUD:
-
-1. No trips/start → unknown availability; missing first approach → incomplete quote.
-2. A then B → B owns the entire A-unload-to-B-load approach; A unchanged.
-3. No next load → current single-trip quote still valid; open approach separate.
-4. Missing wash or wash amount/date → named errors, no default no-wash.
-5. Carrier wash increases cost only; legacy client-paid wash input rejected.
-6. Missing loading/unloading exact time or reversed schedule → validation error.
-7. DST skipped/ambiguous time → explicit rejection/offset choice; company timezone retained.
-8. Future/weekend/holiday FX → last published central-bank rate with its date and estimate status for future use; source data never leaks from after quote as-of.
-9. Source outage/staleness/conflict → retain inputs, follow the approved source hierarchy or list missing fields; no fabricated complete acceptance.
-10. Same named towns in different regions, spelling aliases and reversed routes → mapping review/exclusion.
-11. Median/country-vector mismatch or edited totals not summing → incomplete fuel/toll calculation.
-12. Detour crosses country/date → all legs/time priced once under matching dated inputs.
-13. Odometer absent → notVerified, not failed and not passed; conflicting/reset readings → review.
-14. Terminal approach crosses month/year → same timestamped segment retained and allocated once later; E7’s GPS/proportional rule is recorded but no monthly report created.
-15. New predecessor/reordered/overlapping trip → reject invalid schedule, stale affected unaccepted quotes, flag accepted successors.
-16. Double-click/retried accept → same receipt; same key/different payload → conflict.
-17. Concurrent quote acceptance and schedule edit → one wins by version/lock, other conflicts without partial writes.
-18. Correct/cancel accepted trip → append revision, preserve accepted snapshot and source refs.
-19. Rounded result negative/zero and half-up ties → loss reason follows visible rounded result, never an invisible threshold.
-20. Invoice correction/replayed/partial batch → one current projection, prior revision retained, no deletion by absence.
-21. No similar trips/unmatched routes/provider failure → distinct states, single-trip quote still usable.
-22. Foreign tenant vehicle/place/segment/quote/evidence/receipt/source/account → denied in DB and server read paths.
-23. Shared/unlisted company address, uninvited signup, revoked/expired invite, wrong invitation address/tenant/role, reused setup/reset token, revoked member or CSRF → no E01 access or mutation. Test owner invitation → first-password setup → sign-in → email reset/session revocation through the selected library, with generic failed-login/reset feedback and no credential logs.
-24. Decimal string through input/ORM/JSON/UI → no number coercion or independent intermediate rounding.
-25. Weekend elapsed time without a choice → incomplete “ask about the weekend”; homePoland/restAbroad/drivingOn retain vehicle cost and apply the distinct labour rule once. Partial abroad-flat day incurs the full dated flat amount per touched calendar day (D42); calendar classification uses D43 Europe/Warsaw, including DST and border-crossing cases.
-26. Last closed monthly cost source → preserve vehicle/month/category closure revision; excluded category says notIncluded, required unavailable rate makes quote incomplete, no percentage surcharge.
-27. Fuel hierarchy → correctly litre-weight selected days, median matched discounts and manual-age boundary; unavailable discount does not mean zero, and all absent branches name the country.
-28. Own-vehicle CAN below configured sufficiency → fleet country/load-state fallback with source/period, never per-driver data; toll source remains last-closed-month cards and planner toll is control only.
-29. Warsaw weekend boundaries → Saturday 00:00 included and Monday 00:00 excluded, irrespective of vehicle/segment zone; crossing a border changes neither selection nor labour-day count. A Warsaw DST-change weekend spans 47 or 49 elapsed hours but still two local weekend calendar days; full flat labour charges those two touched days, vehicle/normal labour uses actual elapsed time.
+1. No trips and no start → unknown availability; missing first approach → incomplete quote (BND-1).
+2. Trips A then B → B owns the whole A-unload-to-B-load approach; A unchanged (BND-1, R05).
+3. No next load → quote still valid; open approach separate (R08).
+4. Missing wash answer, amount or date → named errors, no default; a client-paid wash input is rejected (R09).
+5. Missing or reversed times → validation error; DST gap or overlap → rejection or offset choice (TIME-1).
+6. Future, weekend or holiday FX → last published rate with date and estimate status; nothing after as-of (SRC-2).
+7. Fuel hierarchy: litre-weighting of mixed-currency card transactions, median discount, 14-day manual age, missing branches naming the country (SRC-1).
+8. CAN below threshold → fleet fallback with reason (SRC-3). The planner toll stays a control (SRC-4).
+9. Monthly configuration: latest approved month ≤ as-of used; vehicle rate beats fleet-wide; uncovered category → `notIncluded`; missing rate → incomplete; mixed vehicle/labour rate rejected (SRC-5).
+10. Weekend: no choice → “Zapytaj o weekend”; all three cases; one hour inside a weekend day in `restAbroad` → full flat amount; Saturday 00:00 included and Monday 00:00 excluded; DST weekend and border crossing (WKD-1).
+11. Source outage, staleness or conflict → inputs kept, missing fields listed, no complete acceptance (SRC-7).
+12. Same-named towns, spelling aliases, reversed routes → review or exclusion (PLACE-2).
+13. Country vector mismatch or edited totals that do not sum → incomplete fuel/toll (BND-3, BND-4).
+14. Detour crossing a country or date → all legs priced once at matching dated inputs.
+15. New predecessor or overlap → invalid schedule rejected, unaccepted successor quotes stale, accepted successors flagged.
+16. Double-click or retried accept → same acceptance; same key with a different payload → conflict (TIME-3).
+17. Concurrent accept and schedule edit → one wins by version/lock, the other conflicts with no partial write.
+18. Correct or cancel an accepted trip → new revision; snapshot and source refs preserved.
+19. Rounded result negative, zero or at a tie → loss reason follows the visible result (FIN-3).
+20. Decimal string through input, ORM, JSON and UI → no `number`, no intermediate rounding (FIN-1, FIN-2).
+21. Foreign-tenant vehicle, place, segment, quote, evidence, source or account → denied in DB and server reads (AUTH-1).
+22. Shared or unlisted address, open sign-up, revoked/expired/wrong invitation, reused token, revoked member, CSRF → no access. Invite → set password → sign-in → reset → session revocation works with generic feedback and no credential logs (AUTH-2).
+23. Phase 2: odometer absent → `notVerified`; conflicting or reset readings → review; terminal approach crossing a month → one segment, allocated once later.
+24. Phase 3: invoice correction, replay or partial batch → one current projection, prior revision kept; no similar trips, unmatched routes or provider failure → distinct states, quote usable.
 
 ## 📝 Synthetic Calculation Examples
 
-These examples use only invented EUR net decimal strings and abstract places A/B/C, not executed application tests or company rates. The synthetic last-closed-month provider supplies a vehicle-day rate "72.000000" and aggregate labour vehicle-day rate "48.000000" with all fixture fixed-cost categories covered. No separate overhead exists. Elapsed time is 2 hours outside a weekend, so vehicle cost is "6.00" and labour "4.00". Toll "0.100000"/km, fuel "1.000000"/litre and AdBlue "0.010000" per fuel litre are synthetic inputs only.
+Invented EUR net values and places A/B/C only. The synthetic monthly configuration gives vehicle-day rate "72.000000" and driver-day rate "48.000000", with all fixture categories covered. Two elapsed hours outside a weekend give vehicle "6.00" and labour "4.00". Toll "0.100000"/km, fuel "1.000000"/litre, AdBlue "0.010000" per litre.
 
-- Approach 20 km at "10.000000" l/100 km plus loaded 80 km at "20.000000" gives "18.000" litres. Fuel "18.00", toll "10.00", AdBlue "0.18", vehicle "6.00", labour "4.00", no wash: coveredCost "38.18". Freight "60.00" gives resultWithinCoverage "21.82". An unknown future approach after unloading changes none of this quote.
-- Add carrier wash "5.00" within that same 2-hour boundary: coveredCost "43.18", revenue "60.00", result "16.82". Detour km/time trigger recomputation, not just an added wash amount.
-- Freight "30.00" with the first example gives result "-8.18" and requires a reason to accept. A deliberately excluded category is labelled notIncluded beside this coverage-limited result. Missing required monthly cost input instead makes the result incomplete; it is not a zero-rate fallback.
-- With the same variable cost "28.18" but exactly one full 24-hour weekend day and no weekday overlap, vehicle cost is "72.00" in all three modes. HomePoland labour "0.00" gives coveredCost "100.18"; restAbroad with a synthetic dated flat "24.00" gives "124.18"; drivingOn normal labour "48.00" gives "148.18". This proves replacement rather than double charging; D43 selects Europe/Warsaw, while synthetic rates do not supply production configuration. A separate synthetic partial-day restAbroad fixture (one hour inside an identified weekend day) with flat "24.00" charges labour "24.00", never "1.00"; touching two identified weekend days charges "48.00". Vehicle cost for that one-hour fixture is "3.00" from the synthetic rate, independently of the flat labour rule.
-- Synthetic fuel-card example on three eligible refuelling days within the 14-day window: litres "10", "20", "30", corresponding net amounts "10", "40", "60" give weighted price `110/60`, published "1.833333", not the unweighted average of the three prices. Preserve the exact ratio in cost calculation until R11 publication.
-- Half-up publication of exact money "1.005" gives "1.01" and "-1.005" gives "-1.01". Exact components "0.004" + "0.004" publish aggregate "0.01" while each displays "0.00"; show a "0.01" rounding reconciliation, never sum displayed zeros into a zero total.
+- Approach 20 km at "10.000000" l/100 km plus loaded 80 km at "20.000000" → "18.000" litres. Fuel "18.00", toll "10.00", AdBlue "0.18", vehicle "6.00", labour "4.00", no wash: coveredCost "38.18". Freight "60.00" → result "21.82".
+- With a carrier wash of "5.00" in the same interval: coveredCost "43.18", result "16.82".
+- Freight "30.00" with the first example → result "-8.18"; acceptance requires a reason.
+- Variable cost "28.18" and exactly one full weekend day with no weekday overlap: vehicle "72.00" in every case. `homePoland` labour "0.00" → "100.18"; `restAbroad` with flat "24.00" → "124.18"; `drivingOn` labour "48.00" → "148.18".
+- `restAbroad`, one hour inside one weekend day, flat "24.00" → labour "24.00" (not "1.00"), vehicle "3.00". Touching two weekend days → labour "48.00".
+- Card fuel: three days, litres "10", "20", "30", EUR net "10", "40", "60" → `110/60`, published "1.833333"; the exact ratio is used in cost.
+- Half-up: "1.005" → "1.01", "-1.005" → "-1.01". Components "0.004" + "0.004" → aggregate "0.01", each shown as "0.00", with a "0.01" reconciliation line.
 
-Before implementation validate fixture explanations against owner policies and the approved external provider configuration; extend with full/missing fuel fallback branches, net/FX direction, weekday/weekend boundaries, full flat partial-day, Warsaw DST/border and no-default weekend-choice states, repeating division and source conflicts. Historical review examples with client-paid wash, half legs or percentage overhead remain historical comparisons only.
+Extend the fixtures for missing fuel branches, FX direction, weekday/weekend boundaries, DST and border cases, repeating decimals and source conflicts.
 
-## 📝 Risks & Impact Review
+## 📝 Risks
 
-Provider/source readiness and quote latency are unverified. Synthetic adapter fixtures cannot prove live country coverage, net data semantics or route legality; an authorized bounded read-only readiness check must precede real-data rollout. Missing sources block only the affected complete calculation; unavailable history never blocks a valid standalone quote. Existing operational consumption quality is not validated by D30; measure it later without per-driver inference.
+Provider readiness and quote latency are unverified; synthetic fixtures cannot prove live country coverage, net semantics or route legality. A separately authorized read-only readiness check precedes real-data rollout. Missing sources block only the affected complete quote; missing history never blocks a quote. Reasons and route notes are private, length-limited and permission-guarded.
 
-Financial precision, policy choice, immutable history, email binding and place aliases are durable contracts. No code, migration, paid provider registration, credential access, production query, PR or merge is part of this specification run. New APIs/exports/schema enter protected-contract documentation in their implementing phase. Keep actor reasons and route notes private, constrain lengths/permissions and follow an approved retention policy before storing extra personal data; do not add personal contacts.
+## 📋 Phasing and Implementation Plan
 
-## 📋 Phasing
+Precondition: owner approval of both specifications; the authentication library verified (AUTH-2); HERE price and terms checked (ROUTE-1); the #21 mockup traces all states to both documents.
 
-- **Phase 1 — first clickable trip entry + quote (#22 and first #25 slice):** secure personal-account/company access, minimal vehicle/place references, initial start, exact schedule/segments, routed full approach, dated input estimate, mandatory carrier wash, visible result/free place/time and frozen acceptance plus minimal correction/cancellation safety. This phase includes only the minimal dependencies from #23/#24 needed for correct quotation, not the full fleet/check/history screens. D21 observes a real offer with this running phase; no pre-build dispatcher session gates it.
-- **Phase 2 — fleet availability + kilometre check (#23/#24):** chronological fleet projection, explicit open approach and evidence-scoped gap/overlap/coverage review. It displays existing Phase 1 review-required states; it does not reimplement correction or successor invalidation. No GPS importer or monthly report.
-- **Phase 3 — similar trips + invoice reader (#28/#26):** bounded read-only import, confirmed town aliases, correction replay and history beside quote. This completes E01 when all criteria below pass; then specify E3/E4 under D37.
+**Phase 1 — first clickable trip entry and quote (#22 and the first #25 slice).** Includes only the minimal parts of #23/#24 that correct quotation needs. D21 observes a real offer with this phase; no pre-build dispatcher session. Correction and cancellation are included because the next quote depends on the accepted unloading, and a wrong accepted entry must be fixable without editing the database (R12).
 
-Phase 1 correction/cancellation is retained deliberately for the first real-data use: manual entry during a call can contain a mistaken accepted date, truck or amount, and the next quote already depends on that accepted unloading. The minimum safe operation is an explicit append-only correction/cancellation using the same entry/acceptance controls and a successor review warning. Locking users into a known wrong acceptance until Phase 2, or repairing it by DB edits, would violate R12 and undermine D21. No bulk correction workspace, historical comparison UI or automatic repricing is included; the richer fleet visibility comes in Phase 2. This is a safety dependency of the first real-data quote, not a separately deployable new capability.
+1. **1.1 Access and entry.** P04–P08 for this consumer: company, members, AUTH-2/3/4, vehicles, places, initial start, trip commands, segments. Verify two-tenant attacks, the full invitation/password lifecycle, chronological entry, unknown states, migrations/restore and screenshots.
+2. **1.2 Route and inputs.** ROUTE-1 adapters, SRC-1…7, the policy configuration page, P01/P02 contracts. Verify country splits, stops, source dates and currencies, missing/conflict/stale states, cancellation and route edits. No final result exposed yet.
+3. **1.3 Quote.** Cost formulas, WKD-1, FIN-3 and the evidence breakdown with source-gap inputs. Verify the synthetic examples, PostgreSQL decimal round trips and incomplete paths; screenshots of quote, weekend and missing-input states.
+4. **1.4 Acceptance and revisions.** Idempotent acceptance, loss reason, schedule lock, derived staleness, correction, cancellation, one current segment allocation under concurrent requests, successor flags. Screenshots of success, negative and conflict flows.
+5. **1.5 Phase gate.** Full checks; trip entry → quote → accept in one flow with source labels and next availability. Record D21 privately in the deployment; repository evidence stays synthetic.
 
-## 📋 Implementation Plan
+**Phase 2 — availability and kilometre check (#23/#24).**
 
-Precondition: owner approves both designs; all E01 owner policy questions are resolved, while technical library/provider verification remains required; #21 synthetic mockup traces all phases/states to both documents. These are future implementation steps, not work executed in this run. Each step preserves the existing app; only complete phase outcomes are presented as released capability.
+6. **2.1 Fleet availability.** Paginated projection, unknown trucks, open approach, Phase 1 review flags; screenshots.
+7. **2.2 Kilometre check.** Distance evidence entry and reconciliation: verified, notVerified, conflicting, reset, gaps, overlaps, month-crossing open segments. Reuses the Phase 1 allocation invariant; no monthly closure.
 
-**Phase 1**
+**Phase 3 — similar trips and invoice reader (#28/#26).**
 
-1. **1.1 Entry and access:** add minimum tenant/member/vehicle/place/start/trip/segment persistence and authorized trip entry composed with shared UI/API; introduce P04–P08 only for this consumer. D44/R18 fixes the method: verify and pin a maintained library implementing invited email/password, initial password setup and email reset before exposing access; no OAuth/passwordless branch or custom auth. Prove the selected invitation/password lifecycle works without adding a team/organization hierarchy; the research reference to an organization plugin is not approval to adopt its broader schema or workflows. Verify two-tenant FK/query attacks, invite-only personal-company admission, initial password setup, email/password sign-in, email reset/session revocation, expired/reused token rejection, bypassed-registration denial and no credential logs. Also verify chronological entry, empty/unknown state, migrations/restore and screenshots for changed access/entry flows. Existing app remains operable while unfinished quotation is unavailable.
-2. **1.2 Route and input preview:** add P03 adapters and P02/P01 value contracts with actual routed estimate consumer. Validate synthetic country splits, stops, source-date/currency semantics, missing/conflict/stale states, cancellation and route overrides. No complete financial result is exposed yet; preserve entry and user edits. Readiness must not access real data without separate authorized configuration.
-3. **1.3 Complete quotation:** implement pure R11 formula contract and evidence breakdown, with P01/P02 value display and source-gap controls. D38–D41 policies now apply; approved provider configuration and independent synthetic expected results are required. D42/R17 specifies full flat partial-day billing; D43 fixes weekend classification to Europe/Warsaw, including local-calendar day counting across DST/borders. Validate exact/repeating decimals, money/quantity PostgreSQL round trips, whole approach, detours and incomplete results. Browser screenshot records quote and missing-input paths.
-4. **1.4 Acceptance and revisions:** add idempotent transactional acceptance, loss reason, schedule lock/version, stale quote and correction/cancellation behavior. Prove one current segment assignment under concurrent next-trip/accept/edit requests here, together with duplicate-receipt replay, audit rollback and accepted-successor review state; no silent overwrites. Correction/cancellation uses the same entry form and one explicit reason/confirmation, without a new management screen. Screenshot successful, negative and conflict flows.
-5. **1.5 Phase gate:** run configured commands and browser integration evidence; verify trip entry → quote → accept works in one flow with source labels and next availability. Record D21 observation privately in the authorized deployment when arranged; repository evidence remains synthetic and does not claim regular adoption.
-
-**Phase 2**
-
-6. **2.1 Fleet availability:** build paginated future-free projection via shared DataTable, no live GPS; include unknown truck and open-approach states. Verify the read projection displays Phase 1’s existing predecessor/successor review flag and applies authorization; screenshot all changed screens.
-7. **2.2 Kilometre check:** add scoped optional distance-evidence entry and allocation reconciliation; cover verified intervals, notVerified, missing/conflicting/reset readings, gaps/overlaps and month-crossing open segments. Consume the Phase 1 assignment invariant; test new measured-distance coverage/gap/overlap logic and its evidence updates without duplicating the acceptance race implementation. Run full gate and screenshots; do not implement monthly closure.
-
-**Phase 3**
-
-8. **3.1 Restricted history reader:** add P09 batch/cursor/dedup records and explicit read-only replica adapter over approved columns. Use synthetic correction/replay/outage/invalid-currency/unmatched-route tests; no payroll queries. Town aliases use P04 and operator review, not fuzzy auto-merge. Verify restart/cancel preserves exactly one current source revision and does not infer deletions.
-9. **3.2 Similar-trip panel and epic gate:** query same directed town pair, distinguish invoice context from entered plan results, omit invoice result/emptyKm, show unavailable/unmatched/empty separately. Verify reverse exclusion, currency/date/provenance, two-tenant history isolation and screenshots. Run full gate, map all story criteria to evidence, then mark E01 delivered only after those checks and owner approval; actual post-trip costs remain the next specification.
+8. **3.1 History reader.** P09 batches, cursor and dedup; read-only replica adapter; alias review. Tests for correction, replay, outage, invalid currency and unmatched routes; restart keeps one current revision.
+9. **3.2 Similar trips and epic gate.** Directed pair query, invoice versus entered rows, reverse exclusion, currency/date/provenance, two-tenant isolation, screenshots. Map every story criterion to evidence; E01 is delivered only after these checks and owner approval. The next specification is E3/E4 (D37).
 
 ## 📝 Acceptance and Validation Matrix
 
-- #22: entered truck trip is chronological with exact dates, first start and wash details; negative cases reject missing dates and invalid scheduling. Evidence: 1.1/1.4 integration plus screenshot.
-- #23: planned free place/time at unloading end, unknown no-trip/no-start, open approach and no live GPS. Evidence: 1.3 then 2.1 browser/DB checks.
-- #24: full approach belongs to successor, one current segment assignment, gap/overlap references and open terminal handling; evidence absent means notVerified. Evidence: 1.4 assignment/race checks; 2.2 measured-coverage pure/persistence/browser checks.
-- #25: required wash/dates, whole-approach exact quote, source/certainty/date, EUR net, immutable accepted snapshot, no verdict and negative reason. Also verify explicit weekend choice/no-default prompt, all three labour replacements including full flat touched days, last-closed-month fixed-cost source/category coverage and notIncluded labels, fuel weighted-card/public-discount/manual/missing hierarchy, own-CAN/fleet consumption and planner-toll control. Evidence: 1.2–1.5 calculation/provider/DB/browser checks and screenshots of weekend and missing-input states.
-- #26/#28: directed town matching with confirmed aliases, invoice date/price estimate only, entered plan result/emptyKm labelled, reverse excluded and empty/outage nonblocking. Evidence: 3.1–3.2 adapter/DB/browser checks.
-- R10/D32: exact timestamped segment storage and stable open-approach allocation are verified in E01; monthly completeness/freeze correctness is explicitly unimplemented and must be proved in E7, using D41/R16 and D45/R19. Future E7 must prove provisional checklist completion, owner-only explicit closure and next-open-month corrections; E01 verifies source/document linkage, not this unimplemented workflow.
-- Security/foundations: invite → password setup → sign-in → reset/revocation has Phase 1 browser/persistence evidence with synthetic addresses; wrong-domain, shared/unlisted, expired/reused invite/reset and direct public-signup attempts cannot grant membership. Every entry path and nested reference rejects foreign scope; revisions/receipts/source updates survive races; exact values and evidence persist without number conversion; all new pages/flows leave integration-evidence screenshots.
+| Story | Proven by |
+|---|---|
+| #22 entry | 1.1, 1.4 |
+| #23 availability | 1.3, 2.1 |
+| #24 km check | 1.4, 2.2 |
+| #25 quote | 1.2–1.5 |
+| #26/#28 history | 3.1–3.2 |
+| Security, foundations | 1.1, 1.4 |
 
-Required implementing checks: `pnpm lint`, `pnpm typecheck`, `pnpm test:coverage` (100% statements/branches/functions/lines over the mandated roots), `pnpm build` and `pnpm test:integration` (disposable PostgreSQL, agent-browser, screenshots). A passing document check is not any of those checks or approval of this draft.
+- **#22:** chronological trip with exact dates, first start and wash. Missing dates and invalid schedules are rejected.
+- **#23:** planned free place and time at unloading end; unknown no-trip/no-start state; open approach; no live GPS.
+- **#24:** whole approach belongs to the successor; one current allocation; gap and overlap references; open terminal segment; no evidence means `notVerified`.
+- **#25:** scenarios 4–20 above, including weekend and missing-input screenshots.
+- **#26/#28:** scenario 24 above, plus directed matching with confirmed aliases.
+- **Security and foundations:** scenarios 21–22; every new page and flow leaves an integration-evidence screenshot.
+- E7 month closure is not implemented in E01; E01 verifies timestamp and source/document linkage only.
+
+Required checks per phase: `pnpm lint`, `pnpm typecheck`, `pnpm test:coverage` (100% statements, branches, functions and lines over the mandated roots), `pnpm build`, `pnpm test:integration` (disposable PostgreSQL, agent-browser, screenshots).

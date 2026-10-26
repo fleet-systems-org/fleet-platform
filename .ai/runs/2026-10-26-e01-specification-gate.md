@@ -75,3 +75,24 @@
 - Non-blocking nits applied: this result appended; step 1.1 explicitly verifies invitation capability without importing a team/organization hierarchy; implementation precondition no longer suggests an unanswered owner policy. Both specs remain ready for owner approval, not approved or implemented.
 - Final documentation checks passed: all five changed files are Markdown; relative links, fences/table shape, contiguous D01–D45/R01–R19, unchanged D43 and retained prior row bodies, Q21/Q24 closure, matching primitive phase maps, ready-for-owner-approval statuses and no stale open login/month gates. The first ad-hoc check selected the run log as a spec and failed its status assertion; corrected the selector and reran the complete check successfully. No document defect or policy default resulted.
 - Application lint/typecheck/coverage/build/integration and live authentication/mail/provider tests not run (documentation only). No PR, implementation, production access or base-branch merge. Publish the task branch; next step is owner approval, then #21 synthetic mockup under D29/D33. No remaining E01 owner question is inferred from technical deployment readiness.
+
+## Specification review applied — 2026-10-26
+
+- Input: independent review of both E01 specifications (Claude Opus 5.5, read-only) and owner answers in a T3 thread. Edited by Claude Opus 5.5 at the owner's direct request; branch cez/495f3e66 from ad0ae20.
+- Owner decisions recorded in the brief: D46 (fixed-cost and toll rates as owner-approved monthly configuration in E01; automatic reading deferred to a later specification) and D47 (HERE routing and geocoding for Phase 1; broader provider research later). R14/R15 status notes updated.
+- Specification changes:
+  - each rule stated once, with IDs (FIN, EV, SRC, ROUTE, PLACE, AUTH, TIME, BND, WKD);
+  - decimal.js at precision 50 instead of rational pairs;
+  - trip writes are apiHandler commands, makeCrudRoute only for reference records and read-only trip lists;
+  - trip entry is page composition, CrudForm unchanged;
+  - SRC-1 converts each card transaction to EUR at its own date before litre-weighting; windows end at quote as-of;
+  - AUTH-3 first-owner bootstrap, AUTH-4 permission names;
+  - derived quote staleness;
+  - scheduleReviewRequired in the model;
+  - per-command requestKey instead of a generic receipt table;
+  - unconstrained numeric for source inputs;
+  - E7 text reduced to the E01 boundary.
+
+  Backlog note on Phase 1 versus #25 dependencies.
+- Not changed: phase split (owner has not decided on the proposed Phase 1a/1b split).
+- Validation: Markdown-only; link targets, Mermaid fences, decision-table shape, diff whitespace and word counts checked. Application checks not run (documentation only).
