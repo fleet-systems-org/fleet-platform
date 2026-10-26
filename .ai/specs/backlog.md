@@ -4,13 +4,15 @@
 Backlog source: .ai/specs/product-brief.md
 Last filed: 2026-10-24
 
-One specification covers E01 (D19): the first E01 story taken writes it; later stories link it.
+One specification covers the whole E01 epic (D19, D29). #22 authors it using the #27 review; later stories link it. Then #21 produces a synthetic-data mockup from that specification to check it, before implementation. Build in phases, trip entry and the quote first. No dispatcher session gates the build.
+
+The #22 specification milestone precedes #21; only #22 implementation depends on #21. The dependencies below distinguish those milestones to avoid a circular dependency.
 
 | Id | Issue | Title | Epic | Depends on | Adopted |
 |---|---|---|---|---|---|
 | E01 | [#18](https://github.com/fleet-systems-org/fleet-platform/issues/18) | Price an offer together with the truck's next move | — | — | no |
-| E01-S01 | [#21](https://github.com/fleet-systems-org/fleet-platform/issues/21) | Prototype on one real offer (D25) | #18 | — | no |
-| E01-S02 | [#22](https://github.com/fleet-systems-org/fleet-platform/issues/22) | Enter a truck's trip by hand | #18 | #21 | no |
+| E01-S01 | [#21](https://github.com/fleet-systems-org/fleet-platform/issues/21) | Synthetic E01 specification mockup (D29) | #18 | #22 specification | no |
+| E01-S02 | [#22](https://github.com/fleet-systems-org/fleet-platform/issues/22) | Enter a truck's trip by hand | #18 | #27; #21 before build | no |
 | E01-S03 | [#23](https://github.com/fleet-systems-org/fleet-platform/issues/23) | Where and when each truck is free | #18 | #22 | no |
 | E01-S04 | [#24](https://github.com/fleet-systems-org/fleet-platform/issues/24) | Empty km and kilometre check | #18 | #22 | no |
 | E01-S05 | [#25](https://github.com/fleet-systems-org/fleet-platform/issues/25) | Price an offer before accepting | #18 | #23, #24, #27 | no |
