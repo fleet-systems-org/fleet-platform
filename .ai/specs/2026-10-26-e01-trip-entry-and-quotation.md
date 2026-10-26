@@ -57,10 +57,10 @@ Read providers outside transactions, persist immutable normalized observations a
 |---|---|---|
 | P01 Exact values | Quote | 1 |
 | P02 Value evidence | Quote | 1 |
-| P03 Dated providers | Quote | 1 |
-| P04 Town/place | Entry, routing | 1 |
-| P05 Company scope | Stored trips | 1 |
-| P06 Personal login | Real-data entry | 1 |
+| P03 Dated inputs | Quote | 1 |
+| P04 Place identity | Entry, routing | 1 |
+| P05 Scoped access | Stored trips | 1 |
+| P06 Authentication | Real-data entry | 1 |
 | P07 Timed segments | Quote duration | 1 |
 | P08 Revision commands | Acceptance | 1 |
 | P09 Import identity | Invoice history | 3 |
@@ -250,9 +250,11 @@ Financial precision, policy choice, immutable history, email binding and place a
 
 ## 📋 Phasing
 
-- **Phase 1 — first clickable trip entry + quote (#22 and first #25 slice):** secure personal-account/company access, minimal vehicle/place references, initial start, exact schedule/segments, routed full approach, dated input estimate, mandatory carrier wash, visible result/free place/time and frozen acceptance/correction. This phase includes only the minimal dependencies from #23/#24 needed for correct quotation, not the full fleet/check/history screens. D21 observes a real offer with this running phase; no pre-build dispatcher session gates it.
-- **Phase 2 — fleet availability + kilometre check (#23/#24):** chronological fleet projection, explicit open approach, evidence-scoped gap/overlap/coverage review and successor correction states. No GPS importer or monthly report.
+- **Phase 1 — first clickable trip entry + quote (#22 and first #25 slice):** secure personal-account/company access, minimal vehicle/place references, initial start, exact schedule/segments, routed full approach, dated input estimate, mandatory carrier wash, visible result/free place/time and frozen acceptance plus minimal correction/cancellation safety. This phase includes only the minimal dependencies from #23/#24 needed for correct quotation, not the full fleet/check/history screens. D21 observes a real offer with this running phase; no pre-build dispatcher session gates it.
+- **Phase 2 — fleet availability + kilometre check (#23/#24):** chronological fleet projection, explicit open approach and evidence-scoped gap/overlap/coverage review. It displays existing Phase 1 review-required states; it does not reimplement correction or successor invalidation. No GPS importer or monthly report.
 - **Phase 3 — similar trips + invoice reader (#28/#26):** bounded read-only import, confirmed town aliases, correction replay and history beside quote. This completes E01 when all criteria below pass; then specify E3/E4 under D37.
+
+Phase 1 correction/cancellation is retained deliberately for the first real-data use: manual entry during a call can contain a mistaken accepted date, truck or amount, and the next quote already depends on that accepted unloading. The minimum safe operation is an explicit append-only correction/cancellation using the same entry/acceptance controls and a successor review warning. Locking users into a known wrong acceptance until Phase 2, or repairing it by DB edits, would violate R12 and undermine D21. No bulk correction workspace, historical comparison UI or automatic repricing is included; the richer fleet visibility comes in Phase 2. This is a safety dependency of the first real-data quote, not a separately deployable new capability.
 
 ## 📋 Implementation Plan
 
@@ -263,13 +265,13 @@ Precondition: owner approves both designs and resolves the policies blocking the
 1. **1.1 Entry and access:** add minimum tenant/member/vehicle/place/start/trip/segment persistence and authorized trip entry composed with shared UI/API; introduce P04–P08 only for this consumer. Choose approved FQ2 library/method first. Verify two-tenant FK/query attacks, shared-email denial, chronological validation, empty/unknown state, migrations/restore and entry screenshots. Existing app remains operable while unfinished quotation is unavailable.
 2. **1.2 Route and input preview:** add P03 adapters and P02/P01 value contracts with actual routed estimate consumer. Validate synthetic country splits, stops, source-date/currency semantics, missing/conflict/stale states, cancellation and route overrides. No complete financial result is exposed yet; preserve entry and user edits. Readiness must not access real data without separate authorized configuration.
 3. **1.3 Complete quotation:** implement pure R11 formula contract and evidence breakdown, with P01/P02 value display and source-gap controls. FQ1/FQ3/FQ4 and independent synthetic expected results must be approved first. Validate exact/repeating decimals, money/quantity PostgreSQL round trips, whole approach, detours and incomplete results. Browser screenshot records quote and missing-input paths.
-4. **1.4 Acceptance and revisions:** add idempotent transactional acceptance, loss reason, schedule lock/version, stale quote and correction/cancellation behavior. Race two accept/edit requests, retry duplicate receipts, audit rollback and accepted-successor review state; no silent overwrites. Screenshot successful, negative and conflict flows.
+4. **1.4 Acceptance and revisions:** add idempotent transactional acceptance, loss reason, schedule lock/version, stale quote and correction/cancellation behavior. Prove one current segment assignment under concurrent next-trip/accept/edit requests here, together with duplicate-receipt replay, audit rollback and accepted-successor review state; no silent overwrites. Correction/cancellation uses the same entry form and one explicit reason/confirmation, without a new management screen. Screenshot successful, negative and conflict flows.
 5. **1.5 Phase gate:** run configured commands and browser integration evidence; verify trip entry → quote → accept works in one flow with source labels and next availability. Record D21 observation privately in the authorized deployment when arranged; repository evidence remains synthetic and does not claim regular adoption.
 
 **Phase 2**
 
-6. **2.1 Fleet availability:** build paginated future-free projection via shared DataTable, no live GPS; include unknown truck and open-approach states. Verify predecessor/successor correction projection and authorization; screenshot all changed screens.
-7. **2.2 Kilometre check:** add scoped optional distance-evidence entry and allocation reconciliation; cover verified intervals, notVerified, missing/conflicting/reset readings, gaps/overlaps and month-crossing open segments. Prove assignment-once under concurrent next-trip edits and preserve accepted history. Run full gate and screenshots; do not implement monthly closure.
+6. **2.1 Fleet availability:** build paginated future-free projection via shared DataTable, no live GPS; include unknown truck and open-approach states. Verify the read projection displays Phase 1’s existing predecessor/successor review flag and applies authorization; screenshot all changed screens.
+7. **2.2 Kilometre check:** add scoped optional distance-evidence entry and allocation reconciliation; cover verified intervals, notVerified, missing/conflicting/reset readings, gaps/overlaps and month-crossing open segments. Consume the Phase 1 assignment invariant; test new measured-distance coverage/gap/overlap logic and its evidence updates without duplicating the acceptance race implementation. Run full gate and screenshots; do not implement monthly closure.
 
 **Phase 3**
 
@@ -280,7 +282,7 @@ Precondition: owner approves both designs and resolves the policies blocking the
 
 - #22: entered truck trip is chronological with exact dates, first start and wash details; negative cases reject missing dates and invalid scheduling. Evidence: 1.1/1.4 integration plus screenshot.
 - #23: planned free place/time at unloading end, unknown no-trip/no-start, open approach and no live GPS. Evidence: 1.3 then 2.1 browser/DB checks.
-- #24: full approach belongs to successor, one current segment assignment, gap/overlap references and open terminal handling; evidence absent means notVerified. Evidence: 2.2 pure/persistence/race/browser checks.
+- #24: full approach belongs to successor, one current segment assignment, gap/overlap references and open terminal handling; evidence absent means notVerified. Evidence: 1.4 assignment/race checks; 2.2 measured-coverage pure/persistence/browser checks.
 - #25: required wash/dates, whole-approach exact quote, source/certainty/date, EUR net, immutable accepted snapshot, no verdict and negative reason. Evidence: 1.2–1.5 calculation/provider/DB/browser checks.
 - #26/#28: directed town matching with confirmed aliases, invoice date/price estimate only, entered plan result/emptyKm labelled, reverse excluded and empty/outage nonblocking. Evidence: 3.1–3.2 adapter/DB/browser checks.
 - R10/D32: exact timestamped segment storage and stable open-approach allocation are verified in E01; monthly completeness/freeze correctness is explicitly unimplemented and must be proved in E7, including FQ5.

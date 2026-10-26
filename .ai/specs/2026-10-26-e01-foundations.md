@@ -72,7 +72,7 @@ Exactness strategy for this small formula set: represent non-terminating interme
 
 ### P02 — Value with evidence
 
-Proposed `EvidenceValue` in core/contracts carries three independent axes: `phase: plan|actual`, `state: known|missing|conflicting`, and, for a known value, `certainty: certain|estimated`. E01 creates plan values and permitted invoice-history projections only; this contract does not implement actual settlement.
+Proposed `EvidenceValue` in core/contracts carries three independent axes: `phase: plan|actual`, `state: known|missing|conflicting`, and, for a known value, `certainty: certain|estimated`. E01 quote inputs/results have phase `plan`. Phase 3’s invoice-history price has phase `actual` only for the metric `invoicedPrice` (the historical invoice field); its R02 certainty remains `estimated` for this comparison per D28. It is not `actualTripCost` or `actualTripResult`, and no invoice row may supply those metrics. Thus the existing plan/actual contract has an E01 source-context consumer without implementing E3/E4 settlement. Entered-trip history results remain phase `plan` until that later specification supplies measured actuals.
 
 Known shape: `{ value: DecimalString, unit, currency?, certainty, reasonCodes, sources: SourceRef[], observedAt, effectiveFrom, effectiveTo?, receivedAt, calculatedAt?, calculationVersion?, policyRevision? }`. SourceRef contains opaque tenant-owned evidence ID, provider kind, source revision, field identity and scope; it never contains connection strings or source record bodies. Missing has required reason and field identity. Conflicting retains compatible candidates and blocks a complete result until resolved. Keep source and selected override side by side.
 

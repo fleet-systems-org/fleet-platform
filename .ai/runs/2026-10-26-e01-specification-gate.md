@@ -18,3 +18,13 @@
 - Passed documentation checks: relative targets exist; fences/required sections/graphs present; one Markdown decision table with 37 unique ordered rows and one rule table with 12 unique rows; prior Q05 preserved; publication text checks on both E01 specs; diff whitespace check. Synthetic fuel/cost/result and half-up cases independently recalculated with rational arithmetic/Decimal, not application tests.
 - Not executed: application lint/typecheck/coverage/build/integration, live source access, routing requests, authentication or runtime migrations. Markdown-only change; no claim these behaviors work or that new specs are implemented.
 - Independent scope-cohesion review: pending at this checkpoint; review evidence and corrections will be appended before handback.
+
+## Independent scope review and revisions — 2026-10-26
+
+- Cezar review task 3a4530a5, Claude Opus 5.5, examined both specifications at 6c91027; no files changed in its branch. Validated the report against the documents and zero branch diff; no child changes to merge. Verdict: changes, four cohesion findings. Aligned phases, no framework-first runtime and no accidental E3/E4/E7 implementation were confirmed; synthetic examples were independently recomputed by the reviewer.
+- F1: retained only minimal accepted correction/cancellation in Phase 1 and documented why first real-data typos must not require rewriting DB history or waiting for Phase 2; same entry/acceptance controls, no management workspace.
+- F2: placed assignment-once/concurrent next-trip proof in 1.4, its first consumer. Phase 2 only displays existing review flags and adds measured-coverage reconciliation; no duplicate transition implementation.
+- F3: explicitly scoped evidence phase: quotes/entered results are plan; invoice `actual` refers only to its historical `invoicedPrice` source field, still shown as estimated per D28. It supplies no actual trip cost/result.
+- F4: made all P01–P09 primitive names identical in both phase tables.
+- FQ3–FQ5 remain new owner questions, not accepted policies; final gate report must offer options/recommendations. FQ1/FQ2 remain owner-deferred questions.
+- Follow-up scope review: pending on this revision. No application tests run; docs only.
