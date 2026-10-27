@@ -75,7 +75,7 @@ Core ports: `RouteEstimatePort`, `GeocodingPort`, `QuoteInputPort` and, in Phase
   4. Otherwise missing: `no fuel price for <country>`.
 
   No borrowing from another country and no expired manual value.
-- **SRC-2 EUR FX.** Central-bank rate for the requested date. On weekends, holidays and future dates use the last rate published before as-of, retaining its publication date and the configured rate direction and table. Future-date use is estimated. A missing series stays missing. Never pre-round or invert a rounded rate. An accepted quote never changes when new rates are published.
+- **SRC-2 EUR FX.** Central-bank average rate from the last table published before the requested date (D49), matching the company accounts. For future dates use the last table published before as-of, retaining its publication date and the configured rate direction and table. Future-date use is estimated. A missing series stays missing. Never pre-round or invert a rounded rate. An accepted quote never changes when new rates are published.
 - **SRC-3 Consumption.** The vehicle's own CAN history by country and load state when it meets the owner-approved sufficiency threshold; otherwise the fleet average for that country and load state, with the reason for the fallback. Neither sufficient means missing. No driver identity or per-person rate.
 - **SRC-4 Tolls.** Country toll cost per kilometre in EUR from the owner-approved monthly cost configuration (SRC-5), with its source month and the owner's note on how it was measured (fuel-card toll transactions). The planner toll (ROUTE-1) is shown beside it as a control; it is never added and never replaces the configured rate.
 - **SRC-5 Fixed costs — owner-approved monthly configuration (D39, D46).**
