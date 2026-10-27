@@ -1,13 +1,13 @@
 # E01 foundations — exact values, evidence, providers and access
 
-Status: **ready for owner approval; not approved and not implemented**. Date: 2026-10-26.
-Companion: [E01 feature](2026-10-26-e01-trip-entry-and-quotation.md). Scope: #18/#22–#26/#28 (D33). Binding: [product brief](product-brief.md) R02–R20 and active D16–D58.
+Status: **approved by the owner on 2026-10-27; not implemented**. Date: 2026-10-26.
+Companion: [E01 feature](2026-10-26-e01-trip-entry-and-quotation.md). Scope: #18/#22–#26/#28 (D33). Binding: [product brief](product-brief.md) R02–R20 and active D16–D62.
 
 ## 📝 TLDR
 
-E01 needs exact financial calculation, dated source evidence, reliable place identity and secure company access. This document defines those shared contracts once; the feature specification defines behaviour, phases and tests and refers to the rule IDs below (`FIN-*`, `EV-*`, `SRC-*`, `ROUTE-*`, `PLACE-*`, `AUTH-*`, `TIME-*`). Each primitive ships with its first consuming phase; there is no foundation-only release.
+E01 needs exact financial calculation, dated source evidence, reliable place identity and secure company access. This document defines those shared contracts once; the feature specification defines behaviour, phases and tests and refers to the rule IDs below (`FIN-*`, `EV-*`, `SRC-*`, `ROUTE-*`, `PLACE-*`, `AUTH-*`, `TIME-*`, `RUN-*`). Each primitive ships with its first consuming phase; there is no foundation-only release.
 
-Owner policy is settled. Remaining readiness work is technical: authentication library selection, HERE account/terms check, the hourly source copy on the application server (SRC-7) and approved configuration values.
+Owner policy is settled. Remaining readiness work is technical: verifying the authentication library (AUTH-2), the HERE account/terms check, the Phase 1 environment (#35), the hourly source copy (#36) and the owner entering threshold values.
 
 ## 📝 References
 
@@ -44,6 +44,7 @@ Existing code reused as is:
 | P07 Timed segments | 1 | #24, E7 |
 | P08 Revision commands | 1 | E3, E11a |
 | P09 Import identity | 3 | E4, E10a |
+| P10 Clock and configuration | 1 | all modules |
 
 This is the only primitive table; the feature specification refers to it.
 
@@ -51,7 +52,7 @@ This is the only primitive table; the feature specification refers to it.
 
 - **FIN-1 Transport.** Money and fuel never pass through JavaScript `number`. DTOs carry `decimalStringSchema` strings; feature schemas add unit, currency, sign and scale. Polish decimal entry (comma) is normalized as text before validation. Positive and negative zero display as zero; a known zero stays known.
 - **FIN-2 Arithmetic.** Core uses one `Decimal.clone({ precision: 50, rounding: Decimal.ROUND_HALF_UP })` instance for all financial formulas. Components are never rounded; only published values are. Rationale: the only non-terminating quotients are FX conversion, `elapsedSeconds / 86400` and the litre-weighted fuel price. A non-terminating quotient can never equal a tie, and with validated operand bounds its distance from any tie is far larger than the error of 50 significant digits. Validate input magnitude/scale bounds (FIN-4) so this argument holds.
-- **FIN-3 Publication (R11).** EUR net money totals at scale 2; unit prices, FX rates and consumption at 6; kilometres and litres at 3. Ties half-up, negative ties away from zero (`toDecimalPlaces(n, ROUND_HALF_UP)`). Round each published aggregate once from exact values; never sum rounded components into a total. When displayed components differ from the published aggregate, show a rounding reconciliation line. Comparisons, the loss-reason check and sorting use the published rounded result. There is no verdict engine.
+- **FIN-3 Publication (R11).** EUR net money totals at scale 2; unit prices, FX rates and consumption at 6; kilometres and litres at 3. Ties half-up, negative ties away from zero (`toDecimalPlaces(n, ROUND_HALF_UP)`). Round each published aggregate once from exact values; never sum rounded components into a total. When displayed components differ from the published aggregate, show a rounding reconciliation line. Comparisons, the loss-reason check and sorting use the published rounded result. There is no verdict engine. The owner approved these scales and the rounding rule on 2026-10-27.
 - **FIN-4 Storage.** Published values use `numeric(30,2)`, `numeric(30,6)` and `numeric(30,3)`. Source inputs use unconstrained `numeric`, which keeps any scale exactly, plus unit and currency. Inputs are bounded (magnitude and scale) before writes; out-of-range values are rejected, never truncated. ORM mapping converts decimal strings to and from `Decimal` without `number`; test the round trip in PostgreSQL. No operational values in source code.
 - **FIN-5 Tests.** Unit tests cover below/on/above ties, negative ties, long reciprocals (1/3, 110/60, 1/86400), aggregation of many terms and the feature's synthetic examples. An optional test-only BigInt rational oracle may cross-check results; it is not production code.
 
@@ -70,7 +71,7 @@ Core ports: `RouteEstimatePort`, `GeocodingPort`, `QuoteInputPort` and, in Phase
 
 - **SRC-1 Fuel price per country (R15).** Ordered hierarchy:
   1. Own cards: transactions in that country within `[asOf − 14 days, asOf]`, from every card provider. Take the last up to three distinct days with refuelling and compute `sum(net amount in EUR) / sum(litres)` over their transactions, weighted by litres, not an average of daily averages. Convert each transaction's net amount to EUR with the SRC-2 rate for its own transaction date before summing. Keep the selected dates, quantities and source revisions. A transaction confirmed by the provider's invoice is certain. Before the invoice, a card price that the invoice later discounts is an estimate: the card price minus the discount measured on that provider's latest invoice against its card transactions, with that reason. There is no fixed discount constant (D52).
-  2. Public pump price for the trip date when published; for a future trip, the latest published on or before as-of, labelled estimate. Subtract the company's typical country discount: the median of comparable same-day card/public price pairs (same country, currency and net basis). Missing public price or discount makes this branch unavailable, not a zero discount.
+  2. Public pump price from the European Commission Weekly Oil Bulletin (D59): the latest bulletin published on or before the earlier of the trip date and as-of, labelled estimate for a future trip. Bulletin prices include taxes; convert them to net with the country's VAT rate from versioned configuration and to EUR under SRC-2. A country outside the bulletin has no public price. Subtract the company's typical country discount: the median of comparable same-day card/public price pairs (same country, currency and net basis). Missing public price or discount makes this branch unavailable, not a zero discount.
   3. The latest own-card price in that country older than 14 days, with its date, always estimated.
   4. Dispatcher-entered manual price for that country, valid at most 14 days, with actor, date and reason.
   5. Otherwise missing: `no fuel price for <country>`.
@@ -99,8 +100,8 @@ Core ports: `RouteEstimatePort`, `GeocodingPort`, `QuoteInputPort` and, in Phase
   - **Later.** Reading these values automatically from the existing calculation is explicitly deferred to a later specification. It will replace this manual entry behind the same `QuoteInputPort` without changing quote contracts.
 - **SRC-6 AdBlue.** Owner-set dated rate with explicit unit and currency, stored as a `PolicyRevision`.
 - **SRC-7 Common rules.**
-  - Thresholds, window boundaries, net normalization and FX table/direction are versioned configuration approved by the owner, never constants in code; configuration values and raw source rows never enter Git.
-  - Sources are read from a full copy of the company's existing source databases and provider exports, refreshed hourly on the application server (D51), including payroll, which is used only for the aggregate driver rate (SRC-5). The copy, configuration values and rows never enter the repository; the repository holds code only. Readers are read-only and scoped to the authorized company. Credentials and hostnames live in deployment configuration.
+  - Thresholds, window boundaries, net normalization and FX table/direction are versioned configuration approved by the owner, never constants in code and without code defaults: until the owner sets a threshold, the dependent value is missing with reason `threshold not set` and a quote using it cannot be accepted (RUN-2). Starting values are proposed in the deployment issue (#35) for the owner to enter; configuration values and raw source rows never enter Git.
+  - Sources are read from a full copy of the company's existing source databases and provider exports, refreshed hourly on the application server (D51); the first deployment runs on the company's existing source server (D62), including payroll, which is used only for the aggregate driver rate (SRC-5). The copy, configuration values and rows never enter the repository; the repository holds code only. Readers are read-only and scoped to the authorized company. Credentials and hostnames live in deployment configuration.
   - Fetch outside write transactions with timeout, bounded retry and cancellation. Cache keys include tenant, provider account, metric, vehicle, country, load state, effective date and method version.
   - Errors stay distinct: `unavailable`, `notFound`, `stale`, `unmatched`.
   - A refresh creates new evidence and never changes an accepted snapshot. Complete quotes stay readable during an outage; a new incomplete calculation lists missing sources and cannot be accepted.
@@ -125,16 +126,16 @@ Core ports: `RouteEstimatePort`, `GeocodingPort`, `QuoteInputPort` and, in Phase
   - Missing identity, membership or permission denies access on HTTP, server components and background work.
   - Tests attack both tenants and child/source references.
 - **AUTH-2 Sign-in (D44/R18).**
-  - **Method.** Personal company email and password, owner-invited only, through a maintained authentication library pinned to a verified version. The library owns hashing, password policy, setup/reset tokens and expiry, sessions and revocation; no custom crypto, token protocol or password comparison.
+  - **Method.** Personal company email and password, owner-invited only, through a maintained authentication library pinned to a verified version. The selected library is Better Auth (D60), admitted only after a pinned version passes all of: no automatic account linking by email alone; revocable server-side sessions; session-secret rotation without code changes; `__Host-` prefixed session cookies; explicit `SameSite`. If any check fails, stop and return to the owner before choosing another library. The library owns hashing, password policy, setup/reset tokens and expiry, sessions and revocation; no custom crypto, token protocol or password comparison.
   - **Invitation.** If the library's invitation feature requires an organization/team model, do not adopt it. Instead: the owner adds a roster entry, public sign-up is disabled, and the library's set-password/reset email performs the first password setup.
   - **Admission.** Requires verified control of an exact owner-listed personal address on the company domain AND active membership. Shared or role mailboxes, aliases and unlisted addresses are rejected even on the domain. Compare the domain case-insensitively and addresses by a documented stable policy. Changing an address is an owner action that revokes sessions.
   - **Invitation binding.** The invitation binds address, company and role on the server; accepting it cannot change them. Expired, revoked or reused tokens fail.
   - **Reset and revocation.** Reset is available only to admitted addresses, with generic responses and rate limits. Reset revokes existing sessions; roster removal revokes sessions and blocks reset.
-  - **Sessions and requests.** Secure, HttpOnly, SameSite session cookies, origin/CSRF checks (the existing `verifyMutation` hook), safe redirect allowlists. Disable every library sign-up or invite endpoint that bypasses owner admission.
-  - **Secrets.** Passwords never reach logs, audit payloads or DTOs; the owner cannot read or send a password. An email outage blocks setup/reset, never bypasses it.
+  - **Sessions and requests.** A session ends after 7 days without activity and is extended while the member is active (D60); the owner can revoke it at any time. Secure, HttpOnly, `__Host-` prefixed session cookies with explicit `SameSite`, origin/CSRF checks (the existing `verifyMutation` hook), safe redirect allowlists. Disable every library sign-up or invite endpoint that bypasses owner admission.
+  - **Secrets.** Passwords never reach logs, audit payloads or DTOs; the owner cannot read or send a password. An email outage blocks setup/reset, never bypasses it. Invitation and reset email is sent over the company's SMTP from a dedicated sender address (D60); credentials live in deployment configuration.
   - **Test data.** Tests use synthetic addresses only.
 - **AUTH-3 Bootstrap.** A one-time server-side command run at deployment creates the company and sends the first owner invitation. It is not an HTTP route and does nothing if an owner already exists.
-- **AUTH-4 Permissions.** Library identity and session records are separate from tenant-owned memberships; scope comes from membership, never from request data. Permission names:
+- **AUTH-4 Permissions.** E01 has exactly two roles, dispatcher and owner (D61). Library identity and session records are separate from tenant-owned memberships; scope comes from membership, never from request data. Permission names:
 
 | Permission | Dispatcher | Owner |
 |---|---|---|
@@ -164,6 +165,14 @@ Core ports: `RouteEstimatePort`, `GeocodingPort`, `QuoteInputPort` and, in Phase
   - Financial transition, revision, audit entry and schedule-version update commit in one transaction.
   - No event bus or outbox until an asynchronous consumer exists.
 - **TIME-4 Imports (P09).** Imports deduplicate `(tenantId, providerAccount, sourceId, sourceRevision)`. A correction replaces the current projection without deleting earlier evidence; absence from a partial import is not deletion. Job state, cursor and error codes are observable.
+
+## 📝 P10 — Clock and configuration
+
+- **RUN-1 Injected clock.** No code reads the current time from the system directly. Server use cases receive a `Clock` from the composition root; core functions take the instant as an argument. Tests set the date: the 14-day window boundary, quote staleness, midnight in Europe/Warsaw and the 23/25-hour DST days (47/49 hours across two days).
+- **RUN-2 Fail-closed configuration.** In production a missing or invalid required setting (database, HERE key, SMTP, session secret) stops the application at start with the setting's name, never its value; there is no silent fallback. Missing owner thresholds do not stop start-up; they make dependent values missing (SRC-7).
+- **RUN-3 Explicit test doubles.** Fake HERE and mail adapters run only when a test or development setting names them explicitly; production refuses to start with a fake adapter or with partial provider configuration.
+
+Tests: one case per rule (fixed clock across each boundary above; start-up refused for each missing setting; fake adapter refused in production mode).
 
 ## 📝 Data Model
 
