@@ -12,3 +12,5 @@ Index of reusable findings, bug fixes and improvements. Read relevant entries be
 - [Check local services before assuming they are unavailable](lessons/2026-10-19-check-local-services-before-assuming-unavailable.md): identify the port owner and try `sg docker` before planning around a missing database or Docker.
 
 - [agent-browser needs a local Chromium on Linux ARM64](lessons/2026-10-19-agent-browser-linux-arm64.md): Chrome for Testing has no Linux ARM64 build; point `AGENT_BROWSER_EXECUTABLE_PATH` at a local Chromium outside the repository.
+
+- [Source granularity and quote-entry effort](lessons/2026-10-26-source-granularity-and-quote-entry.md): owner-selected town matching and routed estimates preserve source semantics and phone-call usability without claiming measured completeness.
