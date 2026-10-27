@@ -1,6 +1,6 @@
 # E01 — Trip entry, quotation and the truck’s next move
 
-Status: **ready for owner approval; not approved and not implemented**. Date: 2026-10-26.
+Status: **approved by the owner on 2026-10-27; not implemented**. Date: 2026-10-26. Implementation also needs the companion foundations, which are still awaiting owner approval.
 Subject: #18. Specification milestone: #22; delivery stories #22–#26 and #28. Companion: [E01 foundations](2026-10-26-e01-foundations.md), which defines the shared rules `FIN-*`, `EV-*`, `SRC-*`, `ROUTE-*`, `PLACE-*`, `AUTH-*` and `TIME-*` referenced here. Binding: [product brief](product-brief.md) R02–R20 and active D16–D58; [backlog](backlog.md) maps #18–#31. The [older pricing review](../analysis/2026-10-26-older-pricing-review.md) lists failures to avoid, not defaults.
 
 ## 📝 TLDR
