@@ -1,13 +1,13 @@
 # E01 foundations — exact values, evidence, providers and access
 
 Status: **ready for owner approval; not approved and not implemented**. Date: 2026-10-26.
-Companion: [E01 feature](2026-10-26-e01-trip-entry-and-quotation.md). Scope: #18/#22–#26/#28 (D33). Binding: [product brief](product-brief.md) R02–R19 and active D16–D47.
+Companion: [E01 feature](2026-10-26-e01-trip-entry-and-quotation.md). Scope: #18/#22–#26/#28 (D33). Binding: [product brief](product-brief.md) R02–R20 and active D16–D58.
 
 ## 📝 TLDR
 
 E01 needs exact financial calculation, dated source evidence, reliable place identity and secure company access. This document defines those shared contracts once; the feature specification defines behaviour, phases and tests and refers to the rule IDs below (`FIN-*`, `EV-*`, `SRC-*`, `ROUTE-*`, `PLACE-*`, `AUTH-*`, `TIME-*`). Each primitive ships with its first consuming phase; there is no foundation-only release.
 
-Owner policy is settled. Remaining readiness work is technical: authentication library selection, HERE account/terms check, read-only source access and approved configuration values.
+Owner policy is settled. Remaining readiness work is technical: authentication library selection, HERE account/terms check, the hourly source copy on the application server (SRC-7) and approved configuration values.
 
 ## 📝 References
 
@@ -69,28 +69,38 @@ Core ports: `RouteEstimatePort`, `GeocodingPort`, `QuoteInputPort` and, in Phase
 **As-of rule.** Every lookup is evaluated at the quote's captured as-of instant. Windows end at as-of; a quote never uses transactions or publications after as-of, even for a past-dated trip. The source period is retained separately from the trip date it estimates.
 
 - **SRC-1 Fuel price per country (R15).** Ordered hierarchy:
-  1. Own cards: transactions in that country within `[asOf − 14 days, asOf]`. Take the last up to three distinct days with refuelling and compute `sum(net amount in EUR) / sum(litres)` over their transactions, weighted by litres, not an average of daily averages. Convert each transaction's net amount to EUR with the SRC-2 rate for its own transaction date before summing. Keep the selected dates, quantities and source revisions.
+  1. Own cards: transactions in that country within `[asOf − 14 days, asOf]`, from every card provider. Take the last up to three distinct days with refuelling and compute `sum(net amount in EUR) / sum(litres)` over their transactions, weighted by litres, not an average of daily averages. Convert each transaction's net amount to EUR with the SRC-2 rate for its own transaction date before summing. Keep the selected dates, quantities and source revisions. A transaction confirmed by the provider's invoice is certain. Before the invoice, a card price that the invoice later discounts is an estimate: the card price minus the discount measured on that provider's latest invoice against its card transactions, with that reason. There is no fixed discount constant (D52).
   2. Public pump price for the trip date when published; for a future trip, the latest published on or before as-of, labelled estimate. Subtract the company's typical country discount: the median of comparable same-day card/public price pairs (same country, currency and net basis). Missing public price or discount makes this branch unavailable, not a zero discount.
-  3. Dispatcher-entered manual price for that country, valid at most 14 days, with actor, date and reason.
-  4. Otherwise missing: `no fuel price for <country>`.
+  3. The latest own-card price in that country older than 14 days, with its date, always estimated.
+  4. Dispatcher-entered manual price for that country, valid at most 14 days, with actor, date and reason.
+  5. Otherwise missing: `no fuel price for <country>`.
+
+  A card provider whose feed is older than the owner-set threshold adds a warning to every country price it supports and a banner for the owner.
 
   No borrowing from another country and no expired manual value.
 - **SRC-2 EUR FX.** Central-bank average rate from the last table published before the requested date (D49), matching the company accounts. For future dates use the last table published before as-of, retaining its publication date and the configured rate direction and table. Future-date use is estimated. A missing series stays missing. Never pre-round or invert a rounded rate. An accepted quote never changes when new rates are published.
-- **SRC-3 Consumption.** The vehicle's own CAN history by country and load state when it meets the owner-approved sufficiency threshold; otherwise the fleet average for that country and load state, with the reason for the fallback. Neither sufficient means missing. No driver identity or per-person rate.
+- **SRC-3 Consumption (D52).** Ordered hierarchy, each level only when it meets the owner-approved sufficiency threshold:
+  1. this vehicle's CAN history by country and load state;
+  2. this vehicle's CAN history by load state;
+  3. the fleet average for that country and load state;
+  4. otherwise missing.
+
+  A vehicle's CAN history counts only when, over its measurement period, consumed litres agree with litres bought on its cards within the owner-approved tolerance; otherwise skip to level 3 with that reason. A fuel-level probe is a signal, never a number. Each fallback states its reason. No driver identity or per-person rate.
 - **SRC-4 Tolls.** Country toll cost per kilometre in EUR from the owner-approved monthly cost configuration (SRC-5), with its source month and the owner's note on how it was measured (fuel-card toll transactions). The planner toll (ROUTE-1) is shown beside it as a control; it is never added and never replaces the configured rate.
 - **SRC-5 Fixed costs — owner-approved monthly configuration (D39, D46).**
   - **Input.** In E01 the owner records each month's measured rates from the existing division cost calculation as an immutable `PolicyRevision`:
-    - vehicle-day rates per category: leasing, insurance, telematics, service package, tank rental and division fixed costs;
-    - the aggregate driver vehicle-day rate, always separate;
+    - vehicle-day rates per category, as covered by that calculation: leasing (tractor and tank trailer), insurance, telematics, service package, tank rental, parts and repairs with a vehicle reference, parking and roadside assistance, card fees and division fixed costs;
+    - the aggregate driver vehicle-day rate, always separate (below);
     - toll €/km per country (SRC-4).
   - **Revision fields.** Source month, scope (one vehicle, or all company vehicles; a vehicle-specific rate wins), covered categories, actor and approval time.
   - **"Last closed month"** means the latest month the owner has approved for that metric, not later than as-of.
-  - **Coverage.** A category the source does not cover is shown as `notIncluded`, never zero. A combined rate that mixes vehicle and labour costs is rejected. No percentage surcharge, no recomputed payroll, no per-person data.
+  - **Driver rate (D53).** Computed once a month: the payroll cost of drivers for the last closed month divided by the vehicle-days worked, where a vehicle-day is a day with a driver card in that vehicle's tachograph, cross-checked against GPS movement. The owner approves the computed value, which is then stored as a `PolicyRevision`; manual entry remains only as a fallback. Only the aggregate enters quotes; a per-driver cost waits for driver assignment (Q04).
+  - **Coverage.** A category the source does not cover is shown as `notIncluded`, never zero. A combined rate that mixes vehicle and labour costs is rejected. No percentage surcharge and no per-person value in a quote.
   - **Later.** Reading these values automatically from the existing calculation is explicitly deferred to a later specification. It will replace this manual entry behind the same `QuoteInputPort` without changing quote contracts.
 - **SRC-6 AdBlue.** Owner-set dated rate with explicit unit and currency, stored as a `PolicyRevision`.
 - **SRC-7 Common rules.**
   - Thresholds, window boundaries, net normalization and FX table/direction are versioned configuration approved by the owner, never constants in code; configuration values and raw source rows never enter Git.
-  - Operational reads are read-only, scoped to the authorized company and provider account, limited to approved fields, with no payroll or person data. A provider may call an existing internal read-only interface instead of sharing its database. Credentials and hostnames live in deployment configuration.
+  - Sources are read from a full copy of the company's existing source databases and provider exports, refreshed hourly on the application server (D51), including payroll, which is used only for the aggregate driver rate (SRC-5). The copy, configuration values and rows never enter the repository; the repository holds code only. Readers are read-only and scoped to the authorized company. Credentials and hostnames live in deployment configuration.
   - Fetch outside write transactions with timeout, bounded retry and cancellation. Cache keys include tenant, provider account, metric, vehicle, country, load state, effective date and method version.
   - Errors stay distinct: `unavailable`, `notFound`, `stale`, `unmatched`.
   - A refresh creates new evidence and never changes an accepted snapshot. Complete quotes stay readable during an outage; a new incomplete calculation lists missing sources and cannot be accepted.
@@ -140,8 +150,9 @@ Core ports: `RouteEstimatePort`, `GeocodingPort`, `QuoteInputPort` and, in Phase
 | `config.approve` | no | yes |
 | `members.manage` | no | yes |
 | `history.import` | no | yes |
+| `payroll.read` | no | yes |
 
-`trips.correct` covers corrections and cancellations. Vehicle and place reads are part of `trips.read`.
+`trips.correct` covers corrections and cancellations. Vehicle and place reads are part of `trips.read`. `payroll.read` covers payroll inputs and the driver-rate derivation on the owner's rate page; a dispatcher sees only the aggregated labour cost of a trip.
 
 ## 📝 P07–P09 — Time, revisions and imports
 
@@ -162,7 +173,7 @@ New foundation records:
 - **Member** — one personal address, role, status.
 - **Vehicle** — reference and truck profile for ROUTE-1.
 - **Town, TownAlias, Place** — see P04.
-- **PolicyRevision** — immutable: effective interval, metric/rule identity, scope, value(s), unit, currency, source month, method note, approving actor and time. Holds SRC-4/5/6 rates and approved thresholds.
+- **PolicyRevision** — immutable: effective interval, metric/rule identity, scope, value(s), unit, currency, source month, method note, approving actor and time. Holds SRC-4/5/6 rates, the approved computed driver rate and approved thresholds.
 - **SourceObservation** — normalized permitted value, original amount and currency, effective and received times, provider reference and revision, certainty, scoped document references; never a full export.
 - **AuditEntry** — actor, action, target, time, reason.
 
