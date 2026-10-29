@@ -145,7 +145,7 @@ Next: owner reviews Stage 1 and decides whether to proceed to Stage 2. This prot
 
 ## Stage 1b. Owner comments and quote variants
 
-Status: **done, waiting for owner choice of quote variant** (2026-10-29). Stage 2 remains not started.
+Status: **done; owner selected direction C (N6a), superseded by Stage 1c** (2026-10-29). Stage 2 remains not started.
 
 ### Owner feedback addressed
 
@@ -205,4 +205,40 @@ Not run: Stage 2 scenarios (including loss acceptance), production integration/c
 
 Initial font-import failure was resolved by declaring the existing font package directly in the prototype. CLI keyboard injection did not emit keydown in the attached session; keyboard behaviour is verified separately through the browser provider in an isolated context. This is tool behaviour, not a claimed application regression.
 
-Implementation: `c36db18`; baseline sync: `a4ea22a`, followed by `6db5205` for the final documentation-only main update (#49). No pull request opened and no merge into the base branch. Next: owner compares A/B/C before authorizing the next stage.
+Implementation: `c36db18`; baseline sync: `a4ea22a`, followed by `6db5205` for the final documentation-only main update (#49). No pull request opened and no merge into the base branch. Owner selected direction C under N6a; Stage 1c below replaces the alternatives before the next stage.
+
+
+## Stage 1c. Quote screen direction C, customers, fixes
+
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
+
+### Delivered
+
+- N6a: one s12 layout with a cost/source/amount/share table beside one summary card. The route schematic remains above the table. Summary includes result, planned availability, freight, covered cost and state-dependent actions; acceptance, details and trip navigation retain their behaviour. On narrow screens the summary and accept action precede the route and table; sources move below cost labels without horizontal scrolling.
+- R17.1: text percentages and decorative, aria-hidden share bars use the action token on the divider token. Exact integer-cent BigInt arithmetic rounds shares half up to one decimal. Fixture assertions: 47.1 / 26.2 / 15.7 / 10.5 / 0.5 / 0.0 %. Total stays 100.0 %; a conditional reconciliation note handles a rounded sum different from 100.0 %. Wash explicitly shows entered “Bez mycia”, 0.00 EUR, 0.0 %.
+- Vehicle costs expand into the nine daily categories already explained on s13. The 6.00 EUR fixture is allocated proportionally using integer cents and largest remainders, preserving its sum. Child shares use the whole trip cost as denominator. This is a labelled synthetic illustration, not a new production financial policy.
+- N2b: IBM Plex Sans 500 throughout body/label/meta roles via a local variable override. Heading roles stay unchanged. Removed the A/B/C scenario selector, variant marker and all obsolete variant colour styles; the proposal stylesheet retains only the documented typography override. Shared tokens were not edited.
+- SCOPE PROPOSAL: optional loading and unloading customers on s09, identical for dispatcher and owner. Six fictional companies with one to three saved demo places; search by name/city from the first character, arrows/Enter/Escape. A single place fills automatically; multiple places offer keyboard-operable choices. Places remain independently editable/selectable without a customer. Customer selections do not alter price. Route and trip screens show the customer; accepted K2 keeps its customer snapshot after a fresh entry. Both required scope caveats are visible.
+- Back: corrected the CSS bridge selector specificity so normal-flow positioning actually wins over the engine rule. The engine file is byte-identical to the previous stage; bottom clearance remains. Route: fixed 36 px drawing height with HTML labels in the 12 px label role, independent of width. No SVG text scales with the drawing.
+- Merged current main (including #48) without rewriting history; DecimalField and its parser now use `amount` plus EUR currency. No protected application/shared-component/story changes relative to main. Decision records were read from the approved direction branch, not copied into this branch.
+
+### Validation
+
+- Package typecheck and build: passed.
+- Repository `pnpm typecheck`, `pnpm lint`, `pnpm test`: passed; 34 test files, 156 tests.
+- Explicit prototype source/script ESLint: passed. Token scan of app sources excluding the proposal stylesheet plus main entry: 0 findings. Style detector: 0 findings. Diff whitespace: passed.
+- `pnpm exec tsx prototypes/quote-during-call/scripts/check-cost-shares.ts`: fixture shares, nine-category sum, zero total, fractional rounding and values above Number.MAX_SAFE_INTEGER passed. A shorter temporary directory was used to avoid an environment IPC path-length limit.
+- Bar contrast: action `#205b49` against divider `#d9e2dd`, **5.9806:1** (linearized sRGB luminance), exceeding 3:1. These are unchanged shared token values; every category uses the same pair.
+- Isolated browser at actual 1440 and 320 CSS pixels: keyboard customer selection (single/multiple saved places), first-character/name/city/no-match search, Escape, independent place selection, s09, s12 draft, nine expanded categories, s13, s16, accepted s12, s07, accepted snapshot after new entry and owner-role parity passed. Seven screenshots per width remain external to Git.
+- All s01–s19 screens scrolled to the end at both widths: Back computed static and below the frame; no horizontal document overflow. Body weight computed 500; route height 36 px and label size 12 px at both widths. Mobile summary precedes the table. Runtime errors: 0.
+- Protected diff against main for application/shared UI source/stories: empty. Preview index/assets replaced, prior evidence preserved.
+
+Not run: production application build/integration/coverage, Stage 2 scenario matrix including negative-result acceptance, complete accessibility audit or cross-browser matrix. The loss presentation remains confined to the result, with the loss token pair, “Strata” and minus sign (N5a). Production specifications remain approved and unimplemented. No PR opened and no base-branch merge.
+
+### Questions for the customer-directory specification
+
+1. Where does the directory originate: manual records, invoices or accounting?
+2. Is the ordering party distinct from the customer at a loading/unloading place?
+3. Should customer identity affect similar-trip matching and result-per-customer reporting (E8)?
+
+Next: owner review of Stage 1c, then authorization of Stage 2; the customer proposal requires specification decisions before production implementation.
