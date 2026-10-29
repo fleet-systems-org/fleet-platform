@@ -1,6 +1,6 @@
 # Clickable prototype — Stage 1g
 
-Status: in progress. Agent: Codex. Starting branch: prototype/e01-clickable at b3e8c35.
+Status: complete; waiting for owner review. Agent: Codex. Starting branch: prototype/e01-clickable at b3e8c35.
 
 ## Objective and authority
 
@@ -29,4 +29,6 @@ Implement only s11 grouped country costs (N7e / R20.1) and keyboard-only heading
 - Read/update supporting composition lesson for modality-specific heading outline. No financial policy or production specification changed.
 - Not run: production app build/integration/coverage, Storybook tests, exhaustive accessibility or cross-browser matrix, Stage 2. Only prototype composition changed.
 
-Outcome: implementation and requested local verification complete. Normal push and final preview synchronization verification pending. No PR or base-branch merge.
+- External preview and screenshots were kept outside the repository; client-side availability was not verified.
+
+Outcome: Stage 1g complete and verified, ready for owner review. No PR or base-branch merge. Production specifications unchanged. Next: owner reviews s11 and authorizes any Stage 2 work separately.
