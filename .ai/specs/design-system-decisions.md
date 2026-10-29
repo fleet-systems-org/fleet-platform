@@ -28,6 +28,7 @@ Code families:
 - **R14.1** — Typeface IBM Plex Sans and a 12/14/16/20 px scale, bold table headers and horizontal lines only, taken from a reference data table; its 48 px rows and left-aligned numbers are not taken.
 - **R15.1** — A status is a word and a colour together, never colour alone, with amounts right-aligned in tabular figures; the reference's pills and large radii are not taken.
 - **R16.1** — An empty state is one sentence with the reason and at most one action, without illustration, so an empty list says what to do next.
+- **R17.1** — A spending breakdown with the total on top and every category as a row with its amount, a share bar and its percentage, taken for the trip cost breakdown so the dispatcher sees at once what makes up the cost; its share ring, emoji and one colour per category are not taken.
 
 ## Product rules (brief)
 
@@ -49,9 +50,11 @@ Code families:
 ## Owner answers on look
 
 - **N2a** — IBM Plex Sans (open font licence) on the 12/14/16/20 scale instead of Arial or the system stack, because the screens are mostly amounts and kilometres and need tabular figures.
+- **N2b** — Body text uses IBM Plex Sans weight 500 instead of 400, because the owner found 400 too thin on work screens (owner decision 2026-10-29).
 - **N3a** — The existing green `#205b49` stays the action colour, because it already exists and differs from the dispatcher's other tools.
 - **N4b** — Radius 4 px for controls and badges, 8 px for panels, no pills, because square-ish shapes suit a dense work tool and avoid G1.
 - **N5a** — Loss is a red badge with the word "Strata" and a minus sign, only on a trip result, because a loss must be visible at once but never judge a person (R01).
+- **N6a** — The quote screen shows the cost breakdown as a table (cost, source, amount, share of cost with a share bar in the action colour, total row at 100 %) beside one summary panel with the trip result, planned availability, freight, covered cost and the accept action, following R07.1 and R17.1. There are no result tiles, so G1 and P6 stay unchanged (owner decision 2026-10-29).
 
 ## Proposals
 
