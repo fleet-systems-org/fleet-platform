@@ -28,7 +28,7 @@ Branch `prototype/e01-clickable` from `main` 266e9e4.
 
 - Stage 1 (dispatcher, Auto 01, draft K2): s01 → s09 (step 1 vehicle) → s10 → s09 (times, freight 60,00 EUR, "Bez mycia") → s11 → s12 (cost 38,18, result 21,82, "free in Miejsce C from 13:00") → s13 → s16 → s12 accepted → s07.
 - Stage 2: s02–s05, s08, s14, s15, s18, every state, accounts and access gates; then the "show what comes later" control adds s06, s19 (Phase 2) and s17 (Phase 3).
-- Stage 3: notes per screen, README with simulation limits, navigation tests, browser check at 320 and 1440 px and by keyboard.
+- Stage 3: notes per screen, README with simulation limits, navigation tests, browser check at 320 and 1440 px and by keyboard. README in English lists every screen s01–s19 and its states, so the screen IDs are explained in this repository (owner decision 2026-10-29).
 
 ### Review bar and scenario controls
 
@@ -71,6 +71,7 @@ Each gap gets the simplest version built from tokens and existing components, ma
 - G11 trip status words: `Badge` `neutral` with Szkic, Przyjęty, Anulowany, Nieaktualna, Do przeglądu.
 - G12 page frame, header and navigation.
 - G13 trip sequence, country split and result panel.
+- G15 route schematic: simulated A → B → C geometry, dashed approach and solid loaded segment.
 
 Closed: G01 and G04 (#43), G05–G07 (#39); G09 not needed.
 
@@ -141,3 +142,67 @@ G08 sorting is not used in this stage. G01/G04 use the delivered value component
 3. The grey prototype's fictitious vehicle category split is retained as a daily-rate explanation. Whether to add per-category rounding reconciliation remains the existing revision-002 A10 question; this stage does not introduce a financial policy.
 
 Next: owner reviews Stage 1 and decides whether to proceed to Stage 2. This prototype does not mark the E01 production specifications implemented.
+
+## Stage 1b. Owner comments and quote variants
+
+Status: **done, waiting for owner choice of quote variant** (2026-10-29). Stage 2 remains not started.
+
+### Owner feedback addressed
+
+- s07 unused right-hand space: trip sequence and the free-place/time panel use two columns, collapsing to one on a narrow viewport (`src/app/App.tsx`, `styles.css`).
+- s09 unused right-hand space: entry fields and route summary occupy two columns, collapsing to one (`App.tsx`, `styles.css`).
+- s09 freight alignment: prototype-only `amount-left` class, explicitly marked `DS PROPOSAL: amount input left-aligned`. Shared DecimalField is unchanged.
+- s10 place selection: independent loading/unloading inputs suggest from the first character, showing country, fictional region and the fictional-data label. Arrow keys, Enter and Escape are supported. Places A/B/C/E and two regional instances of Town D come from the approved synthetic map; extra towns are explicitly fictional. Only B → C has a quote in Stage 1 (`PlacePicker.tsx`). Starting a new entry also resets local suggestion/selection state. No geocoder is connected; PLACE-3 simulation note is visible.
+- s11 unclear route/countries: separate approach and loaded-segment tables, whole kilometres, country fuel/toll amounts, segment totals and trip total (`CountryCosts.tsx`). Fuel follows the example's consumption: approach 2.00 EUR, loaded 16.00 EUR. Toll is 2.00 + 8.00 EUR. Each segment is allocated by country kilometres using BigInt cents; the final country receives any remainder. Current allocations have zero remainder. All country inputs are explicitly fictional.
+- Back control covering content: bottom clearance uses existing spacing tokens and Back is in normal document flow through the CSS bridge; the review engine remains unchanged (`styles.css`, `src/review/mostek.css`).
+- Navigation inconsistency: both product entries use the same text-button style, with `aria-current="page"` and a token-based active background (`App.tsx`, `styles.css`). Accept is the primary quote action.
+- Route visibility: s09 after place selection and all s12 variants show A → B → C, dashed approach, solid loaded segment, whole km and Warsaw times. The explicit map-simulation caveat is visible (`RouteSchematic.tsx`). **DS GAP G15 route schematic** is a prototype-only composition, not a map service.
+- Thin type and quote colour: three alternatives below. Fleet positions and other Stage 2 work remain deferred.
+
+### Quote alternatives
+
+All alternatives share one s12 ID, the scenario-panel selector (default A), visible variant marker, identical inputs, 38.18 EUR covered cost / 21.82 EUR result, estimated status, availability beside the result, every cost, source-details navigation and acceptance behaviour (`Quote.tsx`, `App.tsx`).
+
+- **A**: current design tokens, stronger result/availability hierarchy and compact cost table. Table geometry follows the existing horizontal-line table decision R14.1 and the extended-table reference; no new DS proposal.
+- **B**: route schematic occupies two thirds of the upper layout beside result/availability, with a five-value bar including approach. R07.1 informs the result bar. B1 proposes IBM Plex Sans 500 body text; B2 proposes blue ink/surface for the cost/result bar.
+- **C**: calculator sections separate route costs from trip servicing, with value pills and a result badge. Grouped-calculator and value-badge references inform composition (visual sources are not copied). C1 proposes Plex 500; C2 proposes group surfaces; C3 proposes a purple profit badge, visibly marked as a proposal pending owner choice. Loss remains a red badge with the word “Strata” and minus sign, per N5a; profit is not green.
+
+All B/C deviations are local variables in `src/app/variant-proposals.css`. No values are added to the shared UI package. Existing tokens handle spacing, focus, loss and typography sizes.
+
+New text/background contrast, calculated from linearized sRGB relative luminance:
+
+| Pair | Contrast | Result |
+|---|---|---|
+| B2/C2 blue / pale blue | 9.56:1 | passed |
+| C2 blue / white pill | 10.81:1 | passed |
+| C3 purple / pale purple | 10.30:1 | passed |
+
+Body colours on other surfaces use unchanged DS pairs. Plex 500 is loaded locally from the same pinned font package as the DS. The prototype declares that direct dependency; no new library or font service.
+
+### Validation
+
+| Check | Result |
+|---|---|
+| Package typecheck/build | passed |
+| Repository typecheck/lint | passed |
+| Repository unit tests | passed: 155 |
+| Prototype source lint | passed |
+| Tokens excluding proposal CSS | passed: 0 |
+| Browser 1440/320 CSS pixels | passed |
+| Quote A/B/C and accepted A/B/C | passed |
+| Picker keyboard/empty/reset | passed |
+| Exact allocation assertions | passed |
+| Protected source diff | passed: empty |
+| Diff whitespace | passed |
+
+Commands: package `typecheck`/`build`; `pnpm typecheck`, `pnpm lint`, `pnpm test`; explicit ESLint of prototype sources; `node packages/ui/scripts/check-tokens.ts` with every app source file except `variant-proposals.css`, plus `src/main.tsx`. Key results: `Tests 155 passed (155)`, `No values outside the design tokens.`, `built in 905ms`.
+
+An isolated browser context traversed s07, s09, s10, s11, s12 A/B/C, accepted s12 A/B/C and s16 at both 1440 and 320 CSS pixels; 22 external PNGs cover those states. Verified actual viewport width, no horizontal quote overflow, exact B/C selection after one/two typed characters, arrows, Enter, Escape, empty suggestions, reset and acceptance. Computed freight alignment is `left`; Back is `static`. Route labels remain readable without scaling text down inside SVG. Screenshots are not committed.
+
+Exact allocation assertions: 2.00 EUR approach fuel/toll → 1.20 + 0.80 EUR; 16.00 EUR loaded fuel → 10.00 + 6.00 EUR; 8.00 EUR loaded toll → 5.00 + 3.00 EUR; 1.01 EUR remainder case → 0.60 + 0.41 EUR; allocation above Number.MAX_SAFE_INTEGER preserves its BigInt sum. This fixture does not introduce a production rounding policy.
+
+Not run: Stage 2 scenarios (including loss acceptance), production integration/coverage, full accessibility audit and cross-browser matrix. No application or shared-UI source changed. Browser console has form label/id audit notices; no runtime exception was observed in the final walkthrough. Those notices were not exhaustively audited here. No production specification is marked implemented. Stage 3 includes the English screen/state README requirement above.
+
+Initial font-import failure was resolved by declaring the existing font package directly in the prototype. CLI keyboard injection did not emit keydown in the attached session; keyboard behaviour is verified separately through the browser provider in an isolated context. This is tool behaviour, not a claimed application regression.
+
+Implementation: `c36db18`; baseline sync: `a4ea22a`, followed by `6db5205` for the final documentation-only main update (#49). No pull request opened and no merge into the base branch. Next: owner compares A/B/C before authorizing the next stage.
