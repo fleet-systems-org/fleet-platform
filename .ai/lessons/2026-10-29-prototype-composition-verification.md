@@ -22,3 +22,7 @@
 - Resolution: keep the viewed quotation's stop snapshot separate from the editable entry, share the quotation frame across every step-4 screen, and reuse category rows in the exact-value evidence table.
 - Verification: repeatable browser regression checks direct screen-picker entry and repeated reset; the two-width walkthrough also checks customer snapshots after entry edits, identical summary content, mobile ordering, category expansion and acceptance.
 - Supporting finding only: name each panel's content for every affected screen in future work orders, and verify direct arrival as well as the sequential path. This does not add a standing process rule.
+
+## Stage 1f: title and responsive reading order
+
+The shared frame needs an explicit heading slot before its summary and detail slots: placing the heading inside detail leaves it after the route, while moving the whole detail first also moves the route ahead of the mobile summary. Verified the heading/summary/route coordinates at actual 1440/320 CSS pixels and retained h1 focus on screen navigation. Ordinary text now inherits shared weight 500; no prototype token override is required. Supporting finding only.

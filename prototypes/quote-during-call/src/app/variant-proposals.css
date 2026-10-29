@@ -1,4 +1,0 @@
-@import "@fontsource/ibm-plex-sans/500.css";
-/* N2b: body weight 500 — owner decision 2026-10-29; shared token change pending */
-/* Only this local typography override remains; A/B/C colour proposals were removed (N6a). */
-:root { --weight-400: 500; }

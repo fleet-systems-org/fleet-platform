@@ -314,3 +314,14 @@ All data, country allocation, source dates and vehicle categories are fictional.
 Publication: implementation `3638c1a`; baseline synchronization `e4392c2`. Protected application/shared UI/story diff against main is empty; no protected source was edited by this stage. Built-preview direct-entry/reset regression passed. Preview index and assets were replaced; final served-index hash and cloud synchronization are checked in the run log. Normal push to the existing prototype branch; no pull request and no base-branch merge.
 
 Next: owner review of Stage 1e before authorizing Stage 2. No Stage 2 work has started.
+
+## Stage 1f. Title order and shared weight
+
+Owner approved Stage 1e s12 as the quotation-screen reference on 2026-10-29. This stage changes only title placement and removes the local typography workaround. Stage 2 remains unstarted.
+
+- Merged origin/main, including shared N2b weight 500. Removed variant-proposals.css and its local font import; ordinary text now uses @fleet-platform/ui roles (500), headings stay 600.
+- The shared quotation frame places the h1 first in the main column on s11/s12/s13/s16. At 320 px the order is steps, title, summary/actions, route, content. Existing screen-navigation focus still targets that h1. The right-hand summary and remaining content are preserved.
+- Passed prototype typecheck/build, repository typecheck/lint and 196 unit tests (37 files), prototype ESLint, token scan (0), mechanical detector (0), byte-identical prototype.js and empty protected-source diff against origin/main.
+- Browser verification on the built preview at actual 1440/320 CSS pixels: s11, s12 draft, s12 accepted, s13, s16; title order, 500/600 computed weights and h1 focus on screen navigation passed. Ten external screenshots in the Stage 1f preview folder; build replaced the preview index/assets.
+- Observation outside this stage: accepting the confirmation dialog leaves focus on body after dialog close; navigating between screens still focuses h1. The dialog and review engine were not changed.
+- No PR or merge into main. Production specifications remain approved/unimplemented.
