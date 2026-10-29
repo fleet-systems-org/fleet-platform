@@ -81,12 +81,8 @@
 .more-places { align-self: flex-start; padding-inline: 0; margin-top: calc(-1 * var(--space-group)); }
 .entry-waiting { color: var(--text-muted); }
 .stack[hidden] { display: none; }
-/* AppFrame owns product geometry. The page composes the narrow menu (no shared prop exists). */
-.product-menu { display: none; }
+/* AppFrame owns product geometry, including the plain navigation list below 768 px. */
 @media (max-width: 47.999rem) {
-  .product-menu { display: block; padding: var(--space-group); }
-  [data-slot="app-frame"]:not(.product-menu-open) > nav { display: none; }
-  [data-slot="app-frame"] > main { padding: var(--space-group); }
   .stop-fields { grid-template-columns: minmax(0, 1fr); }
   .step-collapsed { flex-wrap: wrap; }
 }
