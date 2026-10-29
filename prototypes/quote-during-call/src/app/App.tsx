@@ -52,7 +52,7 @@ export function App() {
   const [screenPicker, setScreenPicker] = useState(false);
   const [quoted, setQuoted] = useState(false);
   const [message, setMessage] = useState("");
-  const parsed = parseDecimalInput(freight, { scale: 2 });
+  const parsed = parseDecimalInput(freight, { kind: "eurAmount" });
   const amount = parsed.ok ? decimal(cents(parsed.value)) : "60.00";
   const result = decimal(cents(amount) - cents(coveredCost));
   const demoReady = vehicle === "Auto 01" && places && wash === "none" && parsed.ok && amount === "60.00"
@@ -108,7 +108,7 @@ export function App() {
         </div>
       </Card>
       <Card><CardTitle>3. Fracht i mycie</CardTitle><div className="form-grid">
-        <Field label="Fracht netto" hint="W przykładzie wpisz 60,00" required><DecimalField unit="EUR" value={freight} onChange={e => { setFreight(e.target.value); invalidate(); }} /></Field>
+        <Field label="Fracht netto" hint="W przykładzie wpisz 60,00" required><DecimalField kind="eurAmount" unit="EUR" value={freight} onChange={e => { setFreight(e.target.value); invalidate(); }} /></Field>
         <Field label="Waluta" required><Select defaultValue="EUR"><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="EUR">EUR</SelectItem></SelectContent></Select></Field>
       </div><Field label="Mycie" required hint="Odpowiedz wprost. Brak wyboru nie oznacza braku mycia.">
         <RadioGroup value={wash} onValueChange={value => { setWash(value); invalidate(); }}>
@@ -184,7 +184,9 @@ export function App() {
       <div className="actions"><Badge variant="neutral">Prototyp</Badge><span className="text-meta">Etap 1 · dane fikcyjne · teraz: 12.11.2026, 09:30 (Warszawa)</span>
         <Button variant="secondary" aria-expanded={screenPicker} aria-controls="screen-picker" onClick={() => setScreenPicker(!screenPicker)}>Wybierz ekran</Button>
         <nav id="screen-picker" hidden={!screenPicker} className="screen-nav screen-picker" aria-label="Ekrany">{screenNames.map((name, index) => <a key={name} href={`#${screenId(index)}`}>{screenId(index)} · {name}</a>)}</nav>
-        <Button variant="secondary" onClick={() => { document.body.classList.remove("proto-focus"); document.getElementById("screen-map")?.scrollIntoView(); }}>Mapa ekranów</Button>
+        <Button variant="secondary" onClick={() => { if (document.body.classList.contains("proto-focus")) {
+          Array.from(document.querySelectorAll<HTMLButtonElement>(".proto-toolbar button")).find(button => button.textContent === "Prezentacja" || button.textContent === "Presentation")?.click();
+        } document.getElementById("screen-map")?.scrollIntoView(); }}>Mapa ekranów</Button>
         <Button variant="secondary" onClick={() => { setHasAccepted(false); reset(); go("s01"); }}>Resetuj symulację</Button>
       </div>
       <details><summary>Scenariusze</summary><div className="form-grid">
