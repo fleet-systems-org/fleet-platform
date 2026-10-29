@@ -1,0 +1,78 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./route-stops.stories";
+
+<Meta of={Stories} />
+
+# Route stops
+
+`import { RouteStops } from "@fleet-platform/ui/components/places/route-stops"`
+
+## 1. Purpose
+
+Shows a trip as stops and times (N7b, R19.1): each stop is a block with its label on the left, the time first, then the date in Warsaw time and the place with its country, then details as label–value pairs. It replaces the A → B → C schematic on entry, route and quote.
+
+## 2. When to use
+
+- The route of one trip on the entry, route and quote screens, usually in a Card or the frame's panel.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| A list of many trips | Data table | Stop blocks are for reading one trip |
+| A figure with its source | Value with source in the details | The details only carry words and values |
+| Choosing a place | Place picker | Route stops only shows |
+
+## 4. Anatomy
+
+Per stop: label ("Start", "Załadunek", "Rozładunek"), time, date with the zone word, place, and an optional list of details.
+
+## 5. Variants
+
+None: the number of stops and details comes from the trip.
+
+<Canvas of={Stories.InPanel} />
+
+## 6. States
+
+A stop not entered yet shows the page's words ("—", "Wybierz miejsce"), never a made-up time. Loading and errors belong to the surrounding panel.
+
+<Canvas of={Stories.NotEntered} />
+
+## 7. Behaviour and accessibility
+
+An ordered list named by `label`; details are a definition list, so each value is read with its label. No interaction.
+
+## 8. Content
+
+- Times and dates in Warsaw time (TIME-1), formatted by the page; the zone word follows each date.
+- Kilometres are whole numbers (owner decision); whether a leg is the approach or loaded is said in words (N7b).
+
+## 9. Responsive
+
+The label column is 96 px; the place and values wrap anywhere, so a long place name never scrolls sideways at 320 px.
+
+## 10. API
+
+`RouteStops`: `label`, `timeZone`, `stops` (`label`, `time`, `date`, `place`, `details` with `label` and `value`), `className`.
+
+<ArgTypes of={Stories} />
+
+## 11. Code
+
+```tsx
+<RouteStops label={t.route} timeZone={t.warsaw} stops={trip.stops.map(stop => ({ label: t[stop.kind], time: formatTime(stop.at), date: formatDate(stop.at), place: placeLine(stop.place), details: detailsOf(stop) }))} />
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| "Dojazd: 20 km, bez ładunku". | A dashed line meaning "empty". |
+| The time first. | A drawn route with scaled text. |
+
+## 13. Related
+
+Used in: App frame panel, entry, route and quote screens. Places come from Place picker; times from Zoned date-time field.
+
+<Canvas of={Stories.Reading} />

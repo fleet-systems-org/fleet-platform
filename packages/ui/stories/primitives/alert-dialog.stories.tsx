@@ -3,6 +3,7 @@ import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@fleet-platform/ui/components/alert-dialog";
 import { Button } from "@fleet-platform/ui/components/button";
 import { applyTextSpacing, findTextSpacingFailures } from "../../.storybook/text-spacing";
+import { waitForFocusReturn } from "../../.storybook/overlay";
 
 const discard = fn();
 
@@ -55,7 +56,7 @@ export const Keyboard: Story = {
     await userEvent.keyboard("{Enter}");
     await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
     await expect(discard).not.toHaveBeenCalled();
-    await expect(trigger).toHaveFocus();
+    await waitForFocusReturn(trigger);
     // A click outside does not close it: the dispatcher must answer.
     await userEvent.click(trigger);
     const reopened = await screen.findByRole("alertdialog");
@@ -63,6 +64,7 @@ export const Keyboard: Story = {
     await expect(screen.getByRole("alertdialog")).toBeInTheDocument();
     await userEvent.click(within(reopened).getByRole("button", { name: "Usuń szkic" }));
     await expect(discard).toHaveBeenCalledOnce();
+    await waitForFocusReturn(trigger);
   },
 };
 

@@ -108,6 +108,9 @@
   --table-row-height: 36px; /* Q3-1, R08.1, T3 */
   --control-height: 36px; /* buttons, inputs, selects (owner decision 2026-10-29) */
   --control-height-compact: 32px; /* controls inside a 36 px table row (owner decision 2026-10-29) */
+  --frame-navigation-width: 224px; /* AppFrame left navigation panel (N7d); 56 x 4 px grid (proposal) */
+  --frame-panel-width: 360px; /* AppFrame right panel on entry, route and quote (N7c) */
+  --frame-content-width: 1120px; /* AppFrame centred content incl. the panel (N7c), as in the prototype (proposal) */
   --tooltip-bg: var(--ink-900); /* T8: dark tooltip, as the shadcn default; white text 14.71:1 */
   --tooltip-text: var(--white); /* T8 */
 
@@ -177,6 +180,9 @@
   --spacing-control: var(--control-height);
   --spacing-control-compact: var(--control-height-compact);
   --spacing-measure: var(--measure-text);
+  --spacing-frame-navigation: var(--frame-navigation-width);
+  --spacing-frame-panel: var(--frame-panel-width);
+  --spacing-frame-content: var(--frame-content-width);
 
   --radius-control: var(--radius-4); /* N4b: inputs, buttons, badges */
   --radius-panel: var(--radius-8); /* N4b: panels, result bar */

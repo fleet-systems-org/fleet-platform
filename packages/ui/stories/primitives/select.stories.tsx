@@ -3,6 +3,7 @@ import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { Field } from "@fleet-platform/ui/components/field";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@fleet-platform/ui/components/select";
 import { applyTextSpacing, findTextSpacingFailures } from "../../.storybook/text-spacing";
+import { waitForFocusReturn } from "../../.storybook/overlay";
 
 const currencies = ["EUR", "PLN", "CZK"] as const;
 
@@ -93,7 +94,7 @@ export const ClickAndKeyboard: Story = {
     await expect(trigger).toHaveTextContent("PLN");
     // Radix returns focus to the trigger after the list closes, in a timeout; wait for it, or that late focus
     // would pull focus out of the list opened next.
-    await waitFor(() => expect(trigger).toHaveFocus());
+    await waitForFocusReturn(trigger);
     await userEvent.keyboard("{Enter}");
     // The list fades in over 110 ms (Q5b) and then moves focus to the chosen option; wait for that before using the arrows.
     const list = await screen.findByRole("listbox");
@@ -104,7 +105,7 @@ export const ClickAndKeyboard: Story = {
     await waitFor(() => expect(screen.getByRole("option", { name: "CZK" })).toHaveFocus());
     await userEvent.keyboard("{Enter}");
     await expect(args.onValueChange).toHaveBeenLastCalledWith("CZK");
-    await expect(trigger).toHaveFocus();
+    await waitForFocusReturn(trigger);
   },
 };
 

@@ -1,0 +1,80 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./step-bar.stories";
+
+<Meta of={Stories} />
+
+# Step bar
+
+`import { StepBar } from "@fleet-platform/ui/components/layout/step-bar"`
+
+## 1. Purpose
+
+Shows on one line how far a multi-step form is, so progress reads without counting (R18.2). The same bar runs from entry to the quote (N7a, N7c).
+
+## 2. When to use
+
+- Above the quote entry form, the route and the quote, inside `AppFrame`'s `steps`.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Going back to a completed step | "Zmień" on the collapsed step (R18.1) | The bar is informational, not navigation |
+| A single form | Nothing | One step needs no progress |
+| Loading progress | Loading message | Steps are the user's work, not waiting |
+
+## 4. Anatomy
+
+Per step: a circle with a check or the step number, the lines to its neighbours, and the step name.
+
+## 5. Variants
+
+| State | Circle | Name | Line after it |
+|---|---|---|---|
+| Completed | Filled, check | Default text, "gotowe" for screen readers | Action colour |
+| Current | Filled, number | Default text, `aria-current="step"` | Divider |
+| Later | Outlined, number | Muted | Divider |
+
+<Canvas of={Stories.Progress} />
+
+## 6. States
+
+The three states above; no hover or focus, because the bar has no controls.
+
+## 7. Behaviour and accessibility
+
+- An ordered list named by `label`; the current step has `aria-current="step"` and completed steps end with `doneText`.
+- Circles and lines are `aria-hidden`; the state is in words and position, never in colour alone.
+
+## 8. Content
+
+Step names from the page, one to three words: "Auto", "Miejsca i czasy", "Fracht i mycie", "Wycena".
+
+## 9. Responsive
+
+Steps share the width equally; long names wrap under their circle. At 320 px four steps fit without horizontal scroll.
+
+## 10. API
+
+`StepBar`: `label`, `steps`, `current` (index from 0), `doneText`, `className`.
+
+<ArgTypes of={Stories} />
+
+## 11. Code
+
+```tsx
+<StepBar label={t.quoteProgress} steps={[t.vehicle, t.placesAndTimes, t.freightAndWash, t.quote]} current={step} doneText={t.done} />
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Keep the same steps on entry, route and quote. | Change the steps between screens. |
+| Let the form change a completed step. | Make the circles clickable. |
+
+## 13. Related
+
+Used in: App frame (`steps`). Pattern: R18.1 collapsed steps in the entry form.
+
+<Canvas of={Stories.States} />

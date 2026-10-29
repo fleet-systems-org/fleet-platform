@@ -6,6 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Button } from "@fleet-platform/ui/components/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@fleet-platform/ui/components/dropdown-menu";
 import { applyTextSpacing, findTextSpacingFailures } from "../../.storybook/text-spacing";
+import { waitForFocusReturn } from "../../.storybook/overlay";
 
 const correct = fn();
 const cancel = fn();
@@ -79,7 +80,7 @@ export const OpensConfirmation: Story = {
     const dialog = await screen.findByRole("alertdialog", { name: "Usunąć szkic kursu?" });
     await expect(screen.queryByRole("menu")).toBeNull();
     await userEvent.click(within(dialog).getByRole("button", { name: "Zostaw szkic" }));
-    await waitFor(() => expect(trigger).toHaveFocus());
+    await waitForFocusReturn(trigger);
   },
 };
 
@@ -99,7 +100,7 @@ export const Keyboard: Story = {
     await expect(screen.getByRole("menuitem", { name: "Anuluj kurs" })).toHaveFocus();
     await userEvent.keyboard("{Enter}");
     await expect(cancel).toHaveBeenCalledOnce();
-    await waitFor(() => expect(trigger).toHaveFocus());
+    await waitForFocusReturn(trigger);
     await userEvent.click(trigger);
     await userEvent.click(await screen.findByRole("menuitem", { name: "Popraw" }));
     await expect(correct).toHaveBeenCalledOnce();
@@ -107,7 +108,7 @@ export const Keyboard: Story = {
     await screen.findByRole("menu");
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
-    await expect(trigger).toHaveFocus();
+    await waitForFocusReturn(trigger);
   },
 };
 

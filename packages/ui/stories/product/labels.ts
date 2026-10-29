@@ -42,3 +42,13 @@ export const zonedDateTimeLabels: ZonedDateTimeLabels = {
   earlier: "przed cofnięciem zegara",
   later: "po cofnięciu zegara",
 };
+
+/** Navigation of a dispatcher as the page passes it (L12: no owner entries); "Flota" waits under "Później" (N7d). */
+export const dispatcherNavigation = {
+  navigationLabel: "Nawigacja",
+  items: [{ href: "#nowa-wycena", label: "Nowa wycena", current: true }, { href: "#kursy", label: "Kursy aut" }],
+  later: { label: "Później", items: ["Flota"] },
+};
+
+/** Steps of the quote entry form (N7a). */
+export const quoteSteps = ["Auto", "Miejsca i czasy", "Fracht i mycie", "Wycena"];
