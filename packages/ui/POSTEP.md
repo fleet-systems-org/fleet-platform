@@ -442,6 +442,21 @@ Proposals of stage 3 batch 5 (for the owner):
 
 Owner answers (2026-10-29): 1–6 approved. 7 changed: `layout/` stays, but `RouteStops` moves to `places/`, following the stage 3 decision (folders by the foundation primitive they serve; a domain folder only when a component gets a second consumer). No `trips/` folder.
 
+## Stage 3, E01 screens, group 1 (2026-10-29)
+
+Screens s09 (trip entry), s10 (place choice) and s11 (route and countries) as stories composed from real components, in their screen-map states. Started from main after #58 and #60.
+
+Owner decision L09 (2026-10-29), recorded under L09 in the decisions record: (1) when the map provider finds no address or is unavailable, the dispatcher chooses a saved place or a town only from the company's list of towns; the quote is still calculated, and the point and the distance are marked "Tylko miasto" and as an estimate; without a route the kilometres per country are entered by hand (ROUTE-1, BND-4). (2) A new place is added only from a map result, in one action (`places.write`); without the map no place is added, with no manual address form and no manual coordinates.
+
+`PlacePicker` changes for L09 (same pull request as s10): when nothing is found it lists the options the page passes (saved places and the company's towns), as it already did when the provider is unavailable; "Dodaj miejsce" appears only while a map address (`address`) is chosen and passes that result to `onAddPlace(option)`, instead of an always-visible "Dodaj miejsce…" that opened an undefined flow.
+
+Plan:
+
+1. s10 inside the entry step "Miejsca i czasy": states s10.1–s10.8 with `PlacePicker`.
+2. s09 trip entry in `AppFrame` with `StepBar`: one open step, completed steps collapsed with "Zmień" (R18.1), `RouteStops` in the 360 px panel.
+3. s11 route and countries: legs with kilometres per country as estimates (`ValueWithSource`, whole km), planner toll only as a control, manual split with a reason when the route is missing (BND-4), town-only endpoints marked (L09).
+4. States that depend on open screen-map gaps are listed, not invented: s09.8 currency list (L30), s09.10 two weekends (L21), s09.15 version conflict (L10), s09.16 session expiry (L11), s11.7 detours (L01).
+
 ## Next step
 
 Conditions before screens are built (owner decision 2026-10-29): L08 is decided (no time limit on the screen; see batch 5); L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next: screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
