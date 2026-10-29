@@ -33,6 +33,7 @@ Code families:
 - **R18.2** — A step bar on one line: a completed step shows a check, the current step is filled, later steps are outlined and muted, and the line after a completed step takes the action colour, so progress reads without counting.
 - **R19.1** — A trip summary where each stop is a block with its label on the left, the time first, then date and place, then details as label–value pairs, taken because a trip is read as stops and times.
 - **R20.1** — A grouped spending list where each group header carries its own total and every item below it has its amount and a thin share bar, taken so the dispatcher reads the subtotal of each leg before its countries; its category icons and colours are not taken.
+- **R21.1** — A choice of one person shown as tiles in a grid: the name first and larger, a smaller detail line beneath it, the chosen tile outlined in the action colour and one continue action below, taken so the dispatcher picks by who drives and which tractor at a glance; avatars, photos and role colours are not taken.
 
 ## Product rules (brief)
 
@@ -64,6 +65,7 @@ Code families:
 - **N7c** — The entry, route and quote screens share one frame: centred content, a 360 px panel on the right and the same step bar, so moving between them changes the content, not the layout (owner decision 2026-10-29).
 - **N7d** — Navigation lives in a left side panel on every screen, never in the top bar; entries of later phases appear muted under "Później" until they exist (owner decision 2026-10-29).
 - **N7e** — The route and countries screen (s11) groups costs by leg: "Dojazd A → B" and "Z ładunkiem B → C", each header showing kilometres, fuel, toll and the leg total; below each header every country is a row with kilometres, fuel, toll and total and a thin share bar of the route's fuel and toll in the action colour; a "Cały kurs" row closes the list, followed by the remaining quote costs and the total cost (R20.1, R17.1) (owner decision 2026-10-29).
+- **N7f** — The vehicle step of the quote entry form shows each vehicle as a tile: the driver's full name, below it in smaller text the tractor registration number, then where and from when the vehicle is free (or "Nieznane"); the chosen tile is outlined and "Dalej" stays below (R21.1). Driver identity is outside the approved E01 specification and is shown with synthetic data in the prototype until a specification decision adds it (owner decision 2026-10-29).
 - **N8a** — The sign-in screen follows the existing office system sign-in that the panel uses: a left half with a dark map of Europe and fictional routes, the sign-in form centred in the right half, and a single column with the form on narrow screens. The map uses design-system colours and carries no company name or logo. It is the only decorative element allowed, an owner-approved exception to R08.5 (owner decision 2026-10-29).
 
 ## Proposals
