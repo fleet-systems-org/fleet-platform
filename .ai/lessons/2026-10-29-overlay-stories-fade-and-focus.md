@@ -13,12 +13,12 @@ Stage 2 batch 3 of the design system added the 110 ms fade-in (`animate-overlay-
 
 ## Resolution
 
-- Wait for an overlay to be fully shown before asserting visibility or sending keys: `await waitFor(() => expect(element).toBeVisible())`. Assert the animation itself once (`getComputedStyle(panel).animationDuration` is `0.11s`) instead of disabling it for all tests.
+- Wait for an overlay to be fully shown before asserting visibility: `await waitFor(() => expect(element).toBeVisible())`. Before sending arrow keys, wait for the real readiness condition, the focused item (for Select, the chosen option has focus); visibility alone still failed two of three runs. Assert the animation itself once (`getComputedStyle(panel).animationDuration` is `0.11s`) instead of disabling it for all tests.
 - Return focus by hand: keep a ref to the menu button and use `onCloseAutoFocus={event => { event.preventDefault(); menuButton.current?.focus(); }}` on the dialog content.
 
 ## Verification
 
-`pnpm test:storybook`: 96 of 96 story tests passed in two consecutive runs; the story "Dropdown menu / Menu item opens a confirmation" checks that focus returns to the menu button.
+`pnpm test:storybook`: 96 of 96 story tests passed in three consecutive runs; the story "Dropdown menu / Menu item opens a confirmation" checks that focus returns to the menu button.
 
 ## Prevention
 

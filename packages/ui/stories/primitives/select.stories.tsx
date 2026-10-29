@@ -93,9 +93,10 @@ export const ClickAndKeyboard: Story = {
     await expect(trigger).toHaveTextContent("PLN");
     trigger.focus();
     await userEvent.keyboard("{Enter}");
-    // The list fades in over 110 ms (Q5b); wait until it is fully shown before using the arrows.
+    // The list fades in over 110 ms (Q5b) and then moves focus to the chosen option; wait for that before using the arrows.
     const list = await screen.findByRole("listbox");
     await waitFor(() => expect(list).toBeVisible());
+    await waitFor(() => expect(screen.getByRole("option", { name: "PLN" })).toHaveFocus());
     await userEvent.keyboard("{ArrowDown}{Enter}");
     await expect(args.onValueChange).toHaveBeenLastCalledWith("CZK");
     await expect(trigger).toHaveFocus();

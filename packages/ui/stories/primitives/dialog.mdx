@@ -45,6 +45,7 @@ One look. `showCloseButton={false}` removes the corner button when the footer ha
 | Closed | Only the trigger | |
 | Opening | Scrim and panel fade in over 110 ms; at once with reduced motion | Q5b, T7, WCAG 2.3.3 |
 | Open | Page behind is dimmed and inert; focus on the first field | WAI-ARIA APG Dialog (Modal) |
+| Click on the scrim | Nothing happens: the typed input stays | owner decision 2026-10-29 |
 | Field error | Error text with icon from `Field`, under the field; the dialog stays open with the input kept | Q3, audit finding 10 |
 | Closing | Instant; focus returns to the trigger | Q5b, T7 |
 | Loading, empty | Not applicable: the dialog collects input; the command's progress shows on the button or in the screen | |
@@ -53,7 +54,7 @@ One look. `showCloseButton={false}` removes the corner button when the footer ha
 
 - WAI-ARIA APG Dialog (Modal) through Radix: `role="dialog"`, `aria-modal`, named by `DialogTitle`, described by `DialogDescription`. Without a description pass `aria-describedby={undefined}`.
 - Focus moves to the first focusable element, `Tab` stays inside, `Escape` closes, focus returns to the trigger. The page behind is hidden from screen readers.
-- A click on the scrim closes the dialog; the input is lost, so a dialog with typed text keeps a visible "Wróć" button as the expected way out.
+- A click or focus outside does not close the dialog, so typed input is never lost by a stray click (owner decision 2026-10-29). The ways out are `Escape`, the corner button and the footer's "Wróć…" button.
 - Always modal: the scrim also centres and scrolls the panel, so a long dialog scrolls inside the screen at 320 px (WCAG 1.4.10).
 - Opened from a menu item, a dialog has no trigger of its own: return focus to the menu button in `onCloseAutoFocus` (see Dropdown menu).
 - Targets: footer buttons at least 36 px, corner button 32 × 32 px (WCAG 2.5.8).
@@ -62,7 +63,7 @@ One look. `showCloseButton={false}` removes the corner button when the footer ha
 
 - Title is the question or the action: "Anulować przyjęty kurs?", not "Uwaga".
 - Description says the consequence in one or two sentences: what is kept and what changes.
-- Buttons say what they do: "Anuluj kurs" and "Wróć do kursu", never "OK" and "Anuluj" side by side.
+- The confirming button is the action's own verb: "Anuluj kurs", "Przyjmij kurs"; never "OK" or "Potwierdź" (owner decision 2026-10-29). The way back says where it goes: "Wróć do kursu".
 
 ## 9. Responsive
 
@@ -100,7 +101,7 @@ One look. `showCloseButton={false}` removes the corner button when the footer ha
 |---|---|
 | Ask for the cancellation reason in a dialog opened by "Anuluj kurs". | Open a dialog by itself when a quote is ready (B2). |
 | Keep the typed reason and show the error under the field. | Close the dialog on a server error and lose the text. |
-| "Anuluj kurs" and "Wróć do kursu". | "OK" and "Anuluj", which both sound like cancelling. |
+| "Anuluj kurs" and "Wróć do kursu". | "OK" or "Potwierdź", which do not say what happens. |
 
 ## 13. Related
 

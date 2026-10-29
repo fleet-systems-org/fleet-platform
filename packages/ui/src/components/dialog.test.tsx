@@ -18,7 +18,7 @@ function CancelTrip({ showCloseButton }: { showCloseButton?: boolean }) {
   </Dialog>;
 }
 
-it("opens a named, described modal dialog inside a scrolling overlay and closes it from the corner button", () => {
+it("opens a named, described modal dialog inside a scrolling overlay and closes it from the corner button", async () => {
   render(<CancelTrip />);
   fireEvent.click(screen.getByRole("button", { name: "Anuluj kurs" }));
   const dialog = screen.getByRole("dialog", { name: "Anulować przyjęty kurs?" });
@@ -26,6 +26,10 @@ it("opens a named, described modal dialog inside a scrolling overlay and closes 
   expect(dialog.parentElement!.dataset.slot).toBe("dialog-overlay");
   expect(dialog.className).toContain("shadow-overlay");
   expect(dialog.parentElement!.className).toContain("animate-overlay-in");
+  // A click on the scrim keeps the dialog and its typed input. Radix listens for outside clicks from the next tick.
+  await new Promise(resolve => setTimeout(resolve, 0));
+  fireEvent.pointerDown(dialog.parentElement!);
+  expect(screen.getByRole("dialog")).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Zamknij" }));
   expect(screen.queryByRole("dialog")).toBeNull();
 });
