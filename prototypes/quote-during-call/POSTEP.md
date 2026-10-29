@@ -364,3 +364,5 @@ Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not sta
 Not run: production app build/integration/coverage, Storybook tests, cross-browser matrix, exhaustive accessibility audit, Stage 2. Production specifications remain unchanged and unimplemented. No PR opened and no base-branch merge.
 
 Next: owner reviews all three s01 states before authorizing further prototype work. Publication and cloud verification are recorded in the Stage 1h run log.
+
+- External preview and screenshots were kept outside the repository; client-side availability was not verified.
