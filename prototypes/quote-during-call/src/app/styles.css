@@ -165,3 +165,19 @@
 .value-details-table tr[hidden] { display: none; }
 
 .value-details-table .source-date { white-space: nowrap; }
+
+/* N7e / R20.1: grouped route costs reuse the quotation's share bars. */
+.country-cost-table { table-layout: fixed; }
+.country-cost-table th:first-child { width: 30%; }
+.country-cost-table th:last-child { width: 18%; }
+.country-cost-table th, .country-cost-table td { vertical-align: top; overflow-wrap: anywhere; }
+.country-group, .country-cost-table tfoot { background: var(--surface-panel); font-weight: var(--weight-600); }
+.country-meta { display: none; font-weight: var(--weight-500); }
+@media (max-width: 48rem) {
+  .country-cost-table .country-detail { display: none; }
+  .country-meta { display: block; margin-top: var(--space-tight); }
+  .country-cost-table th:first-child { width: 46%; }
+  .country-cost-table th:last-child { width: 32%; }
+}
+/* Preserve the engine's h1 focus target, with an outline for keyboard navigation. */
+h1[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }

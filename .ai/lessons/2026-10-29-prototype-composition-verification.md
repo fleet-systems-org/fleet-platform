@@ -26,3 +26,8 @@
 ## Stage 1f: title and responsive reading order
 
 The shared frame needs an explicit heading slot before its summary and detail slots: placing the heading inside detail leaves it after the route, while moving the whole detail first also moves the route ahead of the mobile summary. Verified the heading/summary/route coordinates at actual 1440/320 CSS pixels and retained h1 focus on screen navigation. Ordinary text now inherits shared weight 500; no prototype token override is required. Supporting finding only.
+
+
+## Stage 1g: heading focus depends on navigation modality
+
+The unchanged review engine focuses h1 after navigation for accessibility. Suppress only `h1[tabindex="-1"]:focus:not(:focus-visible)` in prototype styles; removing focus or every outline would break keyboard orientation. Verified actual pointer clicks and Tab/Enter navigation at 1440/320 CSS pixels: focus stays on h1, pointer outline is none and keyboard outline is solid. Supporting finding only; no standing rule added.
