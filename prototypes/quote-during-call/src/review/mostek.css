@@ -29,4 +29,4 @@
   --z-index-product-modal: calc(var(--z-index-product-overlay) + 1);
 }
 /* Keep Back in document flow so it never covers product content while scrolling. */
-body .proto-back { position: static; margin: var(--space-panel); }
+body.proto-focus .proto-back { position: static; margin: var(--space-panel); }
