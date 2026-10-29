@@ -184,13 +184,30 @@ h1[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
 
 /* N8a: the existing office system sign-in; the map is the approved decoration. */
 .sign-in-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 100svh; background: var(--surface-page); }
-.sign-in-map { position: relative; overflow: hidden; background: var(--tooltip-bg); color: var(--tooltip-text); }
+/* N8a: owner-approved exception to R08.5 */
+.sign-in-map {
+  --map-bg: oklch(0.16 0.03 264);
+  --map-text: oklch(0.985 0.002 247.839);
+  --map-land: oklch(0.22 0.035 262);
+  --map-coast: oklch(0.32 0.045 258);
+  --map-road: oklch(0.38 0.05 250);
+  --map-route: oklch(0.72 0.16 55);
+  --map-headlights: oklch(0.96 0.08 92);
+  --map-taillights: oklch(0.63 0.23 29);
+  position: relative; overflow: hidden; background: var(--map-bg); color: var(--map-text);
+}
 .sign-in-company { position: relative; padding: calc(var(--space-section) * 2); font-size: var(--type-20); line-height: var(--type-20-leading); font-weight: var(--weight-600); }
-.sign-in-map svg { overflow: visible; position: absolute; width: 155%; max-width: none; height: 100%; left: -25%; top: 12%; transform: perspective(900px) rotateX(38deg) rotateZ(-9deg); }
-.sign-in-land { fill: var(--text-muted); fill-opacity: 0.16; stroke: var(--text-muted); stroke-width: 0.6; }
-.sign-in-routes { fill: none; stroke: var(--action-primary); stroke-width: 3; }
-.sign-in-routes path:nth-child(even) { stroke: var(--action-primary-hover); }
-.sign-in-map circle { fill: var(--action-primary); }
+.sign-in-map-perspective { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; perspective: 800px; }
+.sign-in-map svg { width: 100%; min-width: 48rem; flex-shrink: 0; scale: 1.5; rotate: x 50deg; translate: 0 4rem; }
+.sign-in-land { fill: var(--map-land); stroke: var(--map-coast); }
+.sign-in-roads { stroke: var(--map-road); }
+.sign-in-route-glow path { stroke: var(--map-route); }
+.sign-in-route-glow circle { fill: var(--map-route); }
+.sign-in-headlights { stroke: var(--map-headlights); }
+.sign-in-taillights { stroke: var(--map-taillights); }
+.sign-in-city { fill: var(--map-headlights); }
+.sign-in-map-fade-top { position: absolute; inset: 0 0 auto; height: 50%; background: linear-gradient(to bottom, var(--map-bg) 55%, transparent); }
+.sign-in-map-fade-bottom { position: absolute; inset: auto 0 0; height: 16rem; background: linear-gradient(to top, var(--map-bg), color-mix(in oklab, var(--map-bg) 80%, transparent), transparent); }
 .sign-in-panel { position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--space-section); padding: calc(var(--space-section) * 3) calc(var(--space-section) * 2); min-width: 0; }
 .sign-in-badge { position: absolute; top: var(--space-section); right: var(--space-section); max-width: 100%; white-space: normal; }
 .sign-in-password-field { display: flex; flex-direction: column; gap: var(--space-tight); }
