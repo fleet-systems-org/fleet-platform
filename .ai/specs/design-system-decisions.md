@@ -32,6 +32,7 @@ Code families:
 - **R18.1** — A multi-step form where completed steps collapse to one line with their answer and an edit link, one step is open and later steps wait below, taken so the dispatcher sees what is done without scrolling past it.
 - **R18.2** — A step bar on one line: a completed step shows a check, the current step is filled, later steps are outlined and muted, and the line after a completed step takes the action colour, so progress reads without counting.
 - **R19.1** — A trip summary where each stop is a block with its label on the left, the time first, then date and place, then details as label–value pairs, taken because a trip is read as stops and times.
+- **R20.1** — A grouped spending list where each group header carries its own total and every item below it has its amount and a thin share bar, taken so the dispatcher reads the subtotal of each leg before its countries; its category icons and colours are not taken.
 
 ## Product rules (brief)
 
@@ -62,6 +63,7 @@ Code families:
 - **N7b** — The route is shown as stop blocks (start, loading, unloading), each with time, date (Warsaw), place with country and details: customer, kilometres, and whether a leg is the approach or loaded, said in words (R19.1). It replaces the A → B → C schematic on the entry, route and quote screens (owner decision 2026-10-29).
 - **N7c** — The entry, route and quote screens share one frame: centred content, a 360 px panel on the right and the same step bar, so moving between them changes the content, not the layout (owner decision 2026-10-29).
 - **N7d** — Navigation lives in a left side panel on every screen, never in the top bar; entries of later phases appear muted under "Później" until they exist (owner decision 2026-10-29).
+- **N7e** — The route and countries screen (s11) groups costs by leg: "Dojazd A → B" and "Z ładunkiem B → C", each header showing kilometres, fuel, toll and the leg total; below each header every country is a row with kilometres, fuel, toll and total and a thin share bar of the route's fuel and toll in the action colour; a "Cały kurs" row closes the list, followed by the remaining quote costs and the total cost (R20.1, R17.1) (owner decision 2026-10-29).
 
 ## Proposals
 
