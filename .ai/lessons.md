@@ -17,7 +17,7 @@ Index of reusable findings, bug fixes and improvements. Read relevant entries be
 
 - [Overlay stories: fade-in timing and focus return from a menu](lessons/2026-10-29-overlay-stories-fade-and-focus.md): wait for an overlay to finish fading in before asserting or typing; return focus to the menu button when a menu item opens a dialog.
 
-- [Async queries time out under coverage on CI runners](lessons/2026-10-29-async-find-timeout-under-coverage.md): give `findBy…` an explicit timeout when it waits for several asynchronous steps.
+- [Passive effects can still be pending when `findBy…` resolves](lessons/2026-10-29-async-find-timeout-under-coverage.md): wait with `waitFor` for effect-driven behaviour (focus, listeners) before acting on it; a test failing at exactly its timeout needs a cause, not a higher limit.
 
 - [Verify prototype composition at the rendered control](lessons/2026-10-29-prototype-composition-verification.md): wrapper styling, child-state reset, stable suggestion geometry and actual browser viewport/evidence checks.
 

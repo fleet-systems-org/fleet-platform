@@ -1,0 +1,107 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./place-picker.stories";
+
+<Meta of={Stories} />
+
+# Place picker
+
+`import { PlacePicker } from "@fleet-platform/ui/components/places/place-picker"`
+
+## 1. Purpose
+
+Lets the dispatcher find a route endpoint by typing an address or a town and choose exactly one result. It always says whether the choice is an exact address or only a town (P04, PLACE-3), and it never merges spellings or same-named towns by itself (PLACE-2).
+
+## 2. When to use
+
+- Loading and unloading places of a trip (E01 trip entry, s09–s10).
+- The vehicle's starting point (s08).
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Showing a place | Text with the place's name and kind | Entry and display are separate |
+| A short fixed list (country, currency) | Select | Known values are chosen, not searched |
+| Editing a saved place's address | A place form (not yet in the system) | Adding and editing places is not yet described (L09) |
+
+## 4. Anatomy
+
+Label, hint and error from `Field`; the search box; the list under it with each result's name, kind ("Zapisane miejsce", "Adres", "Tylko miasto"), address or region and country, a "Do potwierdzenia" badge for same-named towns and the typed spelling when it differs; a status line in the list; under the box, the chosen result's kind and address, and "Dodaj miejsce…" when the page allows it.
+
+## 5. Variants
+
+One look. The page decides the content: saved places while nothing is typed, then the results of the last search, saved places first.
+
+<Canvas of={Stories.Search} />
+
+## 6. States
+
+<Canvas of={Stories.States} />
+
+| State | Look | Source |
+|---|---|---|
+| Empty, focused | Saved places listed | s10.1 |
+| Searching | "Szukam…" in the list | s10.2 (time limit open: L08) |
+| Several results | All listed; the dispatcher chooses one | s10.3, BND-4 |
+| Same town in two regions | Both listed with region and "Do potwierdzenia" | s10.4, PLACE-2 |
+| Other spelling | The result with "wpisano: Miejsce-B"; choosing it saves no alias | s10.5, PLACE-2 |
+| Not found | A message saying what to try | s10.6 (next step open: L09) |
+| Map provider unavailable | A message; saved places can still be chosen | s10.7, ROUTE-1 |
+| Chosen | The name in the box; kind, address and country under it | PLACE-3 |
+| Error | `border-error`, error text with icon from `Field` | Q3 |
+| Disabled | Page background, muted text; the hint says when it becomes available | audit finding 14 |
+
+<Canvas of={Stories.ProviderUnavailable} />
+
+## 7. Behaviour and accessibility
+
+- WAI-ARIA combobox with a list: typing calls `onQueryChange`; the page searches (saved places, then the map provider) and passes `options` and `status`. Down and Up move through the results and wrap; Enter chooses; Escape closes the list; leaving the box closes it.
+- Choosing calls `onSelect(option)`; typing again clears the choice and calls `onSelect(null)`, so a stale endpoint is never kept.
+- The search status ("Szukam…", the number of results, not found, unavailable) is announced through a status region; the chosen result's kind and address are part of the box's description.
+- The box is named by the `Field` label; hint and error are in `aria-describedby`; `aria-invalid` and `required` come from `Field`. "Dodaj miejsce…" is a button under the box, reachable with Tab.
+
+## 8. Content
+
+- A town without an address says so: "Tylko miasto · Region Północ · PL".
+- A country nobody confirmed is not guessed: "kraj niepotwierdzony".
+- Messages say what to do: "Nie znaleziono miejsca. Sprawdź pisownię albo wpisz samo miasto.", "Wyszukiwanie adresów jest teraz niedostępne. Wybierz zapisane miejsce albo spróbuj za chwilę."
+
+## 9. Responsive
+
+The list takes the width of the box; result lines wrap; at 320 px nothing scrolls sideways.
+
+<Canvas of={Stories.Choosing} />
+
+## 10. API
+
+`PlacePicker`: `options` (`PlaceOption[]`: `id`, `kind: "place" | "address" | "town"`, `name`, `detail?`, `country?`, `needsConfirmation?`, `typedAs?`), `status` (`idle`, `searching`, `results`, `notFound`, `unavailable`), `labels`, `defaultValue`, `onQueryChange(query)`, `onSelect(option | null)`, `onAddPlace`, `disabled`. Searching, debouncing and saving aliases stay with the page.
+
+<ArgTypes of={Stories} />
+
+## 11. Code
+
+```tsx
+const [status, setStatus] = useState<PlaceSearchStatus>("idle");
+const [options, setOptions] = useState<PlaceOption[]>(savedPlaces);
+
+<Field label="Miejsce załadunku" hint="Adres albo miasto" error={error} required>
+  <PlacePicker status={status} options={options} labels={placePickerLabels}
+    onQueryChange={query => search(query)} // sets status and options from apiCall
+    onSelect={option => setLoadingPlaceId(option?.id ?? null)}
+    onAddPlace={canWritePlaces ? openAddPlace : undefined} />
+</Field>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Show both "Miasto D" results with their regions. | Choose the first "Miasto D". |
+| Show "wpisano: Miejsce-B" and let a person choose. | Merge "Miejsce-B" into "Miejsce B" silently. |
+| Keep saved places selectable when the map provider fails. | Block the whole field because geocoding is down. |
+
+## 13. Related
+
+Built on: `Field`, `Badge`, `Button` (text), the input styles of Input. Used in: trip entry (loading, unloading), vehicle start. Alias confirmation (`towns.confirmAlias`) and adding a place are separate flows.
+
+<Canvas of={Stories.Unavailable} />
