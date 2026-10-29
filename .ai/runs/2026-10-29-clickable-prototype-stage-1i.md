@@ -22,3 +22,7 @@ Owner order: N7f/R21.1 tiles on s09 only, map edge on s01 only. Read N7a, R18.1,
 ## Outcome
 
 Only Stage 1i prototype changes and its records. Auto 01 labels elsewhere deliberately unchanged; owner question in prototype progress. No independent task dispatched because the authorized scope is small and locally verifiable. Next: owner review; Stage 2 remains unauthorized.
+
+## Publication
+
+- External preview and screenshots were kept outside the repository; client-side availability was not verified.
