@@ -82,8 +82,8 @@ export function App() {
     <strong className="navigation-company">Firma Demo</strong>
     <nav aria-label="Nawigacja produktu" className="stack">
       <Button variant="text" aria-current={["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) ? "page" : undefined} onClick={() => { reset(); close?.(); }}>Nowa wycena</Button>
-      <Button variant="text" aria-current={id === "s07" ? "page" : undefined} asChild><a href="#s07" onClick={close}>Kursy aut</a></Button>
       <p className="text-meta">Później</p>
+      {later ? <Button variant="text" aria-current={id === "s07" ? "page" : undefined} asChild><a href="#s07" onClick={close}>Kursy aut</a></Button> : <Button variant="text" disabled>Kursy aut</Button>}
       {later ? <Button variant="text" aria-current={id === "s06" ? "page" : undefined} asChild><a href="#s06" onClick={close}>Flota</a></Button> : <Button variant="text" disabled>Flota</Button>}
     </nav>
     <div className="navigation-account stack"><span className="text-meta">dyspozytor</span>
@@ -105,7 +105,7 @@ export function App() {
   // The viewed K2 fixture is a snapshot, independent of a new or edited entry.
   const quoteRoute = <RouteStops vehicle="Kierowca A · DEMO 001" loading={accepted ? acceptedStops.loading : quoteStops.loading} unloading={accepted ? acceptedStops.unloading : quoteStops.unloading}
     loadingDate="12.11.2026" loadingTime="12:00" unloadingDate="12.11.2026" unloadingTime="13:00"/>;
-  const quoteActions = accepted ? <><Button onClick={reset}>Nowa wycena</Button><Link to="s07">Kursy auta</Link></> : <>
+  const quoteActions = accepted ? <><Button onClick={reset}>Nowa wycena</Button>{later && <Link to="s07">Kursy auta</Link>}</> : <>
     <Button onClick={() => { if (active === "s16") setConfirm(true); else go("s16"); }}>Przyjmij kurs</Button><Link to="s09">Zmień dane</Link></>;
   function advance(step: number) { setCompletedStep(value => Math.max(value, step)); setEntryStep(step + 1); }
   const content: Record<string, ReactNode> = {
