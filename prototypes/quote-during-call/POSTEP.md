@@ -467,7 +467,7 @@ Both requested corrections verified: prototype typecheck/build; repository typec
 
 ## Stage 1o. Rebuild on design-system components (D1), part 2: s12–s16
 
-Status: implementation verified; publication pending (2026-10-29).
+Status: complete and published; waiting for owner review (2026-10-29).
 
 ### Goal and changes
 
@@ -503,3 +503,5 @@ Final built-browser pass at actual 1440/1024/768/320 CSS px: s09 → s10 → s09
 External screenshots (not committed): 1440-s12, 1440-s12-strata, 1440-s13, 1440-s14, 1440-s15, 1440-s16, 1440-s12-przyjeta, 320-s12; extra happy-path captures retained. Build and earlier evidence are preserved in the existing preview folder. Review engine SHA256 unchanged; no edits in protected application/shared source/story folders, and their diff against origin/main equals the starting branch. Privacy scan zero; added text and commit messages contain no private-process references. Product specification status remains unchanged: this is a synthetic prototype, not implemented E01 backend.
 
 Existing Vite large-bundle warning remains. Production integration, Storybook suite and cross-browser checks were not run. Publication evidence is recorded in the run log. No PR or base merge.
+
+- External preview and screenshots were kept outside the repository; client-side availability was not verified.

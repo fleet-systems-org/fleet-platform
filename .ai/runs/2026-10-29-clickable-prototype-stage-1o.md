@@ -1,6 +1,6 @@
 # Clickable prototype Stage 1o — s12–s16
 
-Status: implementation verified; publication pending. Agent: Codex. Starting branch: prototype/e01-clickable, commit 1551664.
+Status: complete and published; waiting for owner review. Agent: Codex. Starting branch: prototype/e01-clickable, commit 1551664.
 
 ## Objective and authority
 
@@ -12,7 +12,7 @@ Owner order 2026-10-29, D1: compose existing design-system components in s12–s
 2. Compose quote evidence, details popovers, input dialog, draft table and acceptance; retain review engine.
 3. Compute every synthetic vehicle category as daily rate × elapsed seconds / 86400 using BigInt. Round aggregates once and reconcile displayed components.
 4. Run required static/unit checks and browser flow at 1440/1024/768/320, including loss, pending and overlay focus. Capture external screenshots and preserve preview evidence.
-5. Inspect diff, update progress and verification, commit. Ordinary push requires cockpit Guard confirmation because it changes a shared branch.
+5. Inspect diff, update progress and verification, commit. Ordinary push after publication authorization.
 
 ## Validation
 
@@ -29,7 +29,7 @@ Owner order 2026-10-29, D1: compose existing design-system components in s12–s
 
 ## Remaining
 
-Publication and owner review. G11/G13 quote compositions are closed; DS GAP G08 remains because DataTable has no sorting API. Stage 2, source services, repricing after input, driver/tractor/customer-directory work are unchanged. No PR or base merge.
+Owner review. G11/G13 quote compositions are closed; DS GAP G08 remains because DataTable has no sorting API. Stage 2, source services, repricing after input, driver/tractor/customer-directory work are unchanged. No PR or base merge.
 
 ## Publication
 
