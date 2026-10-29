@@ -27,3 +27,10 @@ Validation: pending. Production specifications remain approved, not implemented.
 ## Limits
 
 Production build/integration/coverage, Storybook story tests, Stage 2 scenario matrix, full accessibility and cross-browser audits were not run. No pull request or merge into the base branch.
+
+## Publication
+
+- Implementation commit: 721d2d3. Baseline merges: 2bd966c and 82d9245. Pushed normally to prototype/e01-clickable; remote and local commit verified equal.
+- Preview server returned HTTP 200; served index SHA-256 matches the final built index. Preview index cloud upload was confirmed. This does not prove download on a second device. Direct network access from the build environment timed out; the server-side request succeeded.
+- Exported the eleven selected implementation/record files with their source commit and SHA-256 manifest alongside external evidence. No complete repository, secrets or customer data exported.
+- Production specification status remains unchanged. No PR opened; no base-branch merge.

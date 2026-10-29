@@ -277,3 +277,5 @@ Not run: production application build, production integration/coverage or Storyb
 2. Navigation currently has no icons, as requested. Should it remain text-only in the final product?
 
 Next: review Stage 1d and answer these two presentation questions before authorizing Stage 2. The separate customer-directory specification questions from Stage 1c remain open.
+
+Publication: implementation `721d2d3`; baseline merges `2bd966c` and `82d9245`. Normal push verified. Preview server HTTP 200 and index SHA-256 match verified; preview index cloud upload confirmed, second-device download unverified. Full browser and publication results are recorded in the Stage 1d run log.
