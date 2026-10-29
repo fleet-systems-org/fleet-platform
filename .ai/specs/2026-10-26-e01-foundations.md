@@ -1,7 +1,7 @@
 # E01 foundations — exact values, evidence, providers and access
 
 Status: **approved by the owner on 2026-10-27; not implemented**. Date: 2026-10-26.
-Companion: [E01 feature](2026-10-26-e01-trip-entry-and-quotation.md). Scope: #18/#22–#26/#28 (D33). Binding: [product brief](product-brief.md) R02–R20 and active D16–D62.
+Companion: [E01 feature](2026-10-26-e01-trip-entry-and-quotation.md). Scope: #18/#22–#26/#28 (D33). Binding: [product brief](product-brief.md) R02–R20 and active D16–D64.
 
 ## 📝 TLDR
 
@@ -153,7 +153,7 @@ Core ports: `RouteEstimatePort`, `GeocodingPort`, `QuoteInputPort` and, in Phase
 | `history.import` | no | yes |
 | `payroll.read` | no | yes |
 
-`trips.correct` covers corrections and cancellations. Vehicle and place reads are part of `trips.read`. `payroll.read` covers payroll inputs and the driver-rate derivation on the owner's rate page; a dispatcher sees only the aggregated labour cost of a trip.
+`trips.write` covers `POST /api/assets/vehicles/:id/start` (VehicleStart), available to dispatcher and owner (D64, confirming D61); it does not require owner-only `vehicles.write`. `trips.correct` covers corrections and cancellations. Vehicle and place reads are part of `trips.read`. `payroll.read` covers payroll inputs and the driver-rate derivation on the owner's rate page; a dispatcher sees only the aggregated labour cost of a trip.
 
 ## 📝 P07–P09 — Time, revisions and imports
 

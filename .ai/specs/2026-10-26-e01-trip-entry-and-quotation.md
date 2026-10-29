@@ -1,7 +1,7 @@
 # E01 — Trip entry, quotation and the truck’s next move
 
 Status: **approved by the owner on 2026-10-27; not implemented**. Date: 2026-10-26. Implementation also needs the companion foundations, approved by the owner on 2026-10-27.
-Subject: #18. Specification milestone: #22; delivery stories #22–#26 and #28. Companion: [E01 foundations](2026-10-26-e01-foundations.md), which defines the shared rules `FIN-*`, `EV-*`, `SRC-*`, `ROUTE-*`, `PLACE-*`, `AUTH-*`, `TIME-*` and `RUN-*` referenced here. Binding: [product brief](product-brief.md) R02–R20 and active D16–D62; [backlog](backlog.md) maps #18–#31. The [older pricing review](../analysis/2026-10-26-older-pricing-review.md) lists failures to avoid, not defaults.
+Subject: #18. Specification milestone: #22; delivery stories #22–#26 and #28. Companion: [E01 foundations](2026-10-26-e01-foundations.md), which defines the shared rules `FIN-*`, `EV-*`, `SRC-*`, `ROUTE-*`, `PLACE-*`, `AUTH-*`, `TIME-*` and `RUN-*` referenced here. Binding: [product brief](product-brief.md) R02–R20 and active D16–D64; [backlog](backlog.md) maps #18–#31. The [older pricing review](../analysis/2026-10-26-older-pricing-review.md) lists failures to avoid, not defaults.
 
 ## 📝 TLDR
 
@@ -33,7 +33,7 @@ All records are proposed. Every business record has `tenantId`, a stable opaque 
 - **Vehicle** (foundation) — one fixed tractor and tank-trailer set with one route profile and one rate set; the list is read from the telematics source, manual creation only fills a gap. Moving trailers between tractors is later.
 - **VehicleStart** — vehicle, exact start instant, place, source, version. The only start-up input per truck: where and when it becomes free from its current work. No history or current order is entered. No start and no trip means unknown.
 - **Trip** — vehicle; status `draft|accepted|cancelled` (drafts are alternatives, DRF-1; a lost offer stays a draft or is discarded, no extra status); current plan revision; schedule version; `scheduleReviewRequired` flag; optional opaque `orderRef` (no customer data). One accepted commercial order per trip.
-- **TripPlanRevision** — immutable: place IDs with address/town snapshots, loading instant, unloading-end instant, agreed net freight (`MoneyInput`), `weekendCase`, wash choice/amount/time, declared stops, segment references, predecessor revision.
+- **TripPlanRevision** — immutable: place IDs with address/town snapshots, loading instant, unloading-end instant, agreed net freight (`MoneyInput`), `weekendCase`, wash choice, mandatory amount and local date (Europe/Warsaw) for our wash, optional local time (D63), declared stops, segment references, predecessor revision.
 - **MovementSegment** (TIME-1) — vehicle, ordered endpoints, exact UTC start/end, timezone metadata, per-country distance parts, load state `empty|loaded`, kind `drive|wait|load|unload|wash|refuel|rest`, planned/observed axis, evidence. Stationary segments have known zero distance. Country parts sum exactly to the segment distance. A canonical physical segment is distinct from the planned copies referenced by plan revisions; the distance ledger counts only the current effective version.
 - **SegmentAllocation** — segment → trip revision, active/version. Exactly one current owning trip per physical segment; split at evidenced load/country/time boundaries. Historical allocations stay linked to old revisions and are not counted.
 - **QuoteRevision** — immutable: plan revision, predecessor and schedule versions, normalized request, route revision and country vectors, source observation and policy revisions, document references, `calculatedAt`, formula/rounding version, missing/conflict list, published revenue, covered cost and result in EUR, fixed-cost source month and category breakdown, `notIncluded` categories, `weekendCase` and flat-rate revision, certainty. Status `incomplete|complete`. Staleness is derived, never stored: a quote is stale when its plan revision, schedule version or predecessor version differs from the trip’s current ones.
@@ -129,16 +129,16 @@ All endpoints are company-scoped, use the existing envelope, strict Zod DTOs and
   - `POST /api/trips` creates a draft from `TripDraftInput`.
   - `POST /api/trips/:id/plan-revisions` takes `{ expectedPlanRevision, expectedScheduleVersion, draft: TripDraftInput }`.
   - `POST /api/trips/:id/discard` deletes a never-accepted draft.
-  - `POST /api/assets/vehicles/:id/start` sets the initial start with an expected version.
+  - `POST /api/assets/vehicles/:id/start` sets the initial start with an expected version; requires `trips.write` for dispatcher and owner (D64, AUTH-4), not owner-only `vehicles.write`.
 - **`TripDraftInput`:**
   - `vehicleId`, `loadingPlaceId`, `unloadingPlaceId`, `loadingAt`, `unloadingEndAt`, with timezones/offsets;
   - `freight?: MoneyInput` — agreed net freight in any currency; optional on save, required for a complete quote;
-  - `wash: {kind:"none"} | {kind:"ours", amount: MoneyInput, at}` — date and amount only, no place and no detour;
+  - `wash: {kind:"none"} | {kind:"ours", amount: MoneyInput, date: LocalDate, time?: LocalTime}` — amount and date are mandatory; date is a local calendar date in the company timezone Europe/Warsaw, time is optional (D63). No place and no detour;
   - `stops`;
   - `weekendCase?: "homePoland"|"restAbroad"|"drivingOn"`, optional until quotation and validated against the interval there;
   - optional `orderRef`.
 
-  `MoneyInput` = decimal-string amount, source currency, net basis. Exact times are required on save; unknown start context may be saved but blocks a complete quote.
+  `MoneyInput` = decimal-string amount, source currency, net basis. `LocalDate` is an ISO `YYYY-MM-DD` date; `LocalTime` is an ISO local time, subject to TIME-1 when resolving an instant. Exact schedule-anchor times are required on save; wash time is optional (D63); unknown start context may be saved but blocks a complete quote.
 - **`POST /api/trips/:id/route-estimates`** (`trips.quote`): `{ expectedPlanRevision, expectedScheduleVersion }` → `{ routeRevisionId, segments, distanceByCountry, evidence, limitations }` or `missingFields`. Never routes to client-supplied URLs.
 - **`POST /api/trips/:id/quotes`** (`trips.quote`): `{ expectedPlanRevision, expectedScheduleVersion, routeRevisionId, sourceGapInputs?, requestKey }` → `{ quoteId, state, missingFields, conflicts, planRevision, scheduleVersion, values, freeAt, freePlace, evidenceRefs }`. The server selects sources and never accepts client totals. An incomplete quote may show known components but no final result.
 - **`POST /api/trips/:id/acceptances`** (`trips.accept`): `{ quoteId, expectedPlanRevision, expectedScheduleVersion, requestKey, lossReason?, supersedesAcceptanceId? }`. A trimmed loss reason (max 500 characters, UI hint: no names or personal data) is required when the rounded result is below zero.
@@ -156,9 +156,9 @@ All endpoints are company-scoped, use the existing envelope, strict Zod DTOs and
 - **Access (Phase 1):** owner invites → set-password screen → email/password sign-in → E01. Show generic feedback for failed sign-in and reset. Cover expired, revoked and used invitation or reset states and the revoked-session state. No public sign-up and no other login option.
 - **Trip entry and quote (Phase 1):** a page composed in app from the shared widgets and `apiCall`, with the same pending, error-focus and dirty-navigation behaviour as `CrudForm`. Steps:
   1. Select the truck.
-  2. Enter the start if needed.
+  2. The dispatcher enters the start if needed (`trips.write`, also available to the owner; D64).
   3. Enter places, exact times and the agreed freight with its currency.
-  4. Explicitly choose “Bez mycia” or “Nasze mycie” with amount and date (no preselection).
+  4. Explicitly choose “Bez mycia” or “Nasze mycie” with mandatory amount and local date (Europe/Warsaw), and optional time (D63; no preselection).
   5. Review routed distances and the country split.
   6. If WKD-1 applies, choose the weekend case.
   7. Quote.
@@ -193,8 +193,8 @@ Synthetic fixtures; each line names the rule it proves.
 1. No trips and no start → unknown availability; missing first approach → incomplete quote (BND-1).
 2. Trips A then B → B owns the whole A-unload-to-B-load approach; A unchanged (BND-1, R05).
 3. No next load → quote still valid; open approach separate (R08).
-4. Missing wash answer, amount or date → named errors, no default; a client-paid wash input is rejected; a wash place is not accepted (R09).
-5. Missing or reversed times → validation error; DST gap or overlap → rejection or offset choice (TIME-1).
+4. Missing wash answer, amount or date → named errors, no default; a client-paid wash input is rejected; a wash place is not accepted (R09). Our wash with amount and local date (Europe/Warsaw) but no time is valid input; adding a time remains optional (D63).
+5. Missing required schedule-anchor times or reversed times → validation error; DST gap or overlap → rejection or offset choice (TIME-1).
 6. Future, weekend or holiday FX → last published rate with date and estimate status; nothing after as-of (SRC-2).
 7. Fuel hierarchy: litre-weighting of mixed-currency card transactions, measured invoice discount as estimate before the invoice, median public discount, older own-card price as estimate, 14-day manual age, stale provider feed warning, missing branches naming the country (SRC-1).
 8. Consumption hierarchy: vehicle by country, vehicle without country, fleet by country; CAN disagreeing with card litres beyond tolerance → fleet fallback with reason (SRC-3). The planner toll stays a control (SRC-4).
@@ -269,7 +269,7 @@ Precondition: owner approval of both specifications; the authentication library 
 | #26/#28 history | 3.1–3.2 |
 | Security, foundations | 1.1, 1.4 |
 
-- **#22:** chronological trip with exact dates, first start and wash. Missing dates and invalid schedules are rejected.
+- **#22:** chronological trip with exact schedule anchors, dispatcher-entered first start (D64) and wash with mandatory amount/date and optional time (D63). Missing required dates and invalid schedules are rejected.
 - **#23:** planned free place and time at unloading end; unknown no-trip/no-start state; open approach; no live GPS.
 - **#24:** whole approach belongs to the successor; one current allocation; gap and overlap references; open terminal segment; no evidence means `notVerified`.
 - **#25:** scenarios 4–20 and 25–27 above, including weekend, missing-input and draft-comparison screenshots.
