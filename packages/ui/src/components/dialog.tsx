@@ -31,6 +31,12 @@ function DialogClose(props: React.ComponentProps<typeof DialogPrimitive.Close>) 
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
+// A dialog collects typed input, so a click or focus outside never closes it and never loses the input
+// (owner decision 2026-10-29); Escape, the close button and the footer's way back still close it.
+function keepOpen(event: Event) {
+  event.preventDefault()
+}
+
 function DialogContent({
   className,
   children,
@@ -43,7 +49,7 @@ function DialogContent({
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay data-slot="dialog-overlay" className={dialogStyles.overlay}>
-        <DialogPrimitive.Content data-slot="dialog-content" className={cn(dialogStyles.content, className)} {...props}>
+        <DialogPrimitive.Content data-slot="dialog-content" className={cn(dialogStyles.content, className)} {...props} onInteractOutside={keepOpen}>
           {children}
           {showCloseButton ? (
             <DialogPrimitive.Close asChild>

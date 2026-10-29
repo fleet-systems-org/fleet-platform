@@ -74,11 +74,11 @@ Code families:
 - **T2** — Spacing on a 4 px grid (4, 8, 12, 16, 24, 32) with named relations (tight, group, panel, between, section), because off-grid spacing gave an uneven rhythm.
 - **T3** — Table rows are 36 px; a future timeline row is 48 px for two lines, because dense tables let the whole fleet fit on one screen (Q3-1).
 - **T4** — Focus is a 2 px solid outline in the action colour with a 2 px offset, not the library default, because focus must be visible (WCAG 2.4.7) and not generic (G1).
-- **T5** — One shadow token, `shadow-overlay`: 0 2px 6px in the ink colour at 30 % (IBM Carbon's overlay shadow with ink instead of black), only on dialog, alert dialog, dropdown menu, popover and the Select list; Tailwind's default shadows are removed from the theme. The owner decided one light shadow on overlays (2026-10-29); the value is a proposal.
-- **T6** — A modal dialog dims the page with `bg-scrim`, the ink colour at 50 % (IBM Carbon's overlay colour with ink instead of black), so the inert page reads as background (proposal).
-- **T7** — Overlays only fade in, over `motion-overlay` (110 ms, Q5b) with the productive easing; no zoom or slide, closing is instant, and nothing animates under reduced motion. Tailwind's default animations are removed from the theme (proposal for fade-only and instant closing).
-- **T8** — Tooltips are dark labels (`tooltip-bg` ink, `tooltip-text` white, 14.71 : 1) without shadow or arrow, as the shadcn default colours, so they differ from a popover at a glance (proposal).
-- **T9** — A skeleton placeholder is a still block in the divider tone, without pulse, because nothing moves for decoration (Q5b); loading is said in words by `LoadingMessage` (proposal).
+- **T5** — One shadow token, `shadow-overlay`: 0 2px 6px in the ink colour at 30 % (IBM Carbon's overlay shadow with ink instead of black), only on dialog, alert dialog, dropdown menu, popover and the Select list; Tailwind's default shadows are removed from the theme. Approved by the owner on 2026-10-29, value included.
+- **T6** — A modal dialog dims the page with `bg-scrim`, the ink colour at 50 % (IBM Carbon's overlay colour with ink instead of black), so the inert page reads as background.
+- **T7** — Overlays only fade in, over `motion-overlay` (110 ms, Q5b) with the productive easing; no zoom or slide, closing is instant, and nothing animates under reduced motion. Tailwind's default animations are removed from the theme.
+- **T8** — Tooltips are dark labels (`tooltip-bg` ink, `tooltip-text` white, 14.71 : 1) without shadow or arrow, as the shadcn default colours, so they differ from a popover at a glance; shown at once on hover and focus.
+- **T9** — A skeleton placeholder is a still block in the divider tone, without pulse, because nothing moves for decoration (Q5b); loading is said in words by `LoadingMessage`.
 
 ## Owner answers before building
 

@@ -48,14 +48,15 @@ One. The confirming action is always the primary button: there is no red button;
 
 - `role="alertdialog"`, named by the title, described by the description; Radix reads both when it opens.
 - Focus starts on `AlertDialogCancel`, so a quick Enter keeps things as they are. `Tab` moves to the action; `Escape` cancels.
-- A click on the scrim does not close it (unlike Dialog).
+- A click on the scrim does not close it, as in Dialog.
 - Targets: both buttons at least 36 px high (WCAG 2.5.8).
 
 ## 8. Content
 
 - Title asks the question with the object: "Usunąć szkic kursu?".
 - Description says what disappears and that it cannot be undone.
-- Cancel says what stays ("Zostaw szkic"); the action repeats the verb of the trigger ("Usuń szkic").
+- The action is the concrete verb of the action, repeating the trigger: "Usuń szkic", "Anuluj kurs"; never "OK" or "Potwierdź" (owner decision 2026-10-29).
+- Cancel says what stays ("Zostaw szkic").
 
 ## 9. Responsive
 
@@ -89,7 +90,7 @@ Same as Dialog: at most 65 characters wide, 16 px from the edges at 320 px, butt
 
 | Do | Don't |
 |---|---|
-| "Zostaw szkic" / "Usuń szkic". | "Nie" / "Tak": the dispatcher has to reread the question. |
+| "Zostaw szkic" / "Usuń szkic". | "Anuluj" / "OK" or "Potwierdź": the dispatcher has to reread the question. |
 | Confirm only what cannot be undone. | Confirm saving a draft. |
 | Primary button for the action, words for the weight. | A red button: red is reserved for a loss on a trip result (N5a). |
 
