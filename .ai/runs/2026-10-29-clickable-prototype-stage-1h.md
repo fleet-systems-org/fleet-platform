@@ -1,6 +1,6 @@
 # Clickable prototype — Stage 1h
 
-Status: in progress. Agent: Codex. Starting branch: prototype/e01-clickable at 06697ed.
+Status: complete; waiting for owner review. Agent: Codex. Starting branch: prototype/e01-clickable at 06697ed.
 
 ## Objective and authority
 
@@ -24,3 +24,9 @@ Owner-authorized prototype-only sign-in through the existing office system (W2, 
 - Actual 1440/320 CSS-pixel isolated browser checks passed: three s01 states, recovery before/after, identical success for different logins, empty error icon/role, show/hide, retained login, password clearing, normal and approval paths to s09, logout/reset and scenario clearing, dyspozytor account, s02–s04 annotations/return links. Exact Tab sequence passed at both widths. No horizontal overflow in checked states. Browser resize minimum is 500 px, so 320 was explicitly emulated and innerWidth asserted.
 - Built static preview smoke passed at both widths. Dev console clean; temporary static server only reports favicon 404, no application runtime error. Eight external captures saved. Preview index/assets replaced; prior evidence preserved.
 - Not run: production app build/integration/coverage, Storybook tests, cross-browser matrix, exhaustive accessibility audit or Stage 2. No production specification marked implemented.
+
+## Publication and outcome
+
+Implementation commit: 7573e91, normally pushed to prototype/e01-clickable. No PR opened and no merge into main. Final preview index SHA-256: 829b1fb9acec49781af49eabc45d101c4c4a1d6c4cc7d73d8d66bd80ed385bb4, matches Mac mini disk and explicit index.html HTTP response (200). Folder URLs return a listing, so the review link uses index.html#s01. Mac mini confirms iCloud uploaded 66/66 preview/evidence/assets and CloudDocs caught-up; MacBook download/opening unverified.
+
+Stage 1h is complete. Stage 2 remains unstarted; next is owner review of the three sign-in states. No independent implementation task was dispatched because this work is one coupled sign-in change. The separate production authentication decision remains outside this prototype's scope.
