@@ -29,7 +29,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 - Q2: fleet availability follows the approved specification (paginated table); the timeline view goes to "What is missing". Timeline tokens are therefore not written.
 - Q2a: the place of the actions next to a truck stays open on "What is missing".
 - Q3: a separate error token, always with an icon and words. Value `#da1e28` (IBM Carbon error red) is a proposal: 5,00 : 1 on panel, 4,77 : 1 on page.
-- Q4: only `DecimalField`, `ZonedDateTimeField`, `PlacePicker`, `ValueWithSource` and small badges go to `packages/ui`; screens are stories composed from real components.
+- Q4: only `DecimalField`, `ZonedDateTimeField`, `PlacePicker`, `ValueWithSource` and small badges go to `packages/ui`; screens are stories composed from real components (screen part superseded by D1 on 2026-10-29: screens live in the clickable prototype).
 - Q5a lucide icons (superseded on 2026-10-29, see below); Q5b motion 0 ms and 110 ms, nothing under reduced motion; Q5c no toast, avatar, tabs, switch or checkbox; Q5d character words and Q5e P1–P9 shown as proposals.
 
 2026-10-29, owner changes after stage 1:
@@ -441,6 +441,14 @@ Proposals of stage 3 batch 5 (for the owner):
 7. Folders: `layout/` for the frame and the step bar, `trips/` for route stops, because each has several consuming screens (the stage 3 rule creates a domain folder at the second consumer).
 
 Owner answers (2026-10-29): 1–6 approved. 7 changed: `layout/` stays, but `RouteStops` moves to `places/`, following the stage 3 decision (folders by the foundation primitive they serve; a domain folder only when a component gets a second consumer). No `trips/` folder.
+
+## Stage 3, E01 screens, group 1 (2026-10-29)
+
+Owner decision L09 (2026-10-29), recorded under L09 in the decisions record: (1) when the map provider finds no address or is unavailable, the dispatcher chooses a saved place or a town only from the company's list of towns; the quote is still calculated, and the point and the distance are marked "Tylko miasto" and as an estimate; without a route the kilometres per country are entered by hand (ROUTE-1, BND-4). (2) A new place is added only from a map result, in one action (`places.write`); without the map no place is added, with no manual address form and no manual coordinates.
+
+`PlacePicker` changes for L09: when nothing is found it lists the options the page passes (saved places and the company's towns), as it already did when the provider is unavailable; "Dodaj miejsce" appears only while a map address (`address`) is chosen and passes that result to `onAddPlace(option)`, instead of an always-visible "Dodaj miejsce…" that opened an undefined flow.
+
+Owner decision D1 (2026-10-29, supersedes the screen part of Q4 "screens are stories composed from real components"): screens live in the clickable prototype (`prototype/e01-clickable`), not as Storybook stories. Storybook holds the components and one E01 epic page that maps the journey, links to the prototype's screen states and lists the shared components used. Screen stories for s09–s11 were built on this branch and removed again before merge; the prototype is rebuilt on the current components (`AppFrame`, `StepBar`, `RouteStops`, `PlacePicker` after L09) in a separate pull request.
 
 ## Next step
 

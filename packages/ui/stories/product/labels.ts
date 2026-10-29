@@ -26,10 +26,10 @@ export const placePickerLabels: PlacePickerLabels = {
   noCountry: "kraj niepotwierdzony",
   typedAs: "wpisano",
   searching: "Szukam…",
-  notFound: "Nie znaleziono miejsca. Sprawdź pisownię albo wpisz samo miasto.",
-  unavailable: "Wyszukiwanie adresów jest teraz niedostępne. Wybierz zapisane miejsce albo spróbuj za chwilę.",
+  notFound: "Nie znaleziono adresu. Sprawdź pisownię albo wybierz zapisane miejsce lub samo miasto.",
+  unavailable: "Wyszukiwanie adresów jest teraz niedostępne. Wybierz zapisane miejsce albo samo miasto.",
   results: count => `Wyniki: ${count}`,
-  addPlace: "Dodaj miejsce…",
+  addPlace: "Dodaj miejsce",
 };
 
 /** Polish words the application passes to ZonedDateTimeField. */

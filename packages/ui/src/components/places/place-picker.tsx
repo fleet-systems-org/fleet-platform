@@ -41,13 +41,13 @@ export type PlacePickerLabels = {
   /** Prefix of another spelling, for example "wpisano". */
   typedAs: string
   searching: string
-  /** Shown when the last search found nothing, for example "Nie znaleziono miejsca. Sprawdź pisownię albo wpisz miasto." */
+  /** Shown when the last search found nothing, for example "Nie znaleziono adresu. Sprawdź pisownię albo wybierz zapisane miejsce lub samo miasto." */
   notFound: string
   /** Shown when the map provider fails, for example "Wyszukiwanie adresów jest niedostępne. Wybierz zapisane miejsce." */
   unavailable: string
   /** Count of results for screen readers, for example `n => \`Wyniki: ${n}\``. */
   results: (count: number) => string
-  /** Action that opens adding a place, for example "Dodaj miejsce…". */
+  /** Saves a chosen map address as a place in one action, for example "Dodaj miejsce" (L09). */
   addPlace: string
 }
 
@@ -66,7 +66,8 @@ function PlacePicker({
   className,
   ...props
 }: {
-  /** Saved places while `idle`; the results of the last search otherwise. */
+  /** Saved places while `idle`; the results of the last search otherwise. When the map provider finds nothing or is
+   * unavailable, the page passes saved places and the company's towns, so a town-only choice stays possible (L09). */
   options: PlaceOption[]
   status: PlaceSearchStatus
   labels: PlacePickerLabels
@@ -75,8 +76,9 @@ function PlacePicker({
   onQueryChange?: (query: string) => void
   /** Called with the chosen result; typing again clears the choice (null). */
   onSelect?: (option: PlaceOption | null) => void
-  /** Offers adding a place under the box (the page shows it only with `places.write`). */
-  onAddPlace?: () => void
+  /** Saves the chosen map address as a place (L09): offered under the box only while an `address` result is chosen.
+   * The page passes it only with `places.write`; without the map there is nothing to save, so no place is added. */
+  onAddPlace?: (option: PlaceOption) => void
   disabled?: boolean
   className?: string
   id?: string
@@ -95,7 +97,7 @@ function PlacePicker({
   const [chosen, setChosen] = React.useState(defaultValue)
   const [open, setOpen] = React.useState(false)
   const [active, setActive] = React.useState(-1)
-  const listed = status === "searching" || status === "notFound" ? [] : options
+  const listed = status === "searching" ? [] : options
   const message = status === "searching" ? labels.searching : status === "notFound" ? labels.notFound
     : status === "unavailable" ? labels.unavailable : status === "results" ? labels.results(options.length) : ""
   const expanded = open && (listed.length > 0 || status !== "idle")
@@ -186,8 +188,8 @@ function PlacePicker({
         </div>
       </div>
       {chosen ? <p id={chosenId} data-slot="place-picker-chosen" className="text-meta">{describe(chosen, labels)}</p> : null}
-      {onAddPlace ? (
-        <Button variant="text" size="compact" data-slot="place-picker-add" className="w-fit px-0" disabled={disabled} onClick={onAddPlace}>
+      {onAddPlace && chosen?.kind === "address" ? (
+        <Button variant="text" size="compact" data-slot="place-picker-add" className="w-fit px-0" disabled={disabled} onClick={() => onAddPlace(chosen)}>
           {labels.addPlace}
         </Button>
       ) : null}
