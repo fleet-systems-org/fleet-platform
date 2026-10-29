@@ -251,7 +251,7 @@ Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not sta
 
 - N7d: a 220 px left navigation panel on s05–s19, with demo company, quotation/trip entries, `aria-current="page"`, the existing active background, later-phase fleet entry, account and sign-out. Fleet is disabled in Phase 1 and linked in the later preview (p19). No navigation icons. At narrow widths, a Menu button opens the same entries in the shared Dialog with a text close action and focus return. s01–s04 have no product navigation; the review toolbar and engine remain unchanged.
 - N7c: centred content up to 1120 px on entry/place/route/quote/details/acceptance screens. Desktop uses a main column and 360 px right panel; narrow layouts stack. s09/s11 show the route on the right; s12 keeps the quote summary on the right and route above the cost table. s10/s13/s16 use the same frame with route context.
-- N7a, R18.1/R18.2: three entry cards with exactly one open step, completed answer/neutral Gotowe badge/Zmień action, muted waiting steps and the specified next actions. Collapsed controls stay mounted and hidden, preserving customer queries, dates, freight and wash while editing an earlier step. The four-part progress bar is informational: completed checks and following lines use the action token, the current numbered circle has a pale outline, future circles are outlined/muted; labels use the 12 px role. Route/quote/details/acceptance currently show step 4 pending the confirmation below.
+- N7a, R18.1/R18.2: three entry cards with exactly one open step, completed answer/neutral Gotowe badge/Zmień action, muted waiting steps and the specified next actions. Collapsed controls stay mounted and hidden, preserving customer queries, dates, freight and wash while editing an earlier step. The four-part progress bar is informational: completed checks and following lines use the action token, the current numbered circle has a pale outline, future circles are outlined/muted; labels use the 12 px role. Route/quote/details/acceptance show step 4, confirmed by the owner on 2026-10-29 ("yes").
 - Loading/unloading occupy separate columns, stacking at 320 px. Optional customers retain first-character/name/city keyboard search, single-place fill and multiple-place buttons. Independent place search and More places → s10 remain available. The customer-directory scope note appears once below both columns.
 - Z1 c / TIME-1: reused the delivered ZonedDateTimeField, with text DD.MM.RRRR and GG:MM inputs and a Warsaw-time label, inside Field for accessible naming/errors. Invalid or empty dates/times block progression and explain the required format. The fixed example still uses 12.11.2026, 12:00/13:00; loading time is visibly fictional. DecimalField, EUR, mandatory wash with no default and optional order reference retain their behaviour.
 - N7b, R19.1: start/loading/unloading stop blocks replace the obsolete route schematic and its styles. Each shows a left label, 16 px time, date (Warsaw), place/country and label–value details; unselected customers produce no customer row. Whole kilometres (D65), empty approach/loaded wording, fictional loading-time warning, next free place and map-simulation caveat remain visible. s11 country tables and N6a/R17.1 quote table/summary are preserved.
@@ -273,9 +273,40 @@ Not run: production application build, production integration/coverage or Storyb
 
 ### Questions for owner review
 
-1. Confirm step 4 “Wycena” as current on s11, s13 and s16 (also used on s12), or specify a different current step for those screens.
+1. **Resolved 2026-10-29:** the owner answered "yes"; step 4 “Wycena” is current on s11, s12, s13 and s16.
 2. Navigation currently has no icons, as requested. Should it remain text-only in the final product?
 
-Next: review Stage 1d and answer these two presentation questions before authorizing Stage 2. The separate customer-directory specification questions from Stage 1c remain open.
+Next: review Stage 1d; only the navigation-icon question remains open before authorizing Stage 2. The separate customer-directory specification questions from Stage 1c remain open.
 
 Publication: implementation `721d2d3`; baseline merges `2bd966c` and `82d9245`. Normal push verified. Preview server HTTP 200 and index SHA-256 match verified; preview index cloud upload confirmed, second-device download unverified. Full browser and publication results are recorded in the Stage 1d run log.
+
+## Stage 1e. Owner review fixes
+
+Status: **verified; baseline synchronization and publication pending** (2026-10-29). Stage 2 remains not started.
+
+### Defect and cause
+
+Direct screen-picker entry to s13, and entry after a simulation reset, showed empty vehicle/place placeholders beside the K2 fixture. All route panels read the live entry state; only s12 had the quotation summary. The value-details screen also mixed evidence with working notes in paragraphs.
+
+### Changes
+
+- N7b/R19.1: distinct live entry route for s09/s10 and viewed K2 snapshot for s11/s12/s13/s16. The snapshot always contains Auto 01, A/PL at 11:00, B/DE at 12:00, C/CZ at 13:00, 20 km approach and 80 km loaded. Customer selections are captured when the supported entry advances; editing a later entry cannot alter the viewed quote. Direct screen selection and reset open the fixed K2 example, including its 60.00 EUR freight and 21.82 EUR result.
+- N7c/N6a: one shared summary-first frame for all four quotation screens. At desktop widths the same 360 px panel contains result, estimate, availability, freight, covered cost and state-dependent actions; at 320 px it precedes the route and screen content. Accept is primary only in the summary; on s16 it opens the existing confirmation. Accepted actions retain new quotation/trip navigation. The route precedes main content.
+- EV-4/D65/FIN-3: s13 is the accessible exact-value view, with values, certainty, source, date and estimate reason exposed in table cells rather than hidden in paragraphs/popovers. Kilometres/litres retain three decimals, rates/consumption six, EUR amounts two. Separate empty/loaded consumption rows and vehicle/labour daily-rate formulas preserve the synthetic example. Narrow rows retain all six labelled fields without horizontal scrolling.
+- R17.1: vehicle costs expand into the same nine category rows used on s12 (amount, percentage of whole trip cost and action-colour share bar). The existing exact-cent allocation is unchanged.
+- Working notes about the synthetic vehicle split and missing live sources moved to the review engine's `.notes`; product content has the single sentence “Dane z przykładu specyfikacji; fikcyjne.”
+- R18.1: completed entry steps stay on one line, with Gotowe, an ellipsized answer (full text retained in title and accessible text) and right-aligned Zmień. More places sits directly below and left-aligned with its place field. Warsaw time remains at the date/time fields, with no repeated footer. R19.1 route labels use the same fixed 96 px column everywhere.
+- R18.2: step 4 on s11/s12/s13/s16 is confirmed by the owner's 2026-10-29 “yes”; the Stage 1d question is closed. The local 500-weight override is retained.
+
+### Validation
+
+- Package typecheck/build, repository typecheck/lint and 190 unit tests passed. Explicit prototype ESLint passed; token scan and design detector returned 0 findings. Exact cost-share assertions passed; review engine SHA-256 remains byte-identical to the starting commit.
+- Isolated browser at actual 1440/320 CSS pixels passed direct screen-picker entry, repeated reset, all four identical summaries, summary-first narrow layout, 96 px route labels, all eleven evidence rows, nine expanded vehicle categories, s09 step 2/collapsed step 1/More places alignment, full entry-to-acceptance path and K2 customer snapshots after editing the entry.
+- Every checked screen was scrolled to the end: no horizontal overflow and Back static below the frame. Runtime errors: 0. Twenty final screenshots remain outside Git. Preview index/assets replaced; prior evidence preserved.
+- Not run: production application build, production integration/coverage, Storybook story tests, Stage 2 scenario matrix, exhaustive accessibility and cross-browser audits. Production source is unchanged by this stage.
+
+The repeatable `scripts/check-quote-route.js` browser-evaluator expression checks direct screen-picker entry and repeated reset against the actual rendered K2 route and summary.
+
+### Simulation limits
+
+All data, country allocation, source dates and vehicle categories are fictional. No live lookup, persisted quote, customer directory or financial-policy change is introduced. The exact table exposes the fixture's evidence inline; this is not implementation of the production evidence API. Production E01 specifications remain approved and unimplemented. Stage 2 and the navigation-icon/customer-directory questions remain open.
