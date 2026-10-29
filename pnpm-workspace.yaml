@@ -1,5 +1,6 @@
 packages:
   - packages/*
+  - prototypes/*
 
 allowBuilds:
   # Not needed: the agent-browser wrapper marks its bundled binary executable; ssh2/cpu-features

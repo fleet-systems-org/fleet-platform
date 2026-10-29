@@ -1,0 +1,28 @@
+@import "@fleet-platform/ui/styles.css";
+@source "./";
+/* DS GAP G12: page frame, header and review navigation using existing tokens. */
+.doc-toolbar { position: relative; border-bottom: 1px solid var(--border-divider); background: var(--surface-panel); padding: var(--space-panel); display: flex; flex-direction: column; gap: var(--space-group); }
+.doc { padding: var(--space-section); }
+.stack { display: flex; flex-direction: column; gap: var(--space-between); }
+.actions, .proto-toolbar, .segmented { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-group); }
+.product-header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-between); padding: var(--space-panel); border-bottom: 1px solid var(--border-divider); background: var(--surface-panel); }
+.screen-content { padding: var(--space-section); }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--measure-text)), 1fr)); gap: var(--space-between); }
+.screen-picker { display: flex; flex-direction: column; max-height: 65vh; overflow-y: auto; gap: var(--space-tight); }
+.screen-nav a { color: var(--action-primary); text-decoration: underline; padding: var(--space-tight); }
+.screen-meta, .notes { padding: var(--space-panel); }
+.screen { margin-bottom: var(--space-section); }
+/* DS GAP G13: result bar and chronological sequence without a new design-system component. */
+.result-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: var(--space-section); }
+.figure { display: flex; flex-direction: column; align-items: start; gap: var(--space-tight); }
+.cost-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-group); border-bottom: 1px solid var(--border-divider); padding-block: var(--space-group); }
+.cost-row dd { text-align: right; }
+.cost-row .figure { flex-direction: row; flex-wrap: wrap; justify-content: end; align-items: center; gap: var(--space-panel); }
+.sequence { border-bottom: 1px solid var(--border-divider); padding-bottom: var(--space-panel); display: flex; flex-direction: column; align-items: start; gap: var(--space-group); }
+/* Review engine controls use the same existing tokens; engine mechanics remain unchanged. */
+.doc-toolbar button, .anno-panel button, .proto-back { cursor: pointer; font-family: var(--font-family-base); font-size: var(--type-14); line-height: var(--type-14-leading); min-height: var(--control-height); padding: var(--space-tight) var(--space-panel); border: 1px solid var(--border-input); border-radius: var(--radius-4); background: var(--surface-panel); color: var(--text-default); }
+.doc-toolbar button[aria-pressed="true"], .doc-toolbar .btn-primary, .anno-panel .btn-primary { background: var(--action-primary); color: var(--text-on-action); }
+
+#s01 .screen-content { max-width: var(--measure-text); margin-inline: auto; }
+
+.screen-picker[hidden] { display: none; }
