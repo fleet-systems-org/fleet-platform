@@ -5,3 +5,9 @@
 - Resolution: explicitly include only packages/*/src/**/*.test.{ts,tsx} in the test configuration.
 - Prevention: configure the test search boundary before the first run; Git ignore rules do not define a test runner's search scope.
 - Verification: rerun collected only the product configuration suite; all 5 tests passed.
+
+## Generated prototype bundles and lint discovery (2026-10-29)
+
+- Finding: ESLint's flat configuration does not automatically inherit Git ignore entries. Building a standalone prototype into Storybook's public directory made `pnpm lint` scan bundled third-party JavaScript and fail, even though the bundle was git-ignored.
+- Resolution: ignore only the generated `**/.storybook/public/prototypes/**` directory in ESLint. Keep source checks enabled; explicitly lint the new prototype source as well.
+- Verification: build the prototype and Storybook, then run repository lint and explicit prototype-source lint. Both passed. This extends the existing discovery finding, not a new standing rule.
