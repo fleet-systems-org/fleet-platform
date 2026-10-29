@@ -30,7 +30,18 @@ Label, hint and error from `Field`; the text box (right-aligned, tabular figures
 
 ## 5. Variants
 
-One. The unit is optional; with a currency chosen in a Select next to it, the unit follows the choice (E01 `MoneyInput`).
+One look; the `kind` of value sets the allowed decimal places (FIN-3, owner decision 2026-10-29):
+
+| `kind` | Decimal places | Example |
+|---|---|---|
+| `eurAmount` | 2 | Freight or wash amount in EUR |
+| `amount` | any, as in the source document | Amount in another source currency (FIN-4) |
+| `unitPrice`, `fxRate`, `consumption` | 6 | Fuel price per litre, EUR rate, consumption |
+| `kilometres`, `litres` | 3 | Manual country split, litres |
+
+The unit is optional; with a currency chosen in a Select next to it, the unit and the kind follow the choice (E01 `MoneyInput`).
+
+<Canvas of={Stories.Kinds} />
 
 <Canvas of={Stories.WithCurrency} />
 
@@ -41,7 +52,7 @@ One. The unit is optional; with a currency chosen in a Select next to it, the un
 | State | Look | Source |
 |---|---|---|
 | Empty | Empty box; a required field says what to enter when the dispatcher leaves it | audit finding 10 |
-| Filled | Typed text kept as typed, never reformatted | proposal 4 |
+| Filled | Typed text kept as typed, never reformatted | owner decision 2026-10-29 |
 | Error | `border-error`, error text with icon from `Field` | Q3 |
 | Disabled | Page background, muted text; the hint says when it becomes available | audit finding 14 |
 | Loading | Not applicable: the field is local input; a saving form disables it | |
@@ -49,15 +60,15 @@ One. The unit is optional; with a currency chosen in a Select next to it, the un
 ## 7. Behaviour and accessibility
 
 - A text input with `inputMode="decimal"`, so phones show a keypad with a comma; no spinner, no wheel changes, no `type="number"` (which would parse to a number).
-- `parseDecimalInput(text, { scale, signed })` accepts the comma and spaces between digit groups and returns a decimal string or a reason: `empty`, `format` (also "1.850,00" with both separators and leading zeros), `negative` (unless `signed`), `scale`. It never rounds or truncates (FIN-2, FIN-4); negative zero becomes zero (FIN-1).
-- The application validates when the dispatcher leaves the field and on submit, and maps each reason to a message (proposal 5).
+- When the dispatcher leaves the field it calls `onDecimalChange` with `parseDecimalInput(text, { kind, signed })`, which accepts the comma and spaces between digit groups and returns a decimal string or a reason: `empty`, `format` (also "1.850,00" with both separators and leading zeros), `negative` (unless `signed`), `scale`. It never rounds or truncates (FIN-2, FIN-4); negative zero becomes zero (FIN-1).
+- The application shows the reason as a message when the dispatcher leaves the field and checks again on submit; nothing is checked while typing (owner decision 2026-10-29).
 - Named by the `Field` label; hint, error and unit are in `aria-describedby`; `aria-invalid` and `required` come from `Field`.
 
 ## 8. Content
 
 - The hint gives the form of the value: "Kwota netto uzgodniona z klientem, np. 1850,00".
 - Every message says what to do: "Nie rozpoznano kwoty. Wpisz ją cyframi, np. 1850,00."
-- A value with too many decimals is not rounded for the dispatcher: "Kwota może mieć najwyżej 2 miejsca po przecinku. Popraw ją; wpisana wartość nie jest zaokrąglana." (the 2-decimal limit is proposal 3).
+- A value with too many decimals is not rounded for the dispatcher: "Kwota w EUR może mieć najwyżej 2 miejsca po przecinku. Popraw ją; wpisana wartość nie jest zaokrąglana."
 
 ## 9. Responsive
 
@@ -67,7 +78,7 @@ The box takes its column; the unit stays next to it at 320 px.
 
 ## 10. API
 
-`DecimalField`: `unit` and the input's own props (`value`, `onChange`, `onBlur`, `disabled`, `name`); `type` and `inputMode` are fixed. `parseDecimalInput(text, { scale?, signed? })` → `{ ok: true, value }` or `{ ok: false, reason }`.
+`DecimalField`: `kind` (required), `signed`, `unit`, `onDecimalChange(result)` and the input's own props (`value`, `onChange`, `onBlur`, `disabled`, `name`); `type` and `inputMode` are fixed. `parseDecimalInput(text, { kind, signed? })` → `{ ok: true, value }` or `{ ok: false, reason }`; `decimalScales` lists the kinds.
 
 <ArgTypes of={Stories} />
 
@@ -78,8 +89,8 @@ const [text, setText] = useState("");
 const [result, setResult] = useState<DecimalInputResult | null>(null);
 
 <Field label="Fracht" hint="Kwota netto uzgodniona z klientem, np. 1850,00" error={result && !result.ok ? t(`decimal.${result.reason}`) : undefined} required>
-  <DecimalField unit={currency} value={text} onChange={event => setText(event.target.value)}
-    onBlur={() => setResult(parseDecimalInput(text, { scale: 2 }))} />
+  <DecimalField kind={currency === "EUR" ? "eurAmount" : "amount"} unit={currency} value={text}
+    onChange={event => setText(event.target.value)} onDecimalChange={setResult} />
 </Field>
 // send { amount: result.value, currency } only when result.ok
 ```

@@ -11,7 +11,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 | 0. Inventory and plan | done 2026-10-29, approved |
 | 1. Foundations | done 2026-10-29, approved (#38) |
 | 2. Primitives | done 2026-10-29: batches 1–2 approved and merged (#38), batch 3 approved and merged (#39; the owner's refinements and the stable Select story follow in #42); CI for tokens and Storybook tests merged (#41) |
-| 3. Product components, patterns, screens | domain split approved 2026-10-29; batch 1 done 2026-10-29, waiting for owner decisions on its proposals |
+| 3. Product components, patterns, screens | domain split approved 2026-10-29; batch 1 merged (#43), owner decisions on its proposals applied in a follow-up pull request |
 | 4. Teaching pages | not started |
 | 5. Checks and report | not started |
 
@@ -260,7 +260,7 @@ Checks: typecheck, lint, 153 unit tests at 100% coverage (statements 423/423, br
 
 Defect found by the 320 px screenshot and fixed: an estimated value with its badge overlapped the row label; the value button now lets the badge wrap under the value, and the text spacing story checks rows for overlap, which the clipping check did not catch.
 
-Proposals of stage 3 batch 1 (waiting for the owner):
+Proposals of stage 3 batch 1 (owner answers 2026-10-29: 1, 2, 4, 5, 6, 7 approved; 3 and 8 decided as below):
 
 1. Digit groups always separated, also in four-digit numbers ("1 850,00"), as in the existing examples; the Polish locale default would print "1850,00".
 2. Input accepts spaces between digit groups; text with both a comma and a dot ("1.850,00") and leading zeros are rejected as unrecognized.
@@ -270,6 +270,11 @@ Proposals of stage 3 batch 1 (waiting for the owner):
 6. The value opening details is in the default text colour with a dotted underline (solid on hover), not in the action green.
 7. Missing value as "— brak: …" (R11.2, P3) and conflict as "Sprzeczne dane" with every candidate in the details; which sources can conflict is not yet specified, so the story uses "Źródło A" and "Źródło B".
 8. Are routed kilometres from the map provider certain or estimated? The specification does not say; the story shows them as certain only to show whole kilometres on screen.
+
+Owner decisions on 3 and 8 (2026-10-29), applied on the branch `design-system-product-1-decisions`:
+
+- To 3: 2 decimal places only for EUR amounts. `DecimalField` takes its scale from the kind of value (`kind`, FIN-3): `eurAmount` 2; `unitPrice`, `fxRate`, `consumption` 6; `kilometres`, `litres` 3; `amount` in another source currency keeps its scale. The field checks the typed text when the dispatcher leaves it and reports the result through `onDecimalChange`.
+- To 8: kilometres from the map provider's route are estimated (`certainty: estimated`); recorded under ROUTE-1 in the decisions record.
 
 ## Plan
 
@@ -288,4 +293,4 @@ Proposals of stage 3 batch 1 (waiting for the owner):
 
 ## Next step
 
-Owner decides proposals 1–8 of stage 3 batch 1 and merges #42, then the batch 1 pull request. Next batches: `ZonedDateTimeField`, `PlacePicker`, small badges (EV-1, in `values/` after the owner confirms), then screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
+Owner reviews the follow-up pull request with the batch 1 decisions. Next batches: `ZonedDateTimeField`, `PlacePicker`, small badges (EV-1, in `values/` after the owner confirms), then screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".

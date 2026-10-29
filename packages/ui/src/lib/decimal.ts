@@ -4,15 +4,33 @@ export type DecimalInputResult =
   | { ok: true; value: string }
   | { ok: false; reason: "empty" | "format" | "negative" | "scale" }
 
+/**
+ * Decimal places a typed value may have, by kind (FIN-3; owner decision 2026-10-29): EUR amounts 2; unit prices,
+ * FX rates and consumption 6; kilometres and litres 3. Amounts in another source currency keep any scale (FIN-4
+ * source inputs), so they have no limit here.
+ */
+export const decimalScales = {
+  eurAmount: 2,
+  amount: undefined,
+  unitPrice: 6,
+  fxRate: 6,
+  consumption: 6,
+  kilometres: 3,
+  litres: 3,
+} as const satisfies Record<string, number | undefined>
+
+export type DecimalKind = keyof typeof decimalScales
+
 /** The lexical form of `decimalStringSchema` in the core package: optional minus, no leading zeros, dot separator. */
 const decimalString = /^-?(?:0|[1-9]\d*)(?:\.\d+)?$/
 
 /**
  * Turns what the dispatcher typed into a decimal string. Accepts the Polish comma and spaces between digit groups;
- * rejects text with both a comma and a dot. Never rounds or truncates: a value with more decimals than `scale`
- * is rejected (FIN-2, FIN-4). Negative zero becomes zero, and a known zero stays known (FIN-1).
+ * rejects text with both a comma and a dot. Never rounds or truncates: a value with more decimals than its kind
+ * allows is rejected (FIN-2, FIN-4). Negative zero becomes zero, and a known zero stays known (FIN-1).
  */
-export function parseDecimalInput(text: string, { scale, signed = false }: { scale?: number; signed?: boolean } = {}): DecimalInputResult {
+export function parseDecimalInput(text: string, { kind, signed = false }: { kind: DecimalKind; signed?: boolean }): DecimalInputResult {
+  const scale: number | undefined = decimalScales[kind]
   const compact = text.replace(/[\s  ]/g, "")
   if (compact === "") return { ok: false, reason: "empty" }
   if (compact.includes(",") && compact.includes(".")) return { ok: false, reason: "format" }
