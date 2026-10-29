@@ -1,6 +1,8 @@
 // Documentation-only blocks for the Foundations pages. They render the real CSS variables from src/styles.css
 // and are not exported from the package.
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@fleet-platform/ui/components/card";
+import { applyTextSpacing, findTextSpacingFailures, type TextSpacingFailure } from "../text-spacing";
 
 type ColorRole = { token: string; utility: string; use: string; avoid: string; source: string };
 
@@ -78,7 +80,7 @@ export function ColorRoles() {
   const [probe, values] = useResolved(element => colorRoles.map(role => toHex(resolveColor(element, role.token))));
   return <>
     <span ref={probe} hidden />
-    <table className="w-full border-collapse text-body">
+    <table className="w-full border-collapse text-table">
       <thead><tr>{["Swatch", "Token", "Utility", "Value", "Use for", "Never for", "Source"].map(h => <th key={h} scope="col" className={`${cell} text-body-strong`}>{h}</th>)}</tr></thead>
       <tbody>{colorRoles.map((role, index) => <tr key={role.token}>
         <td className={cell}><span aria-hidden className="block size-8 rounded-control border border-input" style={{ background: `var(--${role.token})` }} /></td>
@@ -101,7 +103,7 @@ export function ContrastTable() {
   }));
   return <>
     <span ref={probe} hidden />
-    <table className="w-full border-collapse text-body">
+    <table className="w-full border-collapse text-table">
       <caption className="text-left text-meta">Measured in this document from the resolved CSS variables (WCAG 2.x relative luminance).</caption>
       <thead><tr>{["Sample", "Foreground", "Background", "Ratio", "Threshold", "Result", "Note"].map(h => <th key={h} scope="col" className={`${cell} text-body-strong`}>{h}</th>)}</tr></thead>
       <tbody>{contrastPairs.map((pair, index) => {
@@ -125,7 +127,8 @@ export function ContrastTable() {
 const typeRoles = [
   { role: "page-title", className: "text-page-title", spec: "20/28, 600", use: "One per screen: the screen name", source: "R14.1, N2a", sample: "Wycena kursu" },
   { role: "section-title", className: "text-section-title", spec: "16/24, 600", use: "Panel and section headings", source: "R14.1", sample: "Trasa i kilometry" },
-  { role: "body", className: "text-body", spec: "14/20, 400", use: "Running text, values in rows", source: "R14.1, Q3-1", sample: "Kurs zaczyna się w miejscu poprzedniego rozładunku." },
+  { role: "body", className: "text-body", spec: "14/21, 400", use: "Running text and messages; line height 1.5 x size", source: "R14.1, owner decision 2026-10-29, WCAG 1.4.8", sample: "Kurs zaczyna się w miejscu poprzedniego rozładunku i niesie cały pusty dojazd." },
+  { role: "table", className: "text-table", spec: "14/20, 400", use: "Table rows and single-line values", source: "Q3-1, T3, owner decision 2026-10-29", sample: "Zestaw 03 · Poznań · 30.10.2026 14:00" },
   { role: "body-strong", className: "text-body-strong", spec: "14/20, 600", use: "Table headers; the one emphasised value", source: "P7 (proposal), Q3-1", sample: "Wynik kursu" },
   { role: "label", className: "text-label", spec: "12/16, 400, text-muted", use: "Field label, label above a value", source: "R07.1, R14.1", sample: "Dojazd" },
   { role: "meta", className: "text-meta", spec: "12/16, 400, text-muted", use: "Source, date, secondary details", source: "R11.1, P2", sample: "wpisane, 29.10.2026 08:40" },
@@ -134,7 +137,7 @@ const typeRoles = [
 ];
 
 export function TypeRoles() {
-  return <table className="w-full border-collapse text-body">
+  return <table className="w-full border-collapse text-table">
     <thead><tr>{["Role", "Class", "Sample", "Size, line, weight", "Use for", "Source"].map(h => <th key={h} scope="col" className={`${cell} text-body-strong`}>{h}</th>)}</tr></thead>
     <tbody>{typeRoles.map(role => <tr key={role.role}>
       <td className={cell}>{role.role}</td>
@@ -156,7 +159,7 @@ const spacingLevels = [
 ];
 
 export function SpacingLevels() {
-  return <table className="w-full border-collapse text-body">
+  return <table className="w-full border-collapse text-table">
     <thead><tr>{["Relation", "Token", "Utility", "Raw value", "Size"].map(h => <th key={h} scope="col" className={`${cell} text-body-strong`}>{h}</th>)}</tr></thead>
     <tbody>{spacingLevels.map(level => <tr key={level.token}>
       <td className={cell}>{level.level}</td>
@@ -200,4 +203,50 @@ export function Frame({ width, children }: { width: number; children: ReactNode 
     <figcaption className="text-meta">{width} px</figcaption>
     <div className="overflow-hidden rounded-panel border border-divider bg-page p-panel" style={{ width }}>{children}</div>
   </figure>;
+}
+
+/** Sample region for the WCAG 1.4.12 check: real package components and the text roles, at 320 px. */
+export function TextSpacingSample() {
+  return <div className="flex w-80 flex-col gap-between rounded-panel border border-divider bg-page p-panel">
+    <p className="text-page-title">Wycena kursu</p>
+    <Card>
+      <CardHeader><CardTitle>Brakuje danych do wyceny</CardTitle></CardHeader>
+      <CardContent>
+        <p className="text-body">Nie można policzyć wyniku kursu, dopóki nie odpowiesz na pytanie o mycie. Wybierz „Bez mycia” albo „Nasze mycie” i podaj kwotę.</p>
+      </CardContent>
+    </Card>
+    <div className="flex flex-col gap-tight">
+      <span className="text-label">Dojazd</span>
+      <span className="text-number">120,000 km</span>
+      <span className="text-meta">wpisane, 29.10.2026 08:40</span>
+    </div>
+    <div className="flex h-row items-center justify-between border-b border-divider text-table">
+      <span>Zestaw 03</span><span className="text-number">14:00</span>
+    </div>
+  </div>;
+}
+
+export function TextSpacingCheck() {
+  const region = useRef<HTMLDivElement>(null);
+  const removeSpacing = useRef<(() => void) | null>(null);
+  const [failures, setFailures] = useState<TextSpacingFailure[]>();
+  const applied = failures !== undefined;
+  const toggle = () => {
+    if (!region.current) return;
+    if (removeSpacing.current) {
+      removeSpacing.current();
+      removeSpacing.current = null;
+      setFailures(undefined);
+      return;
+    }
+    removeSpacing.current = applyTextSpacing(region.current);
+    setFailures(findTextSpacingFailures(region.current));
+  };
+  return <div className="flex flex-col gap-group">
+    <button type="button" aria-pressed={applied} className="self-start rounded-control border border-input bg-panel px-panel py-tight text-body" onClick={toggle}>
+      {applied ? "Remove WCAG 1.4.12 spacing" : "Apply WCAG 1.4.12 spacing"}
+    </button>
+    <p role="status" className="text-body">{failures === undefined ? "Spacing off: normal text roles." : failures.length === 0 ? "Spacing on: no clipped or overflowing text." : `Spacing on: ${failures.length} problem(s): ${failures.map(f => `${f.element} ${f.problem}`).join("; ")}`}</p>
+    <div ref={region}><TextSpacingSample /></div>
+  </div>;
 }

@@ -31,7 +31,8 @@
   --type-12: 12px;
   --type-12-leading: 16px;
   --type-14: 14px;
-  --type-14-leading: 20px;
+  --type-14-leading: 20px; /* single-line rows and values */
+  --type-14-leading-text: 21px; /* running text: 1.5 x font size (owner decision 2026-10-29; WCAG 1.4.8) */
   --type-16: 16px;
   --type-16-leading: 24px;
   --type-20: 20px;
@@ -173,7 +174,10 @@
 @utility text-section-title { /* section or panel heading: R14.1 heading-02 */
   font-size: var(--type-16); line-height: var(--type-16-leading); font-weight: var(--weight-600);
 }
-@utility text-body { /* running text and values in rows: R14.1 body-01, Q3-1 */
+@utility text-body { /* running text and messages: 14/21, line height 1.5 x size (owner decision 2026-10-29) */
+  font-size: var(--type-14); line-height: var(--type-14-leading-text); font-weight: var(--weight-400);
+}
+@utility text-table { /* table rows and single-line values: 14/20 keeps the 36 px row (Q3-1, T3) */
   font-size: var(--type-14); line-height: var(--type-14-leading); font-weight: var(--weight-400);
 }
 @utility text-body-strong { /* table headers (P7, proposal) and the one emphasised value on a screen (Q3-1) */
