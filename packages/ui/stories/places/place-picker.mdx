@@ -22,11 +22,11 @@ Lets the dispatcher find a route endpoint by typing an address or a town and cho
 |---|---|---|
 | Showing a place | Text with the place's name and kind | Entry and display are separate |
 | A short fixed list (country, currency) | Select | Known values are chosen, not searched |
-| Editing a saved place's address | A place form (not yet in the system) | Adding and editing places is not yet described (L09) |
+| Typing an address or coordinates by hand | Nothing: choose a map result, a saved place or a town | A place is added only from a map result (L09) |
 
 ## 4. Anatomy
 
-Label, hint and error from `Field`; the search box; the list under it with each result's name, kind ("Zapisane miejsce", "Adres", "Tylko miasto"), address or region and country, a "Do potwierdzenia" badge for same-named towns and the typed spelling when it differs; a status line in the list; under the box, the chosen result's kind and address, and "Dodaj miejsce…" when the page allows it.
+Label, hint and error from `Field`; the search box; the list under it with each result's name, kind ("Zapisane miejsce", "Adres", "Tylko miasto"), address or region and country, a "Do potwierdzenia" badge for same-named towns and the typed spelling when it differs; a status line in the list; under the box, the chosen result's kind and address, and "Dodaj miejsce" while a map address is chosen and the page allows it (L09).
 
 ## 5. Variants
 
@@ -45,8 +45,9 @@ One look. The page decides the content: saved places while nothing is typed, the
 | Several results | All listed; the dispatcher chooses one | s10.3, BND-4 |
 | Same town in two regions | Both listed with region and "Do potwierdzenia" | s10.4, PLACE-2 |
 | Other spelling | The result with "wpisano: Miejsce-B"; choosing it saves no alias | s10.5, PLACE-2 |
-| Not found | A message saying what to try | s10.6 (next step open: L09) |
-| Map provider unavailable | A message; saved places can still be chosen | s10.7, ROUTE-1 |
+| Not found | A message saying what to try; saved places and the company's towns stay listed | s10.6, L09 |
+| Map provider unavailable | A message; saved places and the company's towns can still be chosen; nothing can be added | s10.7, ROUTE-1, L09 |
+| Map address chosen | "Dodaj miejsce" under the box saves it as a place in one action (`places.write`) | s10.8, L09 |
 | Chosen | The name in the box; kind, address and country under it | PLACE-3 |
 | Error | `border-error`, error text with icon from `Field` | Q3 |
 | Disabled | Page background, muted text; the hint says when it becomes available | audit finding 14 |
@@ -58,13 +59,13 @@ One look. The page decides the content: saved places while nothing is typed, the
 - WAI-ARIA combobox with a list: typing calls `onQueryChange`; the page searches (saved places, then the map provider) and passes `options` and `status`. Down and Up move through the results and wrap; Enter chooses; Escape closes the list; leaving the box closes it.
 - Choosing calls `onSelect(option)`; typing again clears the choice and calls `onSelect(null)`, so a stale endpoint is never kept.
 - The search status ("Szukam…", the number of results, not found, unavailable) is announced through a status region; the chosen result's kind and address are part of the box's description.
-- The box is named by the `Field` label; hint and error are in `aria-describedby`; `aria-invalid` and `required` come from `Field`. "Dodaj miejsce…" is a button under the box, reachable with Tab.
+- The box is named by the `Field` label; hint and error are in `aria-describedby`; `aria-invalid` and `required` come from `Field`. "Dodaj miejsce" is a button under the box, shown only while a map address is chosen, reachable with Tab.
 
 ## 8. Content
 
 - A town without an address says so: "Tylko miasto · Region Północ · PL".
 - A country nobody confirmed is not guessed: "kraj niepotwierdzony".
-- Messages say what to do: "Nie znaleziono miejsca. Sprawdź pisownię albo wpisz samo miasto.", "Wyszukiwanie adresów jest teraz niedostępne. Wybierz zapisane miejsce albo spróbuj za chwilę."
+- Messages say what to do: "Nie znaleziono adresu. Sprawdź pisownię albo wybierz zapisane miejsce lub samo miasto.", "Wyszukiwanie adresów jest teraz niedostępne. Wybierz zapisane miejsce albo samo miasto."
 
 ## 9. Responsive
 
@@ -88,7 +89,7 @@ const [options, setOptions] = useState<PlaceOption[]>(savedPlaces);
   <PlacePicker status={status} options={options} labels={placePickerLabels}
     onQueryChange={query => search(query)} // sets status and options from apiCall
     onSelect={option => setLoadingPlaceId(option?.id ?? null)}
-    onAddPlace={canWritePlaces ? openAddPlace : undefined} />
+    onAddPlace={canWritePlaces ? option => savePlace(option) : undefined} /> // one action, map addresses only (L09)
 </Field>
 ```
 
