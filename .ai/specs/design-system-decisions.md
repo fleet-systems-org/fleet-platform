@@ -29,6 +29,9 @@ Code families:
 - **R15.1** — A status is a word and a colour together, never colour alone, with amounts right-aligned in tabular figures; the reference's pills and large radii are not taken.
 - **R16.1** — An empty state is one sentence with the reason and at most one action, without illustration, so an empty list says what to do next.
 - **R17.1** — A spending breakdown with the total on top and every category as a row with its amount, a share bar and its percentage, taken for the trip cost breakdown so the dispatcher sees at once what makes up the cost; its share ring, emoji and one colour per category are not taken.
+- **R18.1** — A multi-step form where completed steps collapse to one line with their answer and an edit link, one step is open and later steps wait below, taken so the dispatcher sees what is done without scrolling past it.
+- **R18.2** — A step bar on one line: a completed step shows a check, the current step is filled, later steps are outlined and muted, and the line after a completed step takes the action colour, so progress reads without counting.
+- **R19.1** — A trip summary where each stop is a block with its label on the left, the time first, then date and place, then details as label–value pairs, taken because a trip is read as stops and times.
 
 ## Product rules (brief)
 
@@ -55,6 +58,10 @@ Code families:
 - **N4b** — Radius 4 px for controls and badges, 8 px for panels, no pills, because square-ish shapes suit a dense work tool and avoid G1.
 - **N5a** — Loss is a red badge with the word "Strata" and a minus sign, only on a trip result, because a loss must be visible at once but never judge a person (R01).
 - **N6a** — The quote screen shows the cost breakdown as a table (cost, source, amount, share of cost with a share bar in the action colour, total row at 100 %) beside one summary panel with the trip result, planned availability, freight, covered cost and the accept action, following R07.1 and R17.1. There are no result tiles, so G1 and P6 stay unchanged (owner decision 2026-10-29).
+- **N7a** — The quote entry form has the steps vehicle, places and times, freight and wash, and quote: one step is open, completed steps collapse to one line with "Zmień", loading and unloading sit side by side, and a step bar runs to the quote (R18.1, R18.2) (owner decision 2026-10-29).
+- **N7b** — The route is shown as stop blocks (start, loading, unloading), each with time, date (Warsaw), place with country and details: customer, kilometres, and whether a leg is the approach or loaded, said in words (R19.1). It replaces the A → B → C schematic on the entry, route and quote screens (owner decision 2026-10-29).
+- **N7c** — The entry, route and quote screens share one frame: centred content, a 360 px panel on the right and the same step bar, so moving between them changes the content, not the layout (owner decision 2026-10-29).
+- **N7d** — Navigation lives in a left side panel on every screen, never in the top bar; entries of later phases appear muted under "Później" until they exist (owner decision 2026-10-29).
 
 ## Proposals
 
