@@ -394,3 +394,16 @@ Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not sta
 - Not run: production build, coverage, integration, Storybook, cross-browser matrix or exhaustive accessibility audit. No production feature or specification changed. No PR or merge.
 
 Next: owner compares Stage 1j with the reference; Stage 2 still requires separate authorization. Publication/cloud verification is recorded in the run log.
+
+## Stage 1k. Vehicle tiles for a fleet of twelve (N7f)
+
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
+
+- s09 step 1 has twelve explicitly synthetic driver/tractor choices. Existing Auto 01/02/03 mappings are preserved; nine more choices use the same Stage 2 notice and existing non-K2 path. Only Auto 01 can satisfy the unchanged K2 calculation gate.
+- Compact tiles use 8/12 px padding, 8 px grid gaps, single-line 600-weight names with ellipsis, smaller tabular registrations and 12 px availability. All fixtures share the fixed quote day (12 November 2026), so redundant dates are omitted. Unknown availability remains muted. Four columns from 48rem, two below, no horizontal overflow at 320 px.
+- Chronological order uses the displayed availability time with tractor registration as tie-breaker; unknowns come last. Auto 01's existing accepted-K2 availability remains 13:00 in Miejsce C and participates in sorting. Group label and proposal disclaimer retained.
+- Passed: package typecheck/build, repository typecheck/lint/198 tests, explicit prototype ESLint; tokens 0 outside the unchanged eight approved N8a map colours; mechanical detector 0; unchanged prototype.js byte comparison; protected source diff 0; private-name scan 0; diff whitespace check.
+- Real VPS browser at 1440×900 and 320×900: twelve choices in expected order, four/two columns, no horizontal overflow, every tile selectable by pointer, native arrows/Space and visible keyboard focus; full happy path through s11 to s12 remains 21.82 EUR at both widths. Screenshots and built preview are external, not committed.
+- No production source, calculation, other step or specification changed. No PR opened and no merge. Production build/coverage/integration/Storybook and cross-browser checks were not run for this prototype-only refinement.
+
+Next: owner review of Stage 1k; Stage 2 requires separate authorization.

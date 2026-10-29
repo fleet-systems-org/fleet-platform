@@ -94,6 +94,12 @@ export function App() {
     (kind === "loading" ? setLoadingDate : setUnloadingDate)(value.ok ? value.date : "");
     (kind === "loading" ? setLoadingTime : setUnloadingTime)(value.ok ? value.time || "" : ""); invalidate();
   }} /></Field>;
+  const vehicleOptions = vehicles.map(([name, free, driver, tractor]) => [
+    name, name === "Auto 01" && hasAccepted ? "Wolne od 13:00 · Miejsce C" : free, driver, tractor,
+  ]).sort((a, b) => {
+    const time = (free: string) => free.match(/\d{2}:\d{2}/)?.[0] ?? "99:99";
+    return time(a[1]).localeCompare(time(b[1])) || a[3].localeCompare(b[3]);
+  });
   const entryRoute = <RouteStops vehicle={vehicle} loading={loading} unloading={unloading}
     loadingDate={loadingDate.split("-").reverse().join(".")} loadingTime={loadingTime} unloadingDate={unloadingDate.split("-").reverse().join(".")} unloadingTime={unloadingTime}/>;
   // The viewed K2 fixture is a snapshot, independent of a new or edited entry.
@@ -109,12 +115,12 @@ export function App() {
       <p className="text-meta">Etap 1: przykład K2 · Auto 01 · 12.11.2026 · 60,00 EUR · bez mycia. Obliczenia i trasa są symulowane.</p>
       {accepted ? <Alert title="Ten kurs został przyjęty" action={<Button onClick={reset}>Nowa wycena</Button>}>Przyjęta wycena jest zachowana w symulacji. Zacznij nową wycenę, aby wpisać kolejny kurs.</Alert> : <div className="entry-layout"><div className="stack">
       <EntryStep number={1} title="Auto" current={entryStep} completed={completedStep} onEdit={setEntryStep} summary={vehicles.find(([name]) => name === vehicle)?.slice(2).join(" · ") ?? ""}>
-        <fieldset className="vehicle-options"><legend className="text-meta">Kierowca i ciągnik</legend>
-          <div className="vehicle-grid">{vehicles.map(([name, free, driver, tractor]) => <label key={name} className="vehicle-tile">
+        <fieldset className="vehicle-options"><legend className="text-meta">Kierowca i ciągnik · 12 aut</legend>
+          <div className="vehicle-grid">{vehicleOptions.map(([name, free, driver, tractor]) => <label key={name} className="vehicle-tile">
             <input type="radio" name="entry-vehicle" value={name} checked={vehicle === name} onChange={() => { setVehicle(name); invalidate(); }} />
             <span className="vehicle-driver">{driver}</span>
             <span className="text-meta vehicle-tractor">{tractor}</span>
-            <span className="text-meta vehicle-availability">{name === "Auto 01" && hasAccepted ? "Wolne w Miejscu C od 12.11.2026, 13:00" : free}</span>
+            <span className={`vehicle-availability${free === "Nieznane" ? " text-meta" : ""}`}>{free}</span>
           </label>)}</div>
         </fieldset>
         <p className="text-meta">Kierowca i numer ciągnika — propozycja spoza specyfikacji; dane fikcyjne.</p>
