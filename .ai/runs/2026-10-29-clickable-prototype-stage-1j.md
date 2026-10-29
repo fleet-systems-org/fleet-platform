@@ -28,3 +28,5 @@ Checks completed as recorded below.
 ## Publication
 
 Preview HTTP 200 and SHA-256 9295d3a41f77b75aed3e7f6d586eb18127489c7201bca0c9ed9f45e65bf6f781 match on VPS and Mac mini. Comparison HTTP 200. Initial iCloud check: 1440/320/comparison uploaded; index and 1920 pending. CloudDocs reports caught-up but individual flags take precedence. MacBook opening/download unverified. Normal branch push follows this record.
+
+Final publication: implementation 293677e pushed normally and remote tip verified. Final iCloud check confirms index and all four requested screenshots uploaded (5/5). MacBook download/opening remains unverified. Temporary HTTP server stopped by its PID; working tree otherwise clean.
