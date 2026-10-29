@@ -15,7 +15,8 @@ const meta = {
   component: ValueWithSource as React.FC<KnownProps>,
   args: {
     state: "known", label: "Dystans kursu", labels: valueLabels, value: "1234.567", unit: "km", displayScale: 0,
-    certainty: "certain", source: { name: "Trasa od dostawcy map", date: "28.10.2026" },
+    // Owner decision 2026-10-29: kilometres from the map provider's route are estimated.
+    certainty: "estimated", source: { name: "Trasa od dostawcy map", date: "28.10.2026" }, reason: "Kilometry z planowanej trasy dostawcy map, nie z przejazdu.",
   },
   argTypes: {
     state: { control: false }, labels: { control: false }, source: { control: false },
@@ -59,7 +60,7 @@ export const States: Story = {
     </Row>
     <Row name="W wierszu tabeli (compact)">
       <ValueWithSource state="known" size="compact" label="Dystans kursu" labels={valueLabels} value="1234.567" unit="km" displayScale={0}
-        certainty="certain" source={{ name: "Trasa od dostawcy map", date: "28.10.2026" }} />
+        certainty="estimated" source={{ name: "Trasa od dostawcy map", date: "28.10.2026" }} reason="Kilometry z planowanej trasy dostawcy map, nie z przejazdu." />
     </Row>
   </div>,
 };
@@ -79,14 +80,14 @@ export const Open: Story = {
 export const Keyboard: Story = {
   name: "Test: whole kilometres, exact details, keyboard",
   play: async ({ canvasElement }) => {
-    const trigger = within(canvasElement).getByRole("button", { name: "1 235 km" });
+    const trigger = within(canvasElement).getByRole("button", { name: "1\u00a0235\u00a0km Szacunek" });
     trigger.focus();
     await userEvent.keyboard("{Enter}");
     const details = await screen.findByRole("dialog", { name: "Szczegóły: Dystans kursu" });
     // Exact published value in the details; the separators are no-break spaces.
     await waitFor(() => expect(details).toBeVisible());
     await expect(details).toHaveTextContent(/Dokładna wartość1\s234,567\skm/);
-    await expect(details).toHaveTextContent("PewnośćPewne");
+    await expect(details).toHaveTextContent("PewnośćSzacunek");
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     await expect(trigger).toHaveFocus();

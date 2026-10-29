@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDecimal, parseDecimalInput } from "./decimal";
+import { decimalScales, formatDecimal, parseDecimalInput } from "./decimal";
 
 describe("parseDecimalInput", () => {
   it.each([
@@ -11,7 +11,7 @@ describe("parseDecimalInput", () => {
     ["-0,00", "0.00"],
     ["  72  ", "72"],
   ])("normalizes %j to %j as text", (text, value) => {
-    expect(parseDecimalInput(text)).toEqual({ ok: true, value });
+    expect(parseDecimalInput(text, { kind: "amount" })).toEqual({ ok: true, value });
   });
 
   it.each([
@@ -25,17 +25,23 @@ describe("parseDecimalInput", () => {
     ["1e3", "format"],
     ["-12,50", "negative"],
   ])("rejects %j as %s", (text, reason) => {
-    expect(parseDecimalInput(text)).toEqual({ ok: false, reason });
+    expect(parseDecimalInput(text, { kind: "amount" })).toEqual({ ok: false, reason });
   });
 
   it("accepts a sign only where the feature allows it", () => {
-    expect(parseDecimalInput("-12,50", { signed: true })).toEqual({ ok: true, value: "-12.50" });
+    expect(parseDecimalInput("-12,50", { kind: "amount", signed: true })).toEqual({ ok: true, value: "-12.50" });
   });
 
-  it("rejects more decimals than the scale instead of rounding them", () => {
-    expect(parseDecimalInput("1850,005", { scale: 2 })).toEqual({ ok: false, reason: "scale" });
-    expect(parseDecimalInput("1850,00", { scale: 2 })).toEqual({ ok: true, value: "1850.00" });
-    expect(parseDecimalInput("1850", { scale: 2 })).toEqual({ ok: true, value: "1850" });
+  it("takes the scale from the kind of value (FIN-3) and rejects more decimals instead of rounding them", () => {
+    expect(decimalScales).toEqual({ eurAmount: 2, amount: undefined, unitPrice: 6, fxRate: 6, consumption: 6, kilometres: 3, litres: 3 });
+    expect(parseDecimalInput("1850,005", { kind: "eurAmount" })).toEqual({ ok: false, reason: "scale" });
+    expect(parseDecimalInput("1850,00", { kind: "eurAmount" })).toEqual({ ok: true, value: "1850.00" });
+    expect(parseDecimalInput("1,5123401", { kind: "unitPrice" })).toEqual({ ok: false, reason: "scale" });
+    expect(parseDecimalInput("1,512340", { kind: "unitPrice" })).toEqual({ ok: true, value: "1.512340" });
+    expect(parseDecimalInput("412,3001", { kind: "kilometres" })).toEqual({ ok: false, reason: "scale" });
+    expect(parseDecimalInput("412,300", { kind: "litres" })).toEqual({ ok: true, value: "412.300" });
+    // Amounts in another source currency keep any scale.
+    expect(parseDecimalInput("7850,12345", { kind: "amount" })).toEqual({ ok: true, value: "7850.12345" });
   });
 });
 
