@@ -91,12 +91,18 @@ export const ClickAndKeyboard: Story = {
     await userEvent.click(await screen.findByRole("option", { name: "PLN" }));
     await expect(args.onValueChange).toHaveBeenLastCalledWith("PLN");
     await expect(trigger).toHaveTextContent("PLN");
-    trigger.focus();
+    // Radix returns focus to the trigger after the list closes, in a timeout; wait for it, or that late focus
+    // would pull focus out of the list opened next.
+    await waitFor(() => expect(trigger).toHaveFocus());
     await userEvent.keyboard("{Enter}");
-    // The list fades in over 110 ms (Q5b); wait until it is fully shown before using the arrows.
+    // The list fades in over 110 ms (Q5b) and then moves focus to the chosen option; wait for that before using the arrows.
     const list = await screen.findByRole("listbox");
     await waitFor(() => expect(list).toBeVisible());
-    await userEvent.keyboard("{ArrowDown}{Enter}");
+    await waitFor(() => expect(screen.getByRole("option", { name: "PLN" })).toHaveFocus());
+    // Radix moves focus after an arrow key in a timeout, so Enter waits until the next option has focus.
+    await userEvent.keyboard("{ArrowDown}");
+    await waitFor(() => expect(screen.getByRole("option", { name: "CZK" })).toHaveFocus());
+    await userEvent.keyboard("{Enter}");
     await expect(args.onValueChange).toHaveBeenLastCalledWith("CZK");
     await expect(trigger).toHaveFocus();
   },

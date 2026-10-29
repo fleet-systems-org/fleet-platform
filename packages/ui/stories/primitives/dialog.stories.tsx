@@ -94,10 +94,14 @@ export const Keyboard: Story = {
     await expect(reopened.getBoundingClientRect().right).toBeLessThanOrEqual(window.innerWidth - 16);
     await userEvent.click(within(reopened).getByRole("button", { name: "Wróć do kursu" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-    // A click on the scrim closes it as well.
+    // A click on the scrim keeps the dialog and the typed reason (owner decision 2026-10-29).
     await userEvent.click(trigger);
-    const scrim = (await screen.findByRole("dialog")).parentElement!;
-    await userEvent.click(scrim);
+    const typed = await screen.findByRole("dialog");
+    await userEvent.type(within(typed).getByRole("textbox", { name: "Powód anulowania" }), "Klient odwołał ładunek");
+    await userEvent.click(typed.parentElement!);
+    await expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await expect(within(typed).getByRole("textbox", { name: "Powód anulowania" })).toHaveValue("Klient odwołał ładunek");
+    await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   },
 };

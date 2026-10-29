@@ -10,7 +10,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 |---|---|
 | 0. Inventory and plan | done 2026-10-29, approved |
 | 1. Foundations | done 2026-10-29, waiting for owner "next" |
-| 2. Primitives | batches 1 and 2 done and approved 2026-10-29; batch 3 done 2026-10-29, waiting for owner decisions on its proposals |
+| 2. Primitives | batches 1, 2 and 3 done and approved 2026-10-29 |
 | 3. Product components, patterns, screens | not started |
 | 4. Teaching pages | not started |
 | 5. Checks and report | not started |
@@ -196,7 +196,7 @@ Differences from shadcn in this batch:
 | Tooltip | `TooltipProvider` needed at the root, arrow, `text-xs` | provider built in, no arrow, `text-table` on `bg-tooltip` | T8 |
 | Skeleton | `animate-pulse`, `bg-accent` | still, `bg-divider`, always `aria-hidden` | T9, Q5b |
 
-Checks: typecheck, lint, 125 unit tests at 100% coverage (statements 389/389, branches 235/235, functions 129/129, lines 333/333), 96 story tests in two runs (interaction, axe, WCAG 1.4.12), `lint:tokens` 0 in `packages/ui`, app build, Storybook build; in the built Storybook each new page has 13 sections and no page errors, the dialog at 320 px keeps 16 px on both sides with no horizontal scroll, the overlay animation measures 0.11 s and 0 s with reduced motion.
+Checks: typecheck, lint, 125 unit tests at 100% coverage (statements 390/390, branches 235/235, functions 130/130, lines 334/334), 96 story tests in three consecutive runs (interaction, axe, WCAG 1.4.12), `lint:tokens` 0 in `packages/ui`, app build, Storybook build; in the built Storybook each new page has 13 sections and no page errors, the dialog at 320 px keeps 16 px on both sides with no horizontal scroll, the overlay animation measures 0.11 s and 0 s with reduced motion.
 
 | # | Checklist item | Result |
 |---|---|---|
@@ -215,7 +215,7 @@ Checks: typecheck, lint, 125 unit tests at 100% coverage (statements 389/389, br
 
 Exceptions: the open Dialog, Alert dialog and Dropdown menu stories disable the axe rule `aria-hidden-focus`, for the same reason as the open Select list.
 
-Proposals of batch 3 (waiting for the owner):
+Proposals of batch 3 (all eight approved by the owner on 2026-10-29, with the two refinements below):
 
 1. Overlay shadow value 0 2px 6px in ink at 30 % (T5).
 2. Scrim behind a modal dialog: ink at 50 % (T6).
@@ -225,6 +225,11 @@ Proposals of batch 3 (waiting for the owner):
 6. No red or "destructive" item: an irreversible menu item ends with "…" and opens an alert dialog whose action is the primary button.
 7. Dropdown menu without checkbox and radio items, submenus and shortcuts until a screen needs them.
 8. A click on the scrim closes a Dialog (input lost, a "Wróć" button stays the expected way out); an Alert dialog ignores it.
+
+Owner refinements (2026-10-29), applied in the same pull request:
+
+- To 6: the confirming button of any dialog is the action's concrete verb ("Anuluj kurs", "Usuń szkic"), never "OK" or "Potwierdź".
+- To 8: a dialog with typed input (such as a reason) does not close on a scrim click, like an alert dialog. Because a Dialog exists to collect input, `DialogContent` never closes on a click or focus outside; `Escape`, the corner button and the footer's way back close it (unit and story tests).
 
 ## Plan
 
@@ -243,4 +248,4 @@ Proposals of batch 3 (waiting for the owner):
 
 ## Next step
 
-Owner decides proposals 1–8 of batch 3 and reviews the pull request of `design-system-overlays`. Then stage 3 (product components by domain, patterns, screens) and stage 4 follow the structure model recorded under "owner instruction for stages 3 and 4".
+Owner reviews and merges pull request #39 (`design-system-overlays`); the CI jobs for tokens and Storybook tests come in a separate pull request. Then stage 3 (product components by domain, patterns, screens) and stage 4 follow the structure model recorded under "owner instruction for stages 3 and 4".
