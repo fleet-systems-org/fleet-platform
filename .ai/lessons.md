@@ -2,7 +2,7 @@
 
 Index of reusable findings, bug fixes and improvements. Read relevant entries before working. Follow AGENTS.md for recording and maintaining lessons.
 
-- [Scope test discovery to product packages](lessons/2026-10-19-scope-test-discovery.md): explicitly configure test discovery rather than relying on Git ignore rules.
+- [Scope test discovery to product packages](lessons/2026-10-19-scope-test-discovery.md): explicitly configure test and lint discovery rather than relying on Git ignore rules; includes generated prototype bundles.
 - [Cancellation while reading API responses](lessons/2026-10-19-api-response-cancellation.md): distinguish aborted body reads from malformed responses in the shared client.
 
 - [Next.js build type-checks application tests](lessons/2026-10-19-next-build-typechecks-tests.md): run typecheck after writing tests; Vitest alone does not catch type errors that fail the build.
