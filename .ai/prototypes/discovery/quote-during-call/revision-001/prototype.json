@@ -1,0 +1,130 @@
+{
+  "format": "discovery-prototype-v1",
+  "skill": "om-mockup-prototype",
+  "slug": "quote-during-call",
+  "revision": 1,
+  "revisionPath": ".ai/prototypes/discovery/quote-during-call/revision-001",
+  "previousRevision": null,
+  "brief": ".ai/specs/product-brief.md",
+  "flow": "dispatcher prices an offer during the call",
+  "panelReport": null,
+  "verification": "passed",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "d7c01a22e7d04901713e639062adc126647e2e6c044928b4381f834e853d6a1a"
+    },
+    {
+      "path": "evidence/01-zestawy.png",
+      "sha256": "e8806b99d3aab36dca7a90e9e69115ea0b6e20e703a00c099d603c07530ff2fd"
+    },
+    {
+      "path": "evidence/02-kurs-bledy.png",
+      "sha256": "a860466b4c2b8f1a9663e859e63291c2ec926a1073543e0487e830877183c7fe"
+    },
+    {
+      "path": "evidence/03-mycie-bledy.png",
+      "sha256": "8f0ae1677e8b42c68d0390cb6c05e816de3825eb3c2f2dca369924a325d494b3"
+    },
+    {
+      "path": "evidence/04-trasa.png",
+      "sha256": "9914dc963030256410493947d6085645aa042aca3f5fdf454fce2a03ad549cd7"
+    },
+    {
+      "path": "evidence/05-wycena-pelna.png",
+      "sha256": "a98b45ad228369a42204f8fb1d03da49de416e8586899f09e6a14bd6a4de90c2"
+    },
+    {
+      "path": "evidence/06-warianty.png",
+      "sha256": "603324f41733ff2ebe3037d8577bbc7738dc80a6d30f25cd4829d99030724f6f"
+    },
+    {
+      "path": "evidence/07-nieaktualna.png",
+      "sha256": "085086b8578885f7f496e2708e238d17e86b35196638c97a5a0cd87de75b1bf5"
+    },
+    {
+      "path": "evidence/08-strata-powod.png",
+      "sha256": "a9ddb8fcdaf48dbe6ec8ef43bd284b94f1cfaa9b9306bc9237a75daed4bcc541"
+    },
+    {
+      "path": "evidence/09-przyjeto.png",
+      "sha256": "8922c5c15cb4ea4a2e5771cf4932bff858941dedaf0a20cdca84168eb4625d7a"
+    },
+    {
+      "path": "evidence/10-weekend-pytanie.png",
+      "sha256": "fcc40293987da56af9a3c4cf29db1d58fe9045f7ceee0e80d9ff7cb09ed578f4"
+    },
+    {
+      "path": "evidence/11-weekend-niepelna.png",
+      "sha256": "35acc494c7a8d2a7a86c358b1fd45651ab7d725deec605a1ec1ebe1c3697f8bc"
+    },
+    {
+      "path": "evidence/12-weekend-za-granica.png",
+      "sha256": "52657bef6abfabb666cbc7aaa1d5a9513459ea18d7f3b04654ea36e77f9b98e5"
+    },
+    {
+      "path": "evidence/13-start-bledy.png",
+      "sha256": "c28dc6fb8d87f5b8a3e929ddbb42c16ee328afcba8af64a0b881bc7ffd6ea14b"
+    },
+    {
+      "path": "evidence/14-niepelna-fracht-paliwo.png",
+      "sha256": "f495d2505a3f2d480aa27a30b7fc30012ebfffbf3092b52e0d3d59d674522263"
+    },
+    {
+      "path": "evidence/15-pln-reczne-paliwo.png",
+      "sha256": "ff37874949982c9ac0e025549824700a7826909e58daecdba621a9e386bd67a5"
+    },
+    {
+      "path": "evidence/16-paliwo-blad.png",
+      "sha256": "d1a89b79e88c4d9bc56fc9c19268cf229d879b41c28f8479a492356bde4dd839"
+    },
+    {
+      "path": "evidence/17-awaria.png",
+      "sha256": "482ea18811d6b5ba31bb22f9227acfb14af8eba141591f3ba5d332d2829bb922"
+    },
+    {
+      "path": "evidence/18-historia-niedostepna.png",
+      "sha256": "aad3335d4c36248372c6122bbc070d86b4d76d08cb9396295e1344efde92d419"
+    },
+    {
+      "path": "evidence/19-historia-niedopasowane.png",
+      "sha256": "cdc6321260984d6ac2d46c2715b387bb717e60c4e6d520fcd5d77e21d48d32b5"
+    },
+    {
+      "path": "evidence/20-poza.png",
+      "sha256": "81eae436687314bf965ffb302ff411ebb8d2e537def63aac316559c056b76828"
+    },
+    {
+      "path": "evidence/21-nieznany-adres.png",
+      "sha256": "43fc5b950d231dab39617b40ae73fad55e15ad9de93f13670c5a89ee1e6f34cb"
+    },
+    {
+      "path": "evidence/22-brak-kroku.png",
+      "sha256": "628de866cf5e7647ca9d4ccd8993b23ecbf574bdcfc9a89e58834281beb9586f"
+    },
+    {
+      "path": "evidence/23-klawiatura-fokus.png",
+      "sha256": "a7d01b2d196dffcf1f94699d73f851cfdbbd4f2f0381a6847679cbeb042e233f"
+    },
+    {
+      "path": "evidence/24-waski-ekran.png",
+      "sha256": "a4940bbfd1fa82b6a0d7b9327a1373d0188723a2ac26bb9a4e278f0abfd0000d"
+    },
+    {
+      "path": "evidence/25-waski-wycena.png",
+      "sha256": "4758e8142c9a40aefb2af7f9568764f8cdfd8acd251d2a0b1047a3a4c5b43917"
+    },
+    {
+      "path": "evidence/26-zysk-bez-powodu.png",
+      "sha256": "6d8b97f0959d5e890e20ea850a7473cebdc867f46c3c0dcf0c6448c7bb142a2f"
+    },
+    {
+      "path": "evidence/27-strata-przyjeta.png",
+      "sha256": "d54fd1938af89d43b8679a5567c93a8b7bd7635a409e65223404ac9cc98d1869"
+    },
+    {
+      "path": "index.html",
+      "sha256": "1b368fe26754437b77c119a0141d3cfc69d2be4d119240c63dd0ec71e799b1e3"
+    }
+  ]
+}
