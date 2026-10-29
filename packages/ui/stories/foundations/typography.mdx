@@ -6,7 +6,7 @@ import * as TypographyStories from "./typography.stories";
 
 # Typography
 
-One typeface, IBM Plex Sans, bundled with the package from `@fontsource/ibm-plex-sans` (SIL Open Font License), weights 400 and 600. It is not loaded from an external CDN.
+One typeface, IBM Plex Sans, bundled with the package from `@fontsource/ibm-plex-sans` (SIL Open Font License), weights 500 and 600 (N2b). It is not loaded from an external CDN.
 
 ## Roles
 
@@ -24,6 +24,7 @@ Text is styled by role, never by size. Each role is one class that sets size, li
 |---|---|
 | Use a role class (`text-page-title`, `text-section-title`, `text-body`, `text-table`, `text-body-strong`, `text-label`, `text-meta`, `text-number`). Size and weight utilities such as `text-sm` or `font-semibold` are not used; `pnpm lint:tokens` reports them. | Owner decision 2026-10-29 |
 | IBM Plex Sans, not Inter, Arial or the system font stack. | N2a, R14.1, audit finding 3 |
+| Body, table, label, meta and number roles use weight 500; headings and body-strong keep 600. | N2b |
 | Four sizes behind the roles: 12, 14, 16 and 20 px. | R14.1, N2a, audit finding 6 |
 | Running text and messages (`text-body`) have a line height of at least 1.5 x the font size: 14/21. | Owner decision 2026-10-29; WCAG 1.4.8 |
 | Table rows and single-line values (`text-table`, `text-number`) stay 14/20, so a row keeps its 36 px. | Owner decision 2026-10-29; Q3-1, T3 |
