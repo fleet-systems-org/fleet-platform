@@ -1,0 +1,89 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./evidence-badge.stories";
+
+<Meta of={Stories} />
+
+# Evidence badge
+
+`import { EvidenceBadge } from "@fleet-platform/ui/components/values/evidence-badge"`
+
+## 1. Purpose
+
+Shows a value's evidence in words, from its EV-1 shape: an estimate, a missing or conflicting state and, where a screen needs it, the plan phase (EV-2). One mapping, so no screen chooses a colour or icon for these states by itself.
+
+## 2. When to use
+
+- Next to a figure in a table cell or a row where the details of `ValueWithSource` do not fit.
+- History rows beside a quote: invoice rows are "Szacunek", entered-trip rows are "Plan" (spec: History).
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| A figure with its source and details | Value with source | It uses Evidence badge for the estimate and shows the missing reason as "— brak: …" |
+| A loss on a trip result | Badge `loss` with "Strata" | Loss is a result, not evidence (N5a) |
+| The kilometre check of a truck | Badge `neutral` with the check's word and icon | The check has its own states; their mapping is open in the specification |
+| A message with a next step | Alert | A badge has no room for what to do |
+
+## 4. Anatomy
+
+One to three `Badge`s in a row that wraps: "Plan", then "Szacunek", or the state with its icon.
+
+## 5. Variants
+
+| Input | Badge | Source |
+|---|---|---|
+| `certainty: "certain"`, known | none | P4 |
+| `certainty: "estimated"`, known | `estimate` "Szacunek" | R02, P4 |
+| `state: "missing"` | `neutral` "Brak danych" with a crossed circle | EV-1, R11.2 |
+| `state: "conflicting"` | `neutral` "Sprzeczne dane" with a warning triangle | EV-1 |
+| `phase: "plan"` (only when passed) | `neutral` "Plan" | EV-2, spec: History |
+
+<Canvas of={Stories.States} />
+
+## 6. States
+
+Not applicable: a badge is static text with no interaction. An estimate does not apply to a missing or conflicting value, so only the state is shown.
+
+## 7. Behaviour and accessibility
+
+- Text is the meaning; icons are `aria-hidden` and always next to a word, so colour and icon are never alone.
+- Nothing is green: a missing or unchecked value never looks confirmed.
+
+## 8. Content
+
+- One or two words each, from `labels`: "Plan", "Szacunek", "Brak danych", "Sprzeczne dane".
+- Why a value is missing or which sources conflict goes to `ValueWithSource` details, not the badge.
+
+## 9. Responsive
+
+Badges wrap to the next line in a narrow cell.
+
+<Canvas of={Stories.HistoryRows} />
+
+## 10. API
+
+`EvidenceBadge`: `state` (`known` by default, `missing`, `conflicting`), `certainty` (`certain`, `estimated`), `phase` (`plan`, `actual`; pass only where the phase must be visible), `labels` (`plan`, `estimated`, `missing`, `conflicting`), `className`. Renders nothing when there is nothing to say.
+
+<ArgTypes of={Stories} />
+
+## 11. Code
+
+```tsx
+<td>{formatDecimal(row.price, { scale: 2 })} {row.currency}</td>
+<td><EvidenceBadge phase={row.kind === "enteredTrip" ? "plan" : undefined} certainty={row.certainty} labels={evidenceBadgeLabels} /></td>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| "Brak danych" with its icon. | A zero or an empty cell for a missing value. |
+| "Szacunek" on an invoice row. | A green tick on a value nobody checked. |
+| "Plan" on history rows only. | "Plan" on every quote value (all E01 values are plan). |
+
+## 13. Related
+
+Built on: Badge. Used in: Value with source, which takes these labels as `labels.evidence` (owner decision 2026-10-29).
+
+<Canvas of={Stories.Words} />

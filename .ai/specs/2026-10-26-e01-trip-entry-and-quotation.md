@@ -272,6 +272,7 @@ Precondition: owner approval of both specifications; the authentication library 
 - **#22:** chronological trip with exact schedule anchors, dispatcher-entered first start (D64) and wash with mandatory amount/date and optional time (D63). Missing required dates and invalid schedules are rejected.
 - **#23:** planned free place and time at unloading end; unknown no-trip/no-start state; open approach; no live GPS.
 - **#24:** whole approach belongs to the successor; one current allocation; gap and overlap references; open terminal segment; no evidence means `notVerified`.
+  - **Open question (Phase 2, decided by the owner then):** the UI/UX words "Zgodne", "Niezweryfikowane" and "Brak danych" do not map one to one onto `verification: "verified"|"notVerified"|"conflicting"`, and absent evidence is `notVerified`. Proposal (owner, 2026-10-29): `verified` → "Zgodne", `notVerified` → "Brak danych", `conflicting` → "Do sprawdzenia", and "Niezweryfikowane" removed from this specification. No kilometre-check badge is built until then.
 - **#25:** scenarios 4–20 and 25–27 above, including weekend, missing-input and draft-comparison screenshots.
 - **#26/#28:** scenario 24 above, plus directed matching with confirmed aliases.
 - **Security and foundations:** scenarios 21–22; every new page and flow leaves an integration-evidence screenshot.

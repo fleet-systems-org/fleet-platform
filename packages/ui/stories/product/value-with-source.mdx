@@ -63,7 +63,7 @@ Kilometres are whole numbers on screen (`displayScale={0}`) and exact to three d
 
 ## 8. Content
 
-- The application passes the words in `labels` (from its translation module) and the source name and date already formatted.
+- The application passes the words in `labels` (from its translation module) and the source name and date already formatted. `labels.evidence` is the same object as Evidence badge's labels, so "Szacunek" and "Sprzeczne dane" have one source (owner decision 2026-10-29).
 - A reason is one sentence the dispatcher understands: "Brak tankowań w Niemczech z ostatnich 14 dni; cena publiczna przeliczona na netto."
 - A missing reason completes "brak: …": "brak: ceny paliwa dla Czech" (SRC-1).
 
@@ -99,6 +99,6 @@ The value and its unit never wrap apart (no-break spaces); in a narrow column th
 
 ## 13. Related
 
-Built on: Popover, Button, Badge. Confused with: Decimal field (entry). Used in: the quote result bar, distances and the country split, the fleet table (stage 3 screens).
+Built on: Popover, Button, Evidence badge. Confused with: Decimal field (entry). Used in: the quote result bar, distances and the country split, the fleet table (stage 3 screens).
 
 <Canvas of={Stories.Keyboard} />

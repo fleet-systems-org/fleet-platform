@@ -5,20 +5,18 @@
 import * as React from "react"
 import { formatDecimal } from "@fleet-platform/ui/lib/decimal"
 import { cn } from "@fleet-platform/ui/lib/utils"
-import { Badge } from "@fleet-platform/ui/components/badge"
+import { EvidenceBadge, type EvidenceBadgeLabels } from "@fleet-platform/ui/components/values/evidence-badge"
 import { Button } from "@fleet-platform/ui/components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@fleet-platform/ui/components/popover"
 
 /** Translated words, passed by the application like Field's `optionalText`. */
 type ValueLabels = {
-  /** Badge and certainty text of an estimated value, for example "Szacunek". */
-  estimated: string
+  /** Words of the evidence badge; its "Szacunek" and "Sprzeczne dane" are also used in the details, so each has one source. */
+  evidence: EvidenceBadgeLabels
   /** Certainty text of a certain value, for example "Pewne"; certain values get no badge (P4). */
   certain: string
   /** Prefix of a missing value's reason, for example "brak". */
   missing: string
-  /** Text of a conflicting value, for example "Sprzeczne dane". */
-  conflicting: string
   /** Name prefix of the details panel, for example "Szczegóły". */
   details: string
   exactValue: string
@@ -79,11 +77,11 @@ function ValueWithSource(props: ValueWithSourceProps) {
     ? <>
         <span className="text-number">{withUnit(formatDecimal(props.value, { scale: props.displayScale }), props.unit)}</span>
         {/* The space keeps "km" and "Szacunek" apart in the accessible name; flex layout hides it. */}
-        {props.certainty === "estimated" ? <>{" "}<Badge variant="estimate">{labels.estimated}</Badge></> : null}
+        {props.certainty === "estimated" ? <>{" "}<EvidenceBadge certainty="estimated" labels={labels.evidence} /></> : null}
       </>
     : <>
         <span aria-hidden className="text-number">—</span>
-        <span className="text-table">{labels.conflicting}</span>
+        <span className="text-table">{labels.evidence.conflicting}</span>
       </>
 
   return (
@@ -103,7 +101,7 @@ function ValueWithSource(props: ValueWithSourceProps) {
         <dl className="grid gap-group">
           {props.state === "known" ? <>
             <Row term={labels.exactValue}><span className="text-number">{withUnit(formatDecimal(props.value), props.unit)}</span></Row>
-            <Row term={labels.certainty}>{props.certainty === "estimated" ? labels.estimated : labels.certain}</Row>
+            <Row term={labels.certainty}>{props.certainty === "estimated" ? labels.evidence.estimated : labels.certain}</Row>
             <Row term={labels.source}>{props.source.name}</Row>
             <Row term={labels.sourceDate}>{props.source.date}</Row>
           </> : props.candidates.map(candidate => (
