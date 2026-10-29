@@ -340,3 +340,27 @@ Validation: package typecheck/build; repository typecheck/lint/test (37 files, 1
 Browser: actual 1440/320 CSS pixels; s11 scrolled to bottom without horizontal overflow, mobile ordering and metadata verified, desktop summary 360 px and identical DOM to s12. Actual pointer click and keyboard Enter on “Wyceń” confirm h1 focus and the appropriate outline at both widths. Console errors: 0. Three full-page captures remain outside Git in the Stage 1g preview evidence folder; index/assets replaced while earlier evidence was preserved.
 
 Not run: production build/integration/coverage, Storybook tests, Stage 2 scenarios, exhaustive accessibility or cross-browser audit. Production source is unchanged. No PR opened or merge into main. Next: owner review of Stage 1g; Stage 2 needs separate authorization.
+
+## Stage 1h. Sign-in through the existing office system (W2, N8a)
+
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
+
+### Changes
+
+- s01 follows the existing office system sign-in: two equal halves with a dark, tilted/cropped European map and centred 384 px token-derived form; below 64rem the map disappears and Firma Demo appears above the form. No form card, company icon, animation or private reference material. Simulation badge replaces the previous alert.
+- Public-domain Natural Earth ne_50m_land is independently projected/clipped/simplified by a Python-standard-library script. Generated data: 54,203 bytes, including source/license and source SHA-256. Six newly invented illustrative arcs use action tokens; the decorative map is aria-hidden. No live routing.
+- s01 has login, administrator password-request and new-computer approval states. Login is text with username autocomplete; password is checked only for presence, stays outside React state/persistence and clears before progression. Tabler eye toggles visibility; remember choice is simulation-only. Empty credentials produce an error with colour, icon and words. Password requests retain login and return the same status for every submitted login, without email/reset links.
+- New-computer scenario sends sign-in to the status screen; recheck goes to s09 and logout returns to login. Simulation reset clears sign-in state and scenario. Normal sign-in still goes to s09; navigation identifies the account as dyspozytor.
+- s02–s04 stay in both screen selectors with “nie występuje przy W2” and contain only the W2 explanation and return link. No production sources, quotation content or arithmetic changed.
+
+### Validation
+
+- Package typecheck/build passed; final Vite build: 626 ms. Repository typecheck/lint/test passed: 37 files, 196 tests. Explicit prototype ESLint passed; frozen-lockfile installation passed.
+- Token scan src/app + src/main.tsx: 0. Mechanical source detector: 0 findings (regex/source scan only, not a full accessibility audit). Whitespace check passed. private-name scan: 0.
+- Protected diff against origin/main: empty. prototype.js byte-identical to starting commit 06697ed.
+- Isolated browser at actual 1440 and 320 CSS pixels: login, request before/after submission, computer approval, empty error, show/hide password, exact Tab sequence login → recovery link → password → eye → remember → submit, happy path and approval to s09, logout/reset, s02–s04 selector annotations and return links. No horizontal overflow in any checked state. Built static preview smoke-checked at both widths.
+- Eight screenshots saved externally in the stage-1h evidence directory; none committed. Preview index/assets replaced while preserving earlier evidence folders. Dev browser: no console errors/warnings. Temporary static server: only the browser's missing favicon request (404), no application runtime error.
+
+Not run: production app build/integration/coverage, Storybook tests, cross-browser matrix, exhaustive accessibility audit, Stage 2. Production specifications remain unchanged and unimplemented. No PR opened and no base-branch merge.
+
+Next: owner reviews all three s01 states before authorizing further prototype work. Publication and cloud verification are recorded in the Stage 1h run log.

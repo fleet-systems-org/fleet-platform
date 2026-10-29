@@ -18,7 +18,7 @@ export function decimal(value: bigint): string {
   return `${value < 0n ? "-" : ""}${magnitude / 100n}.${String(magnitude % 100n).padStart(2, "0")}`;
 }
 export const screenNames = [
-  "Logowanie", "Ustawienie hasła", "Reset: prośba", "Reset: nowe hasło", "Brak uprawnień",
+  "Logowanie", "Zaproszenie — nie występuje przy W2", "Reset: prośba — nie występuje przy W2", "Reset: nowe hasło — nie występuje przy W2", "Brak uprawnień",
   "Flota", "Kursy auta", "Punkt startowy auta", "Wpis kursu", "Wybór miejsca",
   "Trasa i kraje", "Wycena", "Szczegóły wartości", "Uzupełnienie danej", "Porównanie szkiców",
   "Przyjęcie kursu", "Podobne kursy", "Korekta, anulowanie", "Kontrola km",

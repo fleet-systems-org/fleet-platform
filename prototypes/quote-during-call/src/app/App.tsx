@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@fleet-platform/ui/components/button";
 import { Badge } from "@fleet-platform/ui/components/badge";
-import { Card, CardTitle, CardDescription } from "@fleet-platform/ui/components/card";
+import { Card, CardTitle } from "@fleet-platform/ui/components/card";
 import { Field } from "@fleet-platform/ui/components/field";
 import { Input } from "@fleet-platform/ui/components/input";
 import { Alert } from "@fleet-platform/ui/components/alert";
@@ -21,6 +21,7 @@ import { CountryCosts } from "./CountryCosts";
 import { Quote, QuoteFrame } from "./Quote";
 import { ValueDetails } from "./ValueDetails";
 import { CustomerStop, CustomerRoute, emptyStop } from "./CustomerStop";
+import { SignIn } from "./SignIn";
 import { localizeReview } from "./review-labels";
 
 declare global { interface Window { __PROTOTYPE_START__: () => boolean } }
@@ -34,6 +35,8 @@ export function App() {
   const [entryStep, setEntryStep] = useState(1);
   const [completedStep, setCompletedStep] = useState(0);
   const [active, setActive] = useState("s01");
+  const [signInVersion, setSignInVersion] = useState(0);
+  const [newComputer, setNewComputer] = useState(false);
   const [role, setRole] = useState("dispatcher");
   const [later, setLater] = useState(false);
   const [vehicle, setVehicle] = useState("");
@@ -83,7 +86,7 @@ export function App() {
       <p className="text-meta">Później</p>
       {later ? <Button variant="text" aria-current={id === "s06" ? "page" : undefined} asChild><a href="#s06" onClick={close}>Flota</a></Button> : <Button variant="text" disabled>Flota</Button>}
     </nav>
-    <div className="navigation-account stack"><span className="text-meta">{role === "owner" ? "wlasciciel" : "dyspozytor"}@firma-demo.example</span>
+    <div className="navigation-account stack"><span className="text-meta">dyspozytor</span>
       <Button variant="text" onClick={() => { reset(); go("s01"); close?.(); }}>Wyloguj</Button></div>
   </div>;
   const dateLabels = { date: "Data", dateFormat: "DD.MM.RRRR", time: "Godzina", timeFormat: "GG:MM", occurrence: "Którą godzinę wybierasz?", earlier: "przed cofnięciem zegara", later: "po cofnięciu zegara" };
@@ -100,13 +103,8 @@ export function App() {
     <Button onClick={() => { if (active === "s16") setConfirm(true); else go("s16"); }}>Przyjmij kurs</Button><Link to="s09">Zmień dane</Link></>;
   function advance(step: number) { setCompletedStep(value => Math.max(value, step)); setEntryStep(step + 1); }
   const content: Record<string, ReactNode> = {
-    s01: <Card><CardTitle><h1 className="text-page-title">Logowanie</h1></CardTitle><CardDescription>Firma Demo · dane fikcyjne</CardDescription>
-      <Alert title="Symulacja logowania">Hasło nie jest sprawdzane ani zapisywane. Nie wpisuj prawdziwego hasła. Sposób logowania czeka na decyzję.</Alert>
-      <form className="stack" onSubmit={event => { event.preventDefault(); event.currentTarget.reset(); go("s09"); }}>
-        <Field label="E-mail" required><Input type="email" name="demo-email" autoComplete="off" defaultValue="dyspozytor@firma-demo.example" /></Field>
-        <Field label="Hasło demonstracyjne" hint="Dowolny tekst. Nie używaj prawdziwego hasła."><Input type="password" autoComplete="off" /></Field>
-        <Button type="submit">Zaloguj — symulacja</Button><Link to="s03">Nie pamiętam hasła</Link>
-      </form></Card>,
+    s01: <SignIn key={signInVersion} newComputer={newComputer} onSignedIn={() => go("s09")} />,
+    ...Object.fromEntries(["s02", "s03", "s04"].map(id => [id, <div key={id} className="stack"><p>Nie występuje przy logowaniu systemu biura (W2).</p><Link to="s01">Wróć do logowania</Link></div>])),
     s09: <><h1 className="text-page-title">Nowa wycena</h1>
       <p className="text-meta">Etap 1: przykład K2 · Auto 01 · 12.11.2026 · 60,00 EUR · bez mycia. Obliczenia i trasa są symulowane.</p>
       {accepted ? <Alert title="Ten kurs został przyjęty" action={<Button onClick={reset}>Nowa wycena</Button>}>Przyjęta wycena jest zachowana w symulacji. Zacznij nową wycenę, aby wpisać kolejny kurs.</Alert> : <div className="entry-layout"><div className="stack">
@@ -177,9 +175,10 @@ export function App() {
         <Button variant="secondary" onClick={() => { if (document.body.classList.contains("proto-focus")) {
           Array.from(document.querySelectorAll<HTMLButtonElement>(".proto-toolbar button")).find(button => button.textContent === "Prezentacja" || button.textContent === "Presentation")?.click();
         } document.getElementById("screen-map")?.scrollIntoView(); }}>Mapa ekranów</Button>
-        <Button variant="secondary" onClick={() => { setHasAccepted(false); reset(); go("s01"); }}>Resetuj symulację</Button>
+        <Button variant="secondary" onClick={() => { setHasAccepted(false); setNewComputer(false); setSignInVersion(v => v + 1); reset(); go("s01"); }}>Resetuj symulację</Button>
       </div>
       <details><summary>Scenariusze</summary><div className="form-grid">
+        <label className="sign-in-check"><input type="checkbox" checked={newComputer} onChange={event => setNewComputer(event.target.checked)} />Nowy komputer — czeka na zatwierdzenie</label>
         <Field label="p02 · Konto"><Select value={role} onValueChange={setRole}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="dispatcher">Dyspozytor</SelectItem><SelectItem value="owner">Właściciel</SelectItem></SelectContent></Select></Field>
         <Field label="p19 · Zakres"><Select value={later ? "later" : "phase1"} onValueChange={v => setLater(v === "later")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="phase1">Faza 1</SelectItem><SelectItem value="later">Pokaż, co dojdzie później</SelectItem></SelectContent></Select></Field>
       </div></details>

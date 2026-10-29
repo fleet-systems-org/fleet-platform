@@ -22,7 +22,7 @@
 .doc-toolbar button, .anno-panel button, .proto-back { cursor: pointer; font-family: var(--font-family-base); font-size: var(--type-14); line-height: var(--type-14-leading); min-height: var(--control-height); padding: var(--space-tight) var(--space-panel); border: 1px solid var(--border-input); border-radius: var(--radius-4); background: var(--surface-panel); color: var(--text-default); }
 .doc-toolbar button[aria-pressed="true"], .doc-toolbar .btn-primary, .anno-panel .btn-primary { background: var(--action-primary); color: var(--text-on-action); }
 
-#s01 .screen-content { max-width: var(--measure-text); margin-inline: auto; }
+#s01 .screen-content { padding: 0; }
 
 .screen-picker[hidden] { display: none; }
 /* Stage 1b layout: existing spacing and typography tokens only. */
@@ -181,3 +181,34 @@
 }
 /* Preserve the engine's h1 focus target, with an outline for keyboard navigation. */
 h1[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+
+/* N8a: the existing office system sign-in; the map is the approved decoration. */
+.sign-in-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 100svh; background: var(--surface-page); }
+.sign-in-map { position: relative; overflow: hidden; background: var(--tooltip-bg); color: var(--tooltip-text); }
+.sign-in-company { position: relative; padding: calc(var(--space-section) * 2); font-size: var(--type-20); line-height: var(--type-20-leading); font-weight: var(--weight-600); }
+.sign-in-map svg { position: absolute; width: 155%; max-width: none; height: 100%; left: -25%; top: 12%; transform: perspective(900px) rotateX(38deg) rotateZ(-9deg); }
+.sign-in-land { fill: var(--text-muted); fill-opacity: 0.16; stroke: var(--text-muted); stroke-width: 0.6; }
+.sign-in-routes { fill: none; stroke: var(--action-primary); stroke-width: 3; }
+.sign-in-routes path:nth-child(even) { stroke: var(--action-primary-hover); }
+.sign-in-map circle { fill: var(--action-primary); }
+.sign-in-panel { position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--space-section); padding: calc(var(--space-section) * 3) calc(var(--space-section) * 2); min-width: 0; }
+.sign-in-badge { position: absolute; top: var(--space-section); right: var(--space-section); max-width: 100%; white-space: normal; }
+.sign-in-password-field { display: flex; flex-direction: column; gap: var(--space-tight); }
+.sign-in-form { width: 100%; max-width: calc(var(--space-section) * 16); margin-block: auto; }
+.sign-in-form h1 { margin-bottom: var(--space-group); }
+.sign-in-form button { white-space: normal; height: auto; min-height: var(--control-height); }
+.sign-in-form form > button, .sign-in-form > button { width: 100%; }
+.sign-in-password-label { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-group); }
+.sign-in-password { position: relative; }
+.sign-in-password input { padding-right: calc(var(--control-height) + var(--space-group)); }
+.sign-in-password button { position: absolute; inset-block: 0; right: 0; width: var(--control-height); padding: var(--space-group); }
+.sign-in-check { display: flex; align-items: center; gap: var(--space-group); }
+.sign-in-check input { appearance: auto; width: var(--space-between); height: var(--space-between); accent-color: var(--action-primary); flex-shrink: 0; }
+.sign-in-mobile-company { display: none; }
+@media (max-width: 63.999rem) {
+  .sign-in-layout { grid-template-columns: minmax(0, 1fr); }
+  .sign-in-map { display: none; }
+  .sign-in-panel { padding: calc(var(--space-section) * 3) var(--space-between); }
+  .sign-in-mobile-company { display: block; margin-bottom: var(--space-section); font-weight: var(--weight-600); }
+  .sign-in-badge { right: var(--space-between); left: var(--space-between); width: fit-content; }
+}
