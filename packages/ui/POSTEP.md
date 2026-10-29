@@ -409,6 +409,7 @@ Owner decisions (2026-10-29):
 - W2 (a): the prototype's `allocate` splits a segment total by kilometre share and gives the remainder to the last country. That contradicts the specification and is not ported: a country's cost is its kilometres times its rate (SRC-4), totals are rounded once from exact values, and a rounding reconciliation line is shown when displayed components differ from the total (FIN-3). Screen stories use fixed synthetic data consistent with FIN-3.
 - `AppFrame`: (1) N7d supersedes L22 in the screen map: the account and "Wyloguj" sit in the left panel, not in a top bar; (2) the page passes the navigation entries according to the user's permissions (L12); the component holds no fixed list.
 - Screens use `PlacePicker` from #51, not the prototype's version.
+- L08 (later on 2026-10-29): no time limit on the screen. Place search (s10.2), route (s11.2) and quote (s12.20) show "Szukam…", "Liczę trasę…" or "Liczę wycenę…" until the server returns a result or an error; time limits and retries are server-side only, and a server error is the existing "service unavailable" state. `PlacePicker` is unchanged. Recorded under L08 in the decisions record.
 
 Built: `src/components/layout/app-frame.tsx` (`AppFrame`: N7c, N7d, L12), `src/components/layout/step-bar.tsx` (`StepBar`: R18.2, N7a) and `src/components/trips/route-stops.tsx` (`RouteStops`: N7b, R19.1). Three layout tokens in `src/styles.css`: `frame-navigation` 224 px, `frame-panel` 360 px (N7c), `frame-content` 1120 px. Docs pages with 13 sections; stories under "Product/Layout" and "Product/Trips" with the prototype's synthetic trip (Auto 01, places A–C, 12.11.2026). No new dependencies.
 
@@ -441,7 +442,7 @@ Proposals of stage 3 batch 5 (for the owner):
 
 ## Next step
 
-Conditions before screens are built (owner decision 2026-10-29): L08, the search time limit and what the dispatcher sees after it, is decided; L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next: screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
+Conditions before screens are built (owner decision 2026-10-29): L08 is decided (no time limit on the screen; see batch 5); L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next: screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
 
 ## N2b: ordinary text weight (2026-10-29)
 

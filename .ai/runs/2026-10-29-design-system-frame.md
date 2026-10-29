@@ -18,6 +18,8 @@ Starting branch: design-system-product-5, from design-system-product-4 5c8e025 (
 - Built `AppFrame`, `StepBar` and `RouteStops` with unit tests, stories and documentation pages; added three layout tokens.
 - Synthetic data aligned with the prototype (Auto 01, places A–C, 12.11.2026, Klient D) after a first draft used other values.
 - Step names use `text-table`: the 12 px roles set the muted colour, and combining them with a colour utility has no precedent in the system.
+- After #53 merged, the base moved to main and main was merged in without conflicts.
+- Recorded the owner's L08 decision (no time limit on the screen; server-side limits and retries) under L08 in the decisions record and in POSTEP.md; the PlacePicker page no longer calls the time limit open. The screen map entry is in the private course repository (260eacd).
 
 ## Validation and outcome
 
@@ -27,4 +29,4 @@ Starting branch: design-system-product-5, from design-system-product-4 5c8e025 (
 - Browser check of the built Storybook outside Git: no page errors and no horizontal scroll at 320, 600, 800, 1024 and 1440 px; screenshots inspected.
 - Not run locally: integration tests (no application page changed); CI runs them.
 
-Implementation complete; pull request publication follows. No merge is authorized. Remaining: owner answers to proposals 1–7 in POSTEP.md, L08 before the screens.
+Implementation complete; pull request publication follows. No merge is authorized. Remaining: owner answers to proposals 1–7 in POSTEP.md; L09 stays open.
