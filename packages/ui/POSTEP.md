@@ -276,6 +276,8 @@ Owner decisions on 3 and 8 (2026-10-29), applied on the branch `design-system-pr
 - To 3: 2 decimal places only for EUR amounts. `DecimalField` takes its scale from the kind of value (`kind`, FIN-3): `eurAmount` 2; `unitPrice`, `fxRate`, `consumption` 6; `kilometres`, `litres` 3; `amount` in another source currency keeps its scale. The field checks the typed text when the dispatcher leaves it and reports the result through `onDecimalChange`.
 - To 8: kilometres from the map provider's route are estimated (`certainty: estimated`); recorded under ROUTE-1 in the decisions record.
 
+Owner decision on amounts in other currencies (2026-10-29), applied on the branch `fix/amount-scale-by-currency`: not without a limit, because FIN-4 bounds the scale before writes. The `amount` kind requires a `currency` and takes its decimal places from `Intl.NumberFormat` (`maximumFractionDigits`: PLN, EUR and CZK 2, HUF 0); more decimals are rejected with a message, without rounding. `eurAmount` is replaced by `amount` with `currency: "EUR"`, which gives the same 2. The `scale` result carries the allowed scale so the message can name it; `DecimalField` shows the currency as its unit.
+
 ## Plan
 
 - Storybook 10.6.5 with `@storybook/react-vite` in `packages/ui/.storybook`; addons: docs (MDX with `remark-gfm`), a11y (`test: 'error'`), vitest (stories as browser tests, Playwright Chromium); `msw` + `msw-storybook-addon` for `apiCall` responses. Separate `packages/ui/vitest.storybook.config.ts`; the root unit/coverage run stays unchanged.
