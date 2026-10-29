@@ -34,10 +34,10 @@ On screen: the value rounded for display with its unit, and the "Szacunek" badge
 |---|---|---|---|
 | `known`, certain | Value and unit, no badge | Exact value, "Pewne", source, date | EV-1, P4 (proposal) |
 | `known`, estimated | Value, unit, "Szacunek" | as above plus the reason | EV-1, R11.1 |
-| `missing` | "—" and "brak: …" | none | EV-1, R11.2, P3 (proposals) |
+| `missing` | "—" and "brak: …" | none | EV-1, R11.2, P3; owner decision 2026-10-29 |
 | `conflicting` | "—" and "Sprzeczne dane" | every candidate with its source | EV-1 |
 
-Kilometres are whole numbers on screen (`displayScale={0}`) and exact to three decimals only in the details (R11, FIN-3). Money keeps its published two decimals.
+Kilometres are whole numbers on screen (`displayScale={0}`) and exact to three decimals only in the details (R11, FIN-3); kilometres from the map provider's route are estimated (owner decision 2026-10-29). Money keeps its published two decimals.
 
 <Canvas of={Stories.States} />
 
@@ -45,8 +45,8 @@ Kilometres are whole numbers on screen (`displayScale={0}`) and exact to three d
 
 | State | Look | Source |
 |---|---|---|
-| Default | Value in default text colour with a dotted underline that shows it opens details | proposal 6 |
-| Hover | Solid underline | proposal 6 |
+| Default | Value in default text colour with a dotted underline that shows it opens details | owner decision 2026-10-29 |
+| Hover | Solid underline | owner decision 2026-10-29 |
 | Focus | 2 px `focus-ring` outline | T4 |
 | Open | Details panel below the value, fades in over 110 ms | T7 |
 | Empty | `missing`: a dash and the reason, never zero | EV-4 |
@@ -83,7 +83,8 @@ The value and its unit never wrap apart (no-break spaces); in a narrow column th
 <ValueWithSource
   state="known" label="Dystans kursu" labels={valueLabels}
   value={quote.distanceKm} unit="km" displayScale={0}
-  certainty="certain" source={{ name: "Trasa od dostawcy map", date: formatDate(route.receivedAt) }}
+  certainty="estimated" source={{ name: "Trasa od dostawcy map", date: formatDate(route.receivedAt) }}
+  reason="Kilometry z planowanej trasy dostawcy map, nie z przejazdu."
 />
 <ValueWithSource state="missing" label="Cena paliwa w Czechach" labels={valueLabels} reason="ceny paliwa dla Czech" />
 ```
@@ -92,7 +93,7 @@ The value and its unit never wrap apart (no-break spaces); in a narrow column th
 
 | Do | Don't |
 |---|---|
-| "1 235 km" on screen, "1 234,567 km" in the details. | Three decimals in every table cell. |
+| "1 235 km Szacunek" on screen, "1 234,567 km" in the details. | Three decimals in every table cell. |
 | "— brak: ceny paliwa dla Czech". | "0,00 EUR" for a missing price. |
 | "Szacunek" as a word next to the value. | A grey value that means "estimate" by colour only. |
 

@@ -14,15 +14,22 @@ const labels: ValueLabels = {
 };
 const nbsp = " ";
 
-it("shows whole kilometres on screen and the exact value with its source in the details (R11, EV-4)", () => {
-  render(<ValueWithSource state="known" label="Dystans kursu" labels={labels} value="1234.567" unit="km" displayScale={0}
-    certainty="certain" source={{ name: "Trasa od dostawcy map", date: "28.10.2026" }} />);
-  const trigger = screen.getByRole("button", { name: `1${nbsp}235${nbsp}km` });
+it("shows a certain value without a badge and its exact value with the source in the details (EV-4)", () => {
+  render(<ValueWithSource state="known" label="Cena paliwa w Polsce" labels={labels} value="1.401250" unit="EUR/l"
+    certainty="certain" source={{ name: "Karty paliwowe, potwierdzone fakturą", date: "27.10.2026" }} />);
+  const trigger = screen.getByRole("button", { name: `1,401250${nbsp}EUR/l` });
   expect(trigger.dataset.size).toBe("default");
   expect(screen.queryByText("Szacunek")).toBeNull();
   fireEvent.click(trigger);
-  const details = screen.getByRole("dialog", { name: "Szczegóły: Dystans kursu" });
-  expect(details.textContent).toBe(`Dokładna wartość1${nbsp}234,567${nbsp}kmPewnośćPewneŹródłoTrasa od dostawcy mapData źródła28.10.2026`);
+  const details = screen.getByRole("dialog", { name: "Szczegóły: Cena paliwa w Polsce" });
+  expect(details.textContent).toBe(`Dokładna wartość1,401250${nbsp}EUR/lPewnośćPewneŹródłoKarty paliwowe, potwierdzone fakturąData źródła27.10.2026`);
+});
+
+it("shows routed kilometres as a whole-number estimate and the exact value in the details (R11, owner decision)", () => {
+  render(<ValueWithSource state="known" label="Dystans kursu" labels={labels} value="1234.567" unit="km" displayScale={0}
+    certainty="estimated" source={{ name: "Trasa od dostawcy map", date: "28.10.2026" }} reason="Kilometry z planowanej trasy dostawcy map, nie z przejazdu." />);
+  fireEvent.click(screen.getByRole("button", { name: `1${nbsp}235${nbsp}km Szacunek` }));
+  expect(screen.getByRole("dialog", { name: "Szczegóły: Dystans kursu" }).textContent).toContain(`Dokładna wartość1${nbsp}234,567${nbsp}kmPewnośćSzacunek`);
 });
 
 it("marks an estimate with a word on screen and gives the reason in the details", () => {
