@@ -28,3 +28,5 @@ Checks completed as recorded below.
 ## Publication
 
 - External preview and screenshots were kept outside the repository; client-side availability was not verified.
+
+- External preview and screenshots were kept outside the repository; client-side availability was not verified.
