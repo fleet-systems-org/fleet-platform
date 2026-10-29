@@ -13,12 +13,13 @@ Stage 2 batch 3 of the design system added the 110 ms fade-in (`animate-overlay-
 
 ## Resolution
 
-- Wait for an overlay to be fully shown before asserting visibility: `await waitFor(() => expect(element).toBeVisible())`. Before sending arrow keys, wait for the real readiness condition, the focused item (for Select, the chosen option has focus); visibility alone still failed two of three runs. Assert the animation itself once (`getComputedStyle(panel).animationDuration` is `0.11s`) instead of disabling it for all tests.
+- Wait for an overlay to be fully shown before asserting visibility: `await waitFor(() => expect(element).toBeVisible())`.
+- Radix moves focus late in two places, and a test must wait for both instead of sending keys at once. (1) After a list closes, its focus scope returns focus to the trigger in a timeout; reopening the list before that timeout lets the late focus pull focus out of the new list, so arrows and Enter land on the trigger. Wait for `trigger` to have focus before reopening. (2) After an arrow key, Select focuses the next option in a timeout; wait for that option to have focus before pressing Enter. Waiting only for visibility, or only for the chosen option, still failed two of three runs under full-suite load; with both waits the suite passed eight runs in a row. Assert the animation itself once (`getComputedStyle(panel).animationDuration` is `0.11s`) instead of disabling it for all tests.
 - Return focus by hand: keep a ref to the menu button and use `onCloseAutoFocus={event => { event.preventDefault(); menuButton.current?.focus(); }}` on the dialog content.
 
 ## Verification
 
-`pnpm test:storybook`: 96 of 96 story tests passed in three consecutive runs; the story "Dropdown menu / Menu item opens a confirmation" checks that focus returns to the menu button.
+`pnpm test:storybook`: 96 of 96 story tests passed in eight consecutive runs after the focus waits; the story "Dropdown menu / Menu item opens a confirmation" checks that focus returns to the menu button.
 
 ## Prevention
 
