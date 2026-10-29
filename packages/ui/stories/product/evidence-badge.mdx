@@ -20,7 +20,7 @@ Shows a value's evidence in words, from its EV-1 shape: an estimate, a missing o
 
 | Situation | Use instead | Why |
 |---|---|---|
-| A figure with its source and details | Value with source | It shows the estimate badge itself, and the missing reason as "— brak: …" |
+| A figure with its source and details | Value with source | It uses Evidence badge for the estimate and shows the missing reason as "— brak: …" |
 | A loss on a trip result | Badge `loss` with "Strata" | Loss is a result, not evidence (N5a) |
 | The kilometre check of a truck | Badge `neutral` with the check's word and icon | The check has its own states; their mapping is open in the specification |
 | A message with a next step | Alert | A badge has no room for what to do |
@@ -84,6 +84,6 @@ Badges wrap to the next line in a narrow cell.
 
 ## 13. Related
 
-Built on: Badge. Related: Value with source.
+Built on: Badge. Used in: Value with source, which takes these labels as `labels.evidence` (owner decision 2026-10-29).
 
 <Canvas of={Stories.Words} />
