@@ -1,4 +1,5 @@
 import type { ValueLabels } from "@fleet-platform/ui/components/values/value-with-source";
+import type { ZonedDateTimeLabels } from "@fleet-platform/ui/components/time/zoned-date-time-field";
 
 /** Polish words the application passes to ValueWithSource (from its translation module in production). */
 export const valueLabels: ValueLabels = {
@@ -12,4 +13,13 @@ export const valueLabels: ValueLabels = {
   source: "Źródło",
   sourceDate: "Data źródła",
   reason: "Powód",
+};
+
+/** Polish words the application passes to ZonedDateTimeField. */
+export const zonedDateTimeLabels: ZonedDateTimeLabels = {
+  date: "Data",
+  time: "Godzina",
+  occurrence: "Ta godzina wystąpi tej nocy dwa razy. Którą wybierasz?",
+  earlier: "przed cofnięciem zegara",
+  later: "po cofnięciu zegara",
 };

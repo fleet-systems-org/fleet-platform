@@ -1,0 +1,110 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./zoned-date-time-field.stories";
+
+<Meta of={Stories} />
+
+# Zoned date-time field
+
+`import { ZonedDateTimeField } from "@fleet-platform/ui/components/time/zoned-date-time-field"` · `import { resolveLocalDateTime, toInstant } from "@fleet-platform/ui/lib/zoned-time"`
+
+## 1. Purpose
+
+Lets the dispatcher enter a date and time as the client says it, in the place's zone, and turns it into an exact instant with its zone and offset (P07, TIME-1). A time that does not exist or exists twice because of a clock change is never guessed.
+
+## 2. When to use
+
+- Schedule anchors of a trip: loading and end of unloading, each with its timezone and offset (E01 `TripDraftInput`).
+- The vehicle's starting point: when the truck finishes its current work (s08).
+- The wash date for "Nasze mycie", with `timeOptional`: date mandatory, time optional (D63).
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Showing a time | Text formatted by the application in the place's zone | Entry and display are separate |
+| A month or period (reports, closing) | A month picker, not yet in the system | E7 work; goes to "What is missing" |
+| A date in a flat reference form | Nothing yet: `CrudForm` has text, e-mail and textarea fields | The foundations keep `CrudForm`'s field API unchanged; a need goes to "What is missing" |
+
+## 4. Anatomy
+
+Label, hint and error from `Field`; a group with the date box (the browser's calendar) and the time box (hours and minutes); the zone's name after them, also read as part of the description. When the time occurs twice, a required choice of the occurrence appears under the group.
+
+## 5. Variants
+
+| Variant | Result | Example |
+|---|---|---|
+| Date and time (default) | Instant, zone and offset | Loading, end of unloading, vehicle start |
+| `timeOptional` | Instant when a time is given; otherwise the local date alone | Wash date (D63) |
+
+The zone comes from the place (`timeZone`, IANA); the field does not let the dispatcher change it.
+
+<Canvas of={Stories.OptionalTime} />
+
+## 6. States
+
+<Canvas of={Stories.States} />
+
+| State | Look | Source |
+|---|---|---|
+| Empty | Empty boxes with the browser's placeholders; a required field says what to enter when the dispatcher leaves it | audit finding 10 |
+| Filled | Date and time as chosen; the zone always visible | P07 |
+| Error | `border-error` on both boxes, error text with icon from `Field` | Q3 |
+| Clock goes forward | Rejected with a message; nothing is sent | TIME-1, E01 scenario 5 |
+| Clock goes back | A required choice: before or after the clock goes back, with the UTC offset | TIME-1, E01 scenario 5 |
+| Disabled | Page background, muted text; the hint says when it becomes available | audit finding 14 |
+| Loading | Not applicable: local input; a saving form disables it | |
+
+<Canvas of={Stories.ClockForward} />
+
+<Canvas of={Stories.ClockBack} />
+
+## 7. Behaviour and accessibility
+
+- Native `type="date"` and `type="time"` boxes (minute steps): the calendar, keyboard entry and the phone's pickers come from the browser; the values are ISO text ("2026-11-12", "09:30").
+- When focus leaves the whole field, it calls `onZonedChange` with the result: `{ ok: true, date, time, timeZone, offset, instant }`, or a reason: `empty`, `missingDate`, `missingTime`, `nonexistent`, `ambiguous` (with both offsets). Moving between its two boxes checks nothing; nothing is checked while typing (owner decision 2026-10-29).
+- A repeated time shows the choice of occurrence; choosing reports the resolved value at once. Changing the date or time removes the choice until the field is checked again.
+- The group is named by the `Field` label; each box is named by the label and its own word ("Załadunek Data", "Załadunek Godzina"); hint, error and zone are in `aria-describedby`; `aria-invalid` and `required` come from `Field`.
+
+## 8. Content
+
+- The zone is named in words the dispatcher uses: "Czas warszawski".
+- Every message says what to do: "Wpisz godzinę załadunku."
+- A skipped time says why and what to enter: "Tej godziny nie ma: tej nocy zegar przesuwa się do przodu. Wpisz godzinę sprzed zmiany albo po niej."
+- The choice of occurrence asks one question: "Ta godzina wystąpi tej nocy dwa razy. Którą wybierasz?", with "02:30 przed cofnięciem zegara" and "02:30 po cofnięciu zegara".
+
+## 9. Responsive
+
+The boxes and the zone wrap to the next line in a narrow column; at 320 px nothing scrolls sideways.
+
+<Canvas of={Stories.Typing} />
+
+## 10. API
+
+`ZonedDateTimeField`: `timeZone` (IANA, required), `zoneLabel`, `labels` (`date`, `time`, `occurrence`, `earlier`, `later`), `timeOptional`, `defaultDate`, `defaultTime`, `disabled`, `onZonedChange(result)`. `resolveLocalDateTime(date, time, timeZone)` → `unique` with the offset, `ambiguous` with both offsets (earlier instant first) or `nonexistent`; `toInstant(date, time, offset)` → ISO instant in UTC. Both use `Intl` only.
+
+<ArgTypes of={Stories} />
+
+## 11. Code
+
+```tsx
+const [result, setResult] = useState<ZonedDateTimeResult | null>(null);
+
+<Field label="Załadunek" hint="Dokładna data i godzina u klienta" error={result && !result.ok ? t(`time.${result.reason}`) : undefined} required>
+  <ZonedDateTimeField timeZone={place.timeZone} zoneLabel={t(`zone.${place.timeZone}`)} labels={zonedDateTimeLabels} onZonedChange={setResult} />
+</Field>
+// send { loadingAt: result.instant, timeZone: result.timeZone, offset: result.offset } only when result.ok
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Send the instant with the place's zone and offset. | Send "2027-10-31 02:30" and let the server guess. |
+| Ask which 02:30 when the clock goes back. | Pick the first occurrence silently. |
+| Reject 02:30 on the night the clock goes forward. | Move it to 03:30 without telling the dispatcher. |
+
+## 13. Related
+
+Built on: `Field`, `RadioGroup`, the input styles of Input. Used in: trip entry (loading, unloading, wash date), vehicle start.
+
+<Canvas of={Stories.Occurrence} />

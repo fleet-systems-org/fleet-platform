@@ -291,6 +291,35 @@ Owner decisions on 3 and 8 (2026-10-29), applied on the branch `design-system-pr
 - "Pewne" (certain) has no badge: only estimates are marked (R11.1, P4); `ValueWithSource` decides in stage 3.
 - Checkbox and switch are not in the system (Q5c); a need for independent options goes to "What is missing".
 
+## Stage 3, batch 2 (2026-10-29)
+
+Built in `src/components/time/`: `ZonedDateTimeField` (P07, TIME-1) on Field, RadioGroup and the input styles; in `src/lib/zoned-time.ts`: `resolveLocalDateTime` (a local date and time in an IANA zone is `unique`, `ambiguous` with both offsets or `nonexistent`) and `toInstant` (exact ISO instant in UTC), with `Intl` only. The field reports `{ ok, date, time, timeZone, offset, instant }` or a reason (`empty`, `missingDate`, `missingTime`, `nonexistent`, `ambiguous`) when focus leaves it; a repeated time shows a required choice of occurrence. `timeOptional` covers the wash date (D63). Translated words reach it as a `labels` prop. Docs page with 13 sections; stories under "Product/Time". No new dependencies and no new tokens. Independent of #48 (amount scale by currency).
+
+Checks: typecheck, lint, 167 unit tests at 100% coverage (statements 491/491, branches 321/321, functions 157/157, lines 411/411), 116 story tests (interaction, axe, WCAG 1.4.12), `lint:tokens` 0 in `packages/ui`, app build, Storybook build; in the built Storybook the docs page has 13 sections, no page errors, no horizontal scroll at 320 px.
+
+| # | Checklist item | Result |
+|---|---|---|
+| 1 | Contrast | Pass: axe colour-contrast in all stories |
+| 2 | Targets at least 24 px | Pass: boxes 36 px high, occurrence rows 36 px |
+| 3 | Visible labels | Pass: group named by the Field label, boxes "Załadunek Data" and "Załadunek Godzina", zone in the description |
+| 4 | One icon set | Pass: no new icons; the calendar and clock icons are the browser's |
+| 5 | Colour not alone | Pass: errors in words; occurrences as words with the UTC offset |
+| 6 | Empty, error, loading states | Pass: empty, filled, error, disabled, clock forward, clock back; loading not applicable |
+| 7 | Visible focus | Pass: browser focus on native boxes, 2 px outline on radios |
+| 8 | No invented data | Pass: clock change dates from the zone database (28.03.2027, 31.10.2027), demo time 12.11.2026 09:30 from the screen map |
+| 9 | Only token variants | Pass: no new token or variant |
+| 10 | Zero values outside tokens | Pass in `packages/ui` (0); 12 remain in app pages, unchanged |
+| 11 | Lines at most 75 characters | Pass: messages inside `max-w-measure` |
+| 12 | Message says what happened and what to do | Pass: "Tej godziny nie ma: tej nocy zegar przesuwa się do przodu. Wpisz godzinę sprzed zmiany albo po niej." |
+
+Proposals of stage 3 batch 2 (for the owner):
+
+1. Native date and time boxes show the format of the browser's interface language, not the page's: a browser in English shows "10/31/2027" and "02:30 AM" (seen in the screenshots), so 11/12 and 12/11 can be confused. Options: (a) keep the native boxes and require Polish browsers for dispatchers; (b) own Polish entry ("31.10.2027", 24-hour time) with a calendar in a Popover, which adds the shadcn Calendar and its `react-day-picker` dependency. Recommendation: (b), because a misread date is a wrong trip and the format must not depend on each computer.
+2. The zone comes from the place and cannot be changed in the field; it is named in words ("Czas warszawski") without the offset, which is shown only when the clock goes back.
+3. A repeated time is chosen as "przed cofnięciem zegara" or "po cofnięciu zegara" with "UTC+02:00" or "UTC+01:00" under it, instead of "czas letni" and "czas zimowy", so it also holds for zones without summer time names.
+4. A time skipped by the clock is rejected with a message; the field never moves it to the next valid time.
+5. The conversion lives in `packages/ui/src/lib/zoned-time.ts`, as `decimal.ts` does; it moves to `packages/core` when the server validates TIME-1 with the same rule.
+
 ## Next step
 
-Owner reviews the follow-up pull request with the batch 1 decisions. Next batches: `ZonedDateTimeField`, `PlacePicker`, small badges (EV-1, in `values/` after the owner confirms), then screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
+Owner reviews #48 (amount scale by currency) and the batch 2 pull request with its proposals. Next batches: `PlacePicker`, small badges (EV-1, in `values/` after the owner confirms), then screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
