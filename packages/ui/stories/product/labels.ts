@@ -1,5 +1,6 @@
 import type { ValueLabels } from "@fleet-platform/ui/components/values/value-with-source";
 import type { PlacePickerLabels } from "@fleet-platform/ui/components/places/place-picker";
+import type { ZonedDateTimeLabels } from "@fleet-platform/ui/components/time/zoned-date-time-field";
 
 /** Polish words the application passes to ValueWithSource (from its translation module in production). */
 export const valueLabels: ValueLabels = {
@@ -26,4 +27,15 @@ export const placePickerLabels: PlacePickerLabels = {
   unavailable: "Wyszukiwanie adresów jest teraz niedostępne. Wybierz zapisane miejsce albo spróbuj za chwilę.",
   results: count => `Wyniki: ${count}`,
   addPlace: "Dodaj miejsce…",
+};
+
+/** Polish words the application passes to ZonedDateTimeField. */
+export const zonedDateTimeLabels: ZonedDateTimeLabels = {
+  date: "Data",
+  dateFormat: "DD.MM.RRRR",
+  time: "Godzina",
+  timeFormat: "GG:MM",
+  occurrence: "Ta godzina wystąpi tej nocy dwa razy. Którą wybierasz?",
+  earlier: "przed cofnięciem zegara",
+  later: "po cofnięciu zegara",
 };

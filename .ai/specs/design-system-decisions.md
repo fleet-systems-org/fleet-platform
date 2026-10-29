@@ -28,6 +28,7 @@ Code families:
 - **R14.1** — Typeface IBM Plex Sans and a 12/14/16/20 px scale, bold table headers and horizontal lines only, taken from a reference data table; its 48 px rows and left-aligned numbers are not taken.
 - **R15.1** — A status is a word and a colour together, never colour alone, with amounts right-aligned in tabular figures; the reference's pills and large radii are not taken.
 - **R16.1** — An empty state is one sentence with the reason and at most one action, without illustration, so an empty list says what to do next.
+- **R17.1** — A spending breakdown with the total on top and every category as a row with its amount, a share bar and its percentage, taken for the trip cost breakdown so the dispatcher sees at once what makes up the cost; its share ring, emoji and one colour per category are not taken.
 
 ## Product rules (brief)
 
@@ -49,9 +50,11 @@ Code families:
 ## Owner answers on look
 
 - **N2a** — IBM Plex Sans (open font licence) on the 12/14/16/20 scale instead of Arial or the system stack, because the screens are mostly amounts and kilometres and need tabular figures.
+- **N2b** — Body text uses IBM Plex Sans weight 500 instead of 400, because the owner found 400 too thin on work screens (owner decision 2026-10-29).
 - **N3a** — The existing green `#205b49` stays the action colour, because it already exists and differs from the dispatcher's other tools.
 - **N4b** — Radius 4 px for controls and badges, 8 px for panels, no pills, because square-ish shapes suit a dense work tool and avoid G1.
 - **N5a** — Loss is a red badge with the word "Strata" and a minus sign, only on a trip result, because a loss must be visible at once but never judge a person (R01).
+- **N6a** — The quote screen shows the cost breakdown as a table (cost, source, amount, share of cost with a share bar in the action colour, total row at 100 %) beside one summary panel with the trip result, planned availability, freight, covered cost and the accept action, following R07.1 and R17.1. There are no result tiles, so G1 and P6 stay unchanged (owner decision 2026-10-29).
 
 ## Proposals
 
@@ -99,11 +102,12 @@ Code families:
 - **FIN-1** — Money and fuel travel as decimal strings, never as JavaScript numbers; the Polish comma is normalized as text; negative zero shows as zero.
 - **FIN-2** — Components of a calculation are never rounded; only published values are, so a decimal field never rounds what was typed.
 - **FIN-3** — Published scales: money 2, unit prices and rates 6, kilometres and litres 3; ties half-up, negative ties away from zero.
-- **FIN-4** — Inputs are bounded in magnitude and scale before writes; out-of-range values are rejected, never truncated. `DecimalField` takes its scale from the kind of value as in FIN-3: EUR amounts 2; unit prices, FX rates and consumption 6; kilometres and litres 3; amounts in another source currency keep their scale (owner decision 2026-10-29).
+- **FIN-4** — Inputs are bounded in magnitude and scale before writes; out-of-range values are rejected, never truncated. `DecimalField` takes its scale from the kind of value as in FIN-3: unit prices, FX rates and consumption 6; kilometres and litres 3. An amount in any currency takes the decimal places `Intl.NumberFormat` gives that currency (`maximumFractionDigits`: PLN, EUR and CZK 2, HUF 0); more decimals are rejected with a message, never rounded (owner decision 2026-10-29, replacing the same day's "amounts in another source currency keep their scale").
 - **EV-1** — A value has phase, state (known, missing, conflicting) and certainty; the badges show certainty and missing state as words.
 - **EV-4** — Every figure is shown with `ValueWithSource`; whole kilometres on screen and the exact published scale-3 value only in accessible details are specified in the approved foundations (D65). EUR amounts retain 2 decimals; FIN-2 and FIN-3 are unchanged.
 - **SRC-1** — Fuel price per country: own cards first, then the weekly public bulletin as an estimate, then older own-card prices as estimates, then a manual price; otherwise missing ("no fuel price for <country>").
 - **ROUTE-1** — Routes and the country split come from one map provider without fallback; when it fails, the route is missing and the dispatcher may enter the country split by hand. Kilometres from the map provider's route are estimated (`certainty: estimated`), because the route is planned, not driven (owner decision 2026-10-29).
+- **TIME-1** — Times are exact instants with the place's IANA zone; a nonexistent local time is rejected and an ambiguous one needs an offset choice. `ZonedDateTimeField` (owner decisions 2026-10-29): the date is typed as "DD.MM.RRRR" and the time as "GG:MM" (24 hours) in text boxes, checked when the dispatcher leaves the field as in `DecimalField`, with no calendar and no new libraries (a calendar may come later); a one-digit day, month or hour is accepted ("2.11.2026", "9:30"), a two-digit year is not, and typed text is never reformatted; because the browser's date and time inputs follow the browser's language; the zone comes from the place and cannot be changed in the field, named in words, with the offset shown only when the clock goes back; the two occurrences are "przed cofnięciem zegara" and "po cofnięciu zegara" with the UTC offset; a skipped time is rejected, never moved; the conversion moves from `packages/ui` to `packages/core` when the server validates TIME-1 with the same rule.
 - **WKD-1** — The weekend rule: one required case for every weekend in the quote, no default, "Zapytaj o weekend" when missing.
 - **DRF-1** — Several drafts for one truck are compared in a table beside them, which is a separate pattern, not `DataTable`.
 
