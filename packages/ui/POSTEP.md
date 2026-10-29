@@ -322,9 +322,9 @@ Proposals of stage 3 batch 2 (for the owner):
 4. A time skipped by the clock is rejected with a message; the field never moves it to the next valid time.
 5. The conversion lives in `packages/ui/src/lib/zoned-time.ts`, as `decimal.ts` does; it moves to `packages/core` when the server validates TIME-1 with the same rule.
 
-Owner answers (2026-10-29), applied on the same branch: to 1, (c) own text boxes "DD.MM.RRRR" and "GG:MM" (24 hours), checked when the dispatcher leaves the field as in `DecimalField`, with no calendar and no new libraries; a calendar may come later. 2–5 approved. Recorded under TIME-1 in the decisions record. The field now reports `invalidDate` ("31.02.2027") and `invalidTime` ("25:00", "9:30 PM"); a one-digit day, month or hour is accepted (proposal 6).
+Owner answers (2026-10-29), applied on the same branch: to 1, (c) own text boxes "DD.MM.RRRR" and "GG:MM" (24 hours), checked when the dispatcher leaves the field as in `DecimalField`, with no calendar and no new libraries; a calendar may come later. 2–5 approved. Recorded under TIME-1 in the decisions record. The field now reports `invalidDate` ("31.02.2027") and `invalidTime` ("25:00", "9:30 PM"); a one-digit day, month or hour is accepted (proposal 6, approved by the owner on 2026-10-29).
 
-6. A one-digit day, month or hour is accepted ("2.11.2026", "9:30") and the typed text is never reformatted; a two-digit year is not ("12.11.26").
+6. A one-digit day, month or hour is accepted ("2.11.2026", "9:30") and the typed text is never reformatted; a two-digit year is not ("12.11.26"). Owner answer (2026-10-29): approved; recorded under TIME-1.
 
 ## Next step
 
