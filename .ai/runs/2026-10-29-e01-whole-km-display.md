@@ -9,3 +9,4 @@
 - Not run: typecheck, unit/coverage, build, integration and browser QA (documentation-only change). CI is reported separately.
 - Issues: #25 and #22 each received exactly the requested one-line replacement and an English decision comment referencing PR #40. Re-read full bodies through `gh issue view` and verified byte-for-byte equality with the originals after only that replacement.
 - Outcome: documentation ready for review; no code changes or new follow-up found. Only the owner merges.
+- Owner review on 2026-10-29 asked to state that the value itself is shown; one-word fix applied.
