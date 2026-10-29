@@ -23,7 +23,7 @@
   --paper-50: #f8faf9;
   --white: #ffffff;
   --green-800: #205b49;
-  --green-900: #1d4d3f; /* proposal: green-800 mixed 30% towards ink-900, hover and pressed action */
+  --green-900: #1d4d3f; /* approved 2026-10-29: green-800 mixed 30% towards ink-900, hover and pressed action */
   --red-700: #a2191f; /* N5a: loss badge text */
   --red-600: #da1e28; /* Q3 proposal: error colour, distinct from loss */
   --red-100: #ffd7d9; /* N5a: loss badge background */
@@ -68,7 +68,7 @@
   --border-divider: var(--ink-200); /* R08.1, R14.1: lines between rows and sections; decorative only */
   --border-input: var(--ink-400); /* T1: input border, 3:1 against both surfaces */
   --focus-ring: var(--action-primary); /* G1, T4: not the library default blue-500 */
-  --action-primary-hover: var(--green-900); /* proposal: hover and pressed state of action-primary, white text 9.61:1 */
+  --action-primary-hover: var(--green-900); /* approved 2026-10-29: hover and pressed state of action-primary, white text 9.61:1 */
 
   /* Layer 2: status */
   --status-loss-text: var(--red-700); /* N5a, K1: trip result only, never a person (R01) */

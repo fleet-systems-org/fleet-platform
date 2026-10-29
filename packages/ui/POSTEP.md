@@ -10,7 +10,7 @@ Sources the system is built from (reference IDs such as R06.4, antireferences su
 |---|---|
 | 0. Inventory and plan | done 2026-10-29, approved |
 | 1. Foundations | done 2026-10-29, waiting for owner "next" |
-| 2. Primitives | batch 1 done 2026-10-29, waiting for owner "next" |
+| 2. Primitives | batch 1 done and approved 2026-10-29; batch 2 next |
 | 3. Product components, patterns, screens | not started |
 | 4. Teaching pages | not started |
 | 5. Checks and report | not started |
@@ -60,6 +60,14 @@ Sources the system is built from (reference IDs such as R06.4, antireferences su
   11. lines of text at most 75 characters;
   12. every message says what happened and what to do.
 
+2026-10-29, owner answers after stage 2 batch 1:
+
+- Icons: Tabler confirmed (the unfilled "[Lucide / Tabler]" template item is resolved as Tabler).
+- Hover and pressed colour of the primary action `#1d4d3f` (`action-primary-hover`): approved.
+- "(opcjonalne)" marks optional fields (required is the default): approved.
+- Grey field labels (`text-label`, text-muted, 6.0:1): approved.
+- Next: stage 2 batch 2 — Select, RadioGroup (wash question without a default choice, weekend case), status Badge (certain/estimate, loss, verification), Alert, and the documentation pages and stories of `DataTable` and the feedback messages (closes checklist item 6).
+
 ## Stage 1 result
 
 - Storybook 10.6.5 (`@storybook/react-vite`), addons docs + `remark-gfm`, a11y (`test: 'error'`), vitest; onboarding checklists, telemetry and update notices off; brand title "Fleet Platform".
@@ -81,7 +89,7 @@ Sources the system is built from (reference IDs such as R06.4, antireferences su
 | Inner spacing | button `px-4` 16 px, card `p-6` 24 px, card gap 24 px | button and input 12 px (`px-panel`), compact 8 px; card 12 px | Q3-1, owner 2026-10-29 |
 | Type | `text-sm`, `font-medium` | roles `text-body`, `text-label`, `text-section-title`; weights 400/600 only | Owner 2026-10-29, N2a |
 | Focus | 3 px `ring-ring/50` halo plus border colour | 2 px solid `focus-ring` outline, 2 px offset | T4, WCAG 2.4.7 |
-| Hover | `primary/90` transparency | `action-primary-hover` #1d4d3f (proposal), secondary page background, text underline | proposal |
+| Hover | `primary/90` transparency | `action-primary-hover` #1d4d3f (approved), secondary page background, text underline | proposal |
 | Disabled | `opacity-50` | page background, muted text, divider border; reason in visible text | Audit finding 14 |
 | Invalid | `ring-destructive/20` halo | `border-error`, error text with `IconAlertCircle` | Q3 |
 | Button variants | default, destructive, outline, secondary, ghost, link; 8 sizes | primary, secondary, text; default, compact, icon, icon-compact | N5a/Q3 (no red button), Q3-1 |
