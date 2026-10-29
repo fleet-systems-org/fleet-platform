@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wycena w trakcie rozmowy — makieta discovery</title>
+<style>
+  :root { color-scheme: light; --line: #8a8a8a; --soft: #f2f2f2; --mid: #d9d9d9; --text: #1a1a1a; --muted: #4d4d4d; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--text); background: #fff; line-height: 1.45; }
+  header.bar { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; justify-content: space-between; padding: .6rem 1rem; border-bottom: 1px solid var(--line); background: var(--soft); }
+  header.bar p { margin: 0; font-size: .9rem; color: var(--muted); }
+  nav.steps ol { display: flex; flex-wrap: wrap; gap: .25rem .75rem; list-style: none; margin: 0; padding: .5rem 1rem; border-bottom: 1px solid var(--mid); font-size: .9rem; }
+  nav.steps a[aria-current="step"] { font-weight: 700; text-decoration-thickness: 2px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 17rem; gap: 1rem; padding: 1rem; max-width: 72rem; margin: 0 auto; }
+  @media (max-width: 52rem) { .layout { grid-template-columns: minmax(0, 1fr); } }
+  main section[hidden] { display: none; }
+  h1 { font-size: 1.35rem; margin: .2rem 0 .8rem; }
+  h2 { font-size: 1.05rem; margin: 1.2rem 0 .5rem; }
+  h1:focus { outline: 3px solid #000; outline-offset: 3px; }
+  a, button, input, select, textarea { font: inherit; }
+  :focus-visible { outline: 3px solid #000; outline-offset: 2px; }
+  a { color: #000; }
+  button { border: 1px solid #333; background: #fff; color: #000; padding: .45rem .8rem; border-radius: 4px; cursor: pointer; }
+  button.primary { background: #222; color: #fff; border-color: #222; font-weight: 600; }
+  button:disabled { background: var(--mid); color: #555; border-color: var(--line); cursor: not-allowed; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; margin: 0 0 1rem; padding: .6rem .9rem .9rem; }
+  legend { font-weight: 600; padding: 0 .25rem; }
+  .field { display: flex; flex-direction: column; gap: .2rem; margin: .5rem 0; max-width: 24rem; }
+  .row { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; }
+  label.choice { display: flex; gap: .4rem; align-items: center; margin: .25rem 0; }
+  input[type="text"], select, textarea { border: 1px solid #555; border-radius: 4px; padding: .35rem .45rem; background: #fff; }
+  input[aria-invalid="true"], select[aria-invalid="true"] { border: 2px solid #000; }
+  .hint { font-size: .85rem; color: var(--muted); }
+  .error { font-size: .9rem; font-weight: 600; }
+  .error::before { content: "Błąd: "; }
+  .error:empty { display: none; }
+  .summary { border: 2px solid #000; padding: .6rem .9rem; margin-bottom: 1rem; }
+  .summary[hidden] { display: none; }
+  .notice { border: 1px dashed #333; background: var(--soft); padding: .6rem .9rem; margin: .8rem 0; }
+  .notice[hidden] { display: none; }
+  table { border-collapse: collapse; width: 100%; margin: .4rem 0 1rem; font-size: .95rem; }
+  th, td { border: 1px solid var(--mid); padding: .35rem .5rem; text-align: left; vertical-align: top; }
+  th { background: var(--soft); }
+  td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .tag { display: inline-block; border: 1px solid #333; border-radius: 3px; padding: 0 .3rem; font-size: .8rem; margin-right: .3rem; }
+  .src { font-size: .82rem; color: var(--muted); }
+  .result { font-size: 1.25rem; font-weight: 700; }
+  .actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+  aside.test { border: 1px dashed #333; padding: .6rem .9rem; align-self: start; background: var(--soft); }
+  aside.test h2 { margin-top: 0; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div>
+    <strong>Wycena kursu</strong>
+    <p>Makieta discovery. Dane symulowane, zmyślone. Zalogowany: dyspozytor (logowanie poza makietą).</p>
+  </div>
+  <button type="button" id="reset">Resetuj symulację</button>
+</header>
+<p id="live" class="sr-only" role="status" aria-live="polite"></p>
+<nav class="steps" aria-label="Kroki wyceny">
+  <ol>
+    <li><a href="#zestawy" data-step="zestawy">1. Zestaw</a></li>
+    <li><a href="#kurs" data-step="kurs">2. Dane kursu</a></li>
+    <li><a href="#trasa" data-step="trasa">3. Trasa i weekend</a></li>
+    <li><a href="#wycena" data-step="wycena">4. Wycena</a></li>
+  </ol>
+</nav>
+<div class="layout">
+<main>
+
+<section id="zestawy" aria-labelledby="h-zestawy">
+  <h1 id="h-zestawy" tabindex="-1">Wybierz zestaw</h1>
+  <p class="hint">Zestaw to stały ciągnik z cysterną. Kurs zaczyna się tam, gdzie zestaw jest wolny po ostatnim rozładunku.</p>
+  <div class="table-wrap">
+  <table>
+    <caption class="sr-only">Zestawy i miejsce, w którym są wolne</caption>
+    <thead><tr><th scope="col">Zestaw</th><th scope="col">Wolny od</th><th scope="col">Stan</th><th scope="col">Akcja</th></tr></thead>
+    <tbody id="truck-rows"></tbody>
+  </table>
+  </div>
+</section>
+
+<section id="start" aria-labelledby="h-start" hidden>
+  <h1 id="h-start" tabindex="-1">Punkt startowy zestawu</h1>
+  <p>Zestaw <strong data-bind="truck-name"></strong> nie ma jeszcze żadnego kursu. Podaj, skąd i od kiedy zaczyna; z tego miejsca liczy się pierwszy dojazd.</p>
+  <div class="summary" id="start-summary" role="alert" tabindex="-1" hidden></div>
+  <form id="start-form" novalidate>
+    <div class="field">
+      <label for="start-place">Miejsce startu</label>
+      <select id="start-place" aria-describedby="start-place-err">
+        <option value="">Wybierz miejsce</option>
+        <option value="A">Miasto A (PL)</option>
+        <option value="D">Miasto D (PL)</option>
+      </select>
+      <span class="error" id="start-place-err"></span>
+    </div>
+    <div class="field">
+      <label for="start-at">Wolny od (data i godzina, czas warszawski)</label>
+      <input type="text" id="start-at" autocomplete="off" aria-describedby="start-at-hint start-at-err">
+      <span class="hint" id="start-at-hint">Format DD.MM.RRRR GG:MM, np. 02.11.2026 08:00</span>
+      <span class="error" id="start-at-err"></span>
+    </div>
+    <div class="actions">
+      <a href="#zestawy">Wstecz do zestawów</a>
+      <button type="submit" class="primary">Zapisz start i przejdź dalej</button>
+    </div>
+  </form>
+</section>
+
+<section id="kurs" aria-labelledby="h-kurs" hidden>
+  <h1 id="h-kurs" tabindex="-1">Dane kursu</h1>
+  <p>Zestaw <strong data-bind="truck-name"></strong> · wolny: <span data-bind="truck-free"></span></p>
+  <div class="summary" id="kurs-summary" role="alert" tabindex="-1" hidden></div>
+  <form id="kurs-form" novalidate>
+    <fieldset>
+      <legend>Miejsca</legend>
+      <div class="row">
+        <div class="field">
+          <label for="load-place">Załadunek</label>
+          <select id="load-place" aria-describedby="load-place-err">
+            <option value="">Wybierz miejsce</option>
+            <option value="B">Miasto B (PL)</option>
+          </select>
+          <span class="error" id="load-place-err"></span>
+        </div>
+        <div class="field">
+          <label for="unload-place">Rozładunek</label>
+          <select id="unload-place" aria-describedby="unload-place-err">
+            <option value="">Wybierz miejsce</option>
+            <option value="C">Miasto C (PL)</option>
+            <option value="E">Miasto E (PL)</option>
+          </select>
+          <span class="error" id="unload-place-err"></span>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Dokładne daty (czas warszawski)</legend>
+      <div class="row">
+        <div class="field">
+          <label for="load-at">Załadunek: data i godzina</label>
+          <input type="text" id="load-at" autocomplete="off" aria-describedby="load-at-hint load-at-err">
+          <span class="hint" id="load-at-hint">Format DD.MM.RRRR GG:MM</span>
+          <span class="error" id="load-at-err"></span>
+        </div>
+        <div class="field">
+          <label for="unload-at">Koniec rozładunku: data i godzina</label>
+          <input type="text" id="unload-at" autocomplete="off" aria-describedby="unload-at-hint unload-at-err">
+          <span class="hint" id="unload-at-hint">Format DD.MM.RRRR GG:MM. Od tej chwili zestaw jest wolny.</span>
+          <span class="error" id="unload-at-err"></span>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Uzgodniony fracht netto</legend>
+      <div class="row">
+        <div class="field">
+          <label for="freight">Kwota</label>
+          <input type="text" id="freight" inputmode="decimal" autocomplete="off" aria-describedby="freight-hint freight-err">
+          <span class="hint" id="freight-hint">Bez kwoty wycena pokaże koszty, ale nie wynik.</span>
+          <span class="error" id="freight-err"></span>
+        </div>
+        <div class="field">
+          <label for="currency">Waluta</label>
+          <select id="currency">
+            <option value="EUR">EUR</option>
+            <option value="PLN">PLN</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset aria-describedby="wash-err">
+      <legend>Mycie cysterny (odpowiedź obowiązkowa)</legend>
+      <label class="choice"><input type="radio" name="wash" value="none" id="wash-none"> Bez mycia</label>
+      <label class="choice"><input type="radio" name="wash" value="ours" id="wash-ours"> Nasze mycie (koszt przewoźnika)</label>
+      <span class="error" id="wash-err"></span>
+      <div id="wash-details" hidden>
+        <div class="row">
+          <div class="field">
+            <label for="wash-amount">Kwota mycia netto (EUR)</label>
+            <input type="text" id="wash-amount" inputmode="decimal" autocomplete="off" aria-describedby="wash-amount-err">
+            <span class="error" id="wash-amount-err"></span>
+          </div>
+          <div class="field">
+            <label for="wash-date">Data mycia</label>
+            <input type="text" id="wash-date" autocomplete="off" aria-describedby="wash-date-hint wash-date-err">
+            <span class="hint" id="wash-date-hint">DD.MM.RRRR</span>
+            <span class="error" id="wash-date-err"></span>
+          </div>
+          <div class="field">
+            <label for="wash-time">Godzina mycia (opcjonalnie)</label>
+            <input type="text" id="wash-time" autocomplete="off" aria-describedby="wash-time-hint wash-time-err">
+            <span class="hint" id="wash-time-hint">GG:MM</span>
+            <span class="error" id="wash-time-err"></span>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    <div class="actions">
+      <a href="#zestawy">Wstecz do zestawów</a>
+      <button type="submit" class="primary">Dalej: trasa</button>
+    </div>
+  </form>
+</section>
+
+<section id="trasa" aria-labelledby="h-trasa" hidden>
+  <h1 id="h-trasa" tabindex="-1">Trasa i weekend</h1>
+  <p><span data-bind="route-line"></span></p>
+  <div class="table-wrap">
+  <table>
+    <caption class="sr-only">Odległości według krajów</caption>
+    <thead><tr><th scope="col">Odcinek</th><th scope="col">Kraj</th><th scope="col">Km</th><th scope="col">Źródło</th></tr></thead>
+    <tbody id="route-rows"></tbody>
+  </table>
+  </div>
+  <p><a href="#poza" data-out="Edycja trasy z podziałem na kraje i powodem">Popraw trasę</a> <span class="hint">(poza makietą)</span></p>
+  <form id="trasa-form" novalidate>
+    <fieldset id="weekend-box" hidden aria-describedby="weekend-hint">
+      <legend>Kurs obejmuje weekend: co z kierowcą?</legend>
+      <p class="hint" id="weekend-hint">Weekend to sobota 00:00 – poniedziałek 00:00 czasu warszawskiego. Jedna odpowiedź dotyczy wszystkich weekendów w kursie.</p>
+      <label class="choice"><input type="radio" name="weekend" value="homePoland"> Kierowca w domu w Polsce</label>
+      <label class="choice"><input type="radio" name="weekend" value="restAbroad"> Skrócony odpoczynek za granicą</label>
+      <label class="choice"><input type="radio" name="weekend" value="drivingOn"> Jedzie dalej</label>
+    </fieldset>
+    <div class="actions">
+      <a href="#kurs">Wstecz: dane kursu</a>
+      <button type="submit" class="primary" id="quote-btn">Wyceń</button>
+    </div>
+    <p id="quote-busy" class="notice" hidden>Wyceniam…</p>
+  </form>
+</section>
+
+<section id="wycena" aria-labelledby="h-wycena" hidden>
+  <h1 id="h-wycena" tabindex="-1">Wycena kursu</h1>
+  <p data-bind="quote-head"></p>
+  <div class="notice" id="stale-box" hidden>
+    <p><strong>Dane zmieniły się po wycenie.</strong> Przelicz, aby móc przyjąć.</p>
+    <button type="button" id="requote">Przelicz</button>
+  </div>
+  <div class="notice" id="outage-box" hidden>
+    <p><strong>Nie udało się pobrać danych źródłowych.</strong> Wpisane dane są zachowane. Brakuje: ceny paliwa, kursu walut, stawek miesięcznych.</p>
+    <button type="button" id="retry">Spróbuj ponownie</button>
+  </div>
+  <div id="incomplete-box" class="notice" hidden>
+    <p><strong>Wycena niepełna.</strong> Brakuje:</p>
+    <ul id="missing-list"></ul>
+  </div>
+  <form id="manual-fuel" class="notice" hidden novalidate>
+    <p><strong>Brak ceny paliwa dla PL</strong> (brak transakcji kart z 14 dni i brak ceny publicznej). Możesz wpisać cenę ręcznie; będzie oznaczona jako szacunek i ważna 14 dni.</p>
+    <div class="field">
+      <label for="manual-fuel-price">Cena paliwa PL, EUR netto za litr</label>
+      <input type="text" id="manual-fuel-price" inputmode="decimal" autocomplete="off" aria-describedby="manual-fuel-price-err">
+      <span class="error" id="manual-fuel-price-err"></span>
+    </div>
+    <button type="submit">Zapisz cenę i przelicz</button>
+  </form>
+
+  <div id="quote-body">
+    <h2>Koszty i wynik</h2>
+    <div class="table-wrap">
+    <table>
+      <caption class="sr-only">Składniki wyceny z oznaczeniem pewności i źródłem</caption>
+      <thead><tr><th scope="col">Składnik</th><th scope="col">EUR netto</th><th scope="col">Pewność i źródło</th></tr></thead>
+      <tbody id="cost-rows"></tbody>
+    </table>
+    </div>
+    <p id="result-line" class="result"></p>
+    <p class="hint">Wynik w zakresie uwzględnionych kosztów; to nie jest pełny zysk ani rekomendacja.</p>
+    <h2>Gdzie i kiedy zestaw będzie wolny</h2>
+    <p id="free-line"></p>
+    <p class="hint">Pusty przejazd po rozładunku nie obciąża tej wyceny; przejmie go następny kurs.</p>
+  </div>
+
+  <h2>Podobne kursy: <span data-bind="pair"></span></h2>
+  <div id="history"></div>
+
+  <div id="drafts-box" hidden>
+    <h2>Warianty tego zestawu (od tego samego poprzedniego kursu)</h2>
+    <div class="field">
+      <label for="draft-sort">Sortuj według</label>
+      <select id="draft-sort">
+        <option value="result">Wynik</option>
+        <option value="freight">Fracht</option>
+        <option value="perDay">Wynik na dzień</option>
+        <option value="perKm">Wynik na km</option>
+        <option value="free">Czas wolny</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <caption class="sr-only">Porównanie wariantów bez rekomendacji</caption>
+      <thead><tr><th scope="col">Wariant</th><th scope="col">Fracht EUR</th><th scope="col">Koszt EUR</th><th scope="col">Wynik EUR</th><th scope="col">Na dzień</th><th scope="col">Na km</th><th scope="col">Wolny</th><th scope="col">Stan</th><th scope="col">Akcja</th></tr></thead>
+      <tbody id="draft-rows"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <form id="accept-form" novalidate>
+    <div class="field" id="loss-field" hidden>
+      <label for="loss-reason">Powód przyjęcia ze stratą (wymagany)</label>
+      <textarea id="loss-reason" rows="2" aria-describedby="loss-reason-err"></textarea>
+      <span class="error" id="loss-reason-err"></span>
+    </div>
+    <div class="actions">
+      <a href="#trasa">Wstecz: trasa</a>
+      <button type="button" id="add-variant">Zachowaj jako wariant i wyceń inny</button>
+      <button type="submit" class="primary" id="accept-btn">Przyjmij wycenę</button>
+    </div>
+    <p class="hint" id="accept-hint"></p>
+  </form>
+</section>
+
+<section id="przyjeto" aria-labelledby="h-przyjeto" hidden>
+  <h1 id="h-przyjeto" tabindex="-1">Wycena przyjęta</h1>
+  <p id="accepted-line"></p>
+  <p id="accepted-free"></p>
+  <p>Dojazd po rozładunku: <strong>otwarty, czeka na następny kurs</strong>.</p>
+  <p class="hint">Dane wejściowe, stawki i wersja obliczeń są zamrożone. Zmiana źródeł nie zmienia tej wyceny.</p>
+  <div class="actions">
+    <a href="#zestawy">Wróć do zestawów</a>
+    <button type="button" id="next-trip">Wyceń kolejny kurs tego zestawu</button>
+    <a href="#poza" data-out="Korekta albo anulowanie przyjętego kursu">Popraw albo anuluj kurs</a>
+  </div>
+</section>
+
+<section id="poza" aria-labelledby="h-poza" hidden>
+  <h1 id="h-poza" tabindex="-1">Poza tą makietą</h1>
+  <p><strong data-bind="out-name">Ta funkcja</strong> jest w specyfikacji E01, ale ta makieta jej nie symuluje.</p>
+  <p><a href="#" id="poza-back">Wróć do poprzedniego ekranu</a> · <a href="#zestawy">Zestawy</a></p>
+</section>
+
+<section id="brak" aria-labelledby="h-brak" hidden>
+  <h1 id="h-brak" tabindex="-1">Nie ma takiego ekranu</h1>
+  <p id="brak-text">Ten adres nie prowadzi do żadnego ekranu makiety albo brakuje wcześniejszego kroku.</p>
+  <p><a href="#zestawy">Zacznij od wyboru zestawu</a></p>
+</section>
+
+</main>
+
+<aside class="test" aria-labelledby="h-test">
+  <h2 id="h-test">Stany testowe</h2>
+  <p class="hint">Przełączniki makiety do sprawdzania stanów brzegowych. Nie są częścią produktu.</p>
+  <label class="choice"><input type="checkbox" id="t-no-fuel"> Brak ceny paliwa PL</label>
+  <label class="choice"><input type="checkbox" id="t-outage"> Następna wycena: źródło niedostępne</label>
+  <div class="field">
+    <label for="t-history">Historia faktur</label>
+    <select id="t-history">
+      <option value="ok">Dostępna</option>
+      <option value="down">Źródło niedostępne</option>
+      <option value="unmatched">Są niedopasowane miejscowości</option>
+    </select>
+  </div>
+</aside>
+</div>
+
+<script>
+"use strict";
+// ---------- exact decimal fractions (BigInt), rounding once at publication (R11) ----------
+const B = BigInt;
+function gcd(a, b) { a = a < 0n ? -a : a; while (b) { [a, b] = [b, a % b]; } return a || 1n; }
+function fr(n, d = 1n) { if (d < 0n) { n = -n; d = -d; } const g = gcd(n, d); return { n: n / g, d: d / g }; }
+const add = (a, b) => fr(a.n * b.d + b.n * a.d, a.d * b.d);
+const sub = (a, b) => fr(a.n * b.d - b.n * a.d, a.d * b.d);
+const mul = (a, b) => fr(a.n * b.n, a.d * b.d);
+const div = (a, b) => fr(a.n * b.d, a.d * b.n);
+const ZERO = fr(0n);
+function dec(s) { // "60,00" | "60.5" -> fraction or null
+  const t = String(s).trim().replace(",", ".");
+  if (!/^-?\d+(\.\d+)?$/.test(t)) return null;
+  const [i, f = ""] = t.replace("-", "").split(".");
+  const v = fr(B(i + f), 10n ** B(f.length));
+  return t.startsWith("-") ? fr(-v.n, v.d) : v;
+}
+function roundScaled(f, places) { // half-up away from zero
+  const scale = 10n ** B(places); const neg = f.n < 0n; const n = (neg ? -f.n : f.n) * scale;
+  let q = n / f.d; if ((n % f.d) * 2n >= f.d) q += 1n; return neg ? -q : q;
+}
+function fmtScaled(q, places) {
+  const neg = q < 0n; let s = (neg ? -q : q).toString().padStart(places + 1, "0");
+  const int = s.slice(0, s.length - places), frac = s.slice(s.length - places);
+  const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return (neg ? "−" : "") + grouped + (places ? "," + frac : "");
+}
+const money = (f) => fmtScaled(roundScaled(f, 2), 2);
+const centsOf = (f) => roundScaled(f, 2);
+
+// ---------- fictitious fixtures ----------
+const PLACES = { A: "Miasto A (PL)", B: "Miasto B (PL)", C: "Miasto C (PL)", D: "Miasto D (PL)", E: "Miasto E (PL)" };
+const APPROACH_KM = { A: { B: 20 }, C: { B: 80 }, D: { B: 35 }, E: { B: 120 } };
+const LOADED_KM = { B: { C: 80, E: 120 } };
+const RATES = { consEmpty: dec("10"), consLoaded: dec("20"), fuel: dec("1.000000"), toll: dec("0.100000"),
+  adBlue: dec("0.010000"), vehicleDay: dec("72.000000"), driverDay: dec("48.000000"), restFlat: dec("24.000000"),
+  plnPerEur: dec("4.250000"), month: "2026-09" };
+const INVOICES = { "B>C": [
+  { date: "2026-10-01", amount: "1250.00", cur: "PLN" },
+  { date: "2026-09-03", amount: "58.50", cur: "EUR" },
+  { date: "2026-08-14", amount: "61.00", cur: "EUR" } ] };
+function initialState() {
+  return {
+    trucks: [
+      { id: "z01", name: "Zestaw 01", place: "A", at: "2026-11-02T08:00", origin: "trip" },
+      { id: "z02", name: "Zestaw 02", place: null, at: null, origin: null },
+      { id: "z03", name: "Zestaw 03", place: "D", at: "2026-11-03T12:00", origin: "trip" } ],
+    drafts: [], current: null, accepted: [], seq: 0, quoteSeq: 0, manualFuel: null,
+    outOrigin: "#zestawy", lastAccepted: null };
+}
+let S = initialState();
+
+// ---------- time helpers (naive local Europe/Warsaw strings; DST not modelled) ----------
+const MIN = 60000;
+function isoDT(raw) { // "DD.MM.RRRR GG:MM" -> "YYYY-MM-DDTHH:MM" or null
+  const m = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/.exec(String(raw).trim()); if (!m) return null;
+  const [, dd, mm, y, h, mi] = m.map(Number); const t = new Date(Date.UTC(y, mm - 1, dd, h, mi));
+  if (t.getUTCDate() !== dd || t.getUTCMonth() !== mm - 1 || h > 23 || mi > 59) return null;
+  return `${m[3]}-${m[2]}-${m[1]}T${m[4]}:${m[5]}`; }
+const isoD = (raw) => { const v = isoDT(String(raw).trim() + " 00:00"); return v ? v.slice(0, 10) : null; };
+const okTime = (raw) => /^([01]\d|2[0-3]):[0-5]\d$/.test(String(raw).trim());
+const toMin = (s) => { const [d, t] = s.split("T"); const [y, m, dd] = d.split("-").map(Number); const [h, mi] = t.split(":").map(Number); return Date.UTC(y, m - 1, dd, h, mi) / MIN; };
+const DAYS = ["niedz.", "pon.", "wt.", "śr.", "czw.", "pt.", "sob."];
+const MONTHS = ["sty", "lut", "mar", "kwi", "maj", "cze", "lip", "sie", "wrz", "paź", "lis", "gru"];
+function fmtAt(s) { if (!s) return "—"; const dt = new Date(toMin(s) * MIN);
+  return `${DAYS[dt.getUTCDay()]} ${dt.getUTCDate()} ${MONTHS[dt.getUTCMonth()]} ${dt.getUTCFullYear()}, ${String(dt.getUTCHours()).padStart(2, "0")}:${String(dt.getUTCMinutes()).padStart(2, "0")}`; }
+function split(startMin, endMin) { // weekday minutes, weekend minutes, touched weekend days
+  let w = 0, e = 0, k = 0; let day = Math.floor(startMin / 1440) * 1440;
+  for (; day < endMin; day += 1440) {
+    const ov = Math.min(endMin, day + 1440) - Math.max(startMin, day); if (ov <= 0) continue;
+    const wd = new Date(day * MIN).getUTCDay(); if (wd === 0 || wd === 6) { e += ov; k += 1; } else w += ov; }
+  return { w, e, k };
+}
+
+// ---------- DOM helpers ----------
+const $ = (id) => document.getElementById(id);
+function text(el, s) { el.textContent = s; return el; }
+function el(tag, s, cls) { const n = document.createElement(tag); if (s !== undefined) n.textContent = s; if (cls) n.className = cls; return n; }
+function announce(s) { const l = $("live"); l.textContent = ""; setTimeout(() => { l.textContent = s; }, 30); }
+const truck = (id) => S.trucks.find((t) => t.id === id);
+const cur = () => S.drafts.find((d) => d.id === S.current) || null;
+function bindAll(key, value) { document.querySelectorAll(`[data-bind="${key}"]`).forEach((n) => { n.textContent = value; }); }
+
+// ---------- quote calculation (spec E01: cost formulas, WKD-1) ----------
+function calculate(d, t) {
+  const i = d.inputs, missing = [];
+  const aKm = APPROACH_KM[t.place][i.load], lKm = LOADED_KM[i.load][i.unload];
+  const startMin = toMin(t.at), endMin = toMin(i.unloadIso), sp = split(startMin, endMin);
+  const litres = add(mul(fr(B(aKm)), div(RATES.consEmpty, fr(100n))), mul(fr(B(lKm)), div(RATES.consLoaded, fr(100n))));
+  let fuelPrice = RATES.fuel, fuelSrc = "Szacunek · karty paliwowe PL, średnia ważona z 3 dni (dane syntetyczne)";
+  if ($("t-no-fuel").checked) {
+    if (S.manualFuel) { fuelPrice = S.manualFuel; fuelSrc = "Szacunek · cena wpisana ręcznie przez dyspozytora, ważna 14 dni"; }
+    else { fuelPrice = null; missing.push("Cena paliwa PL"); }
+  }
+  const rows = [];
+  const fuel = fuelPrice ? mul(litres, fuelPrice) : null;
+  rows.push({ name: `Paliwo (${fmtScaled(roundScaled(litres, 3), 3)} l)`, v: fuel, src: fuel ? fuelSrc : "Brak danych" });
+  const toll = mul(fr(B(aKm + lKm)), RATES.toll);
+  rows.push({ name: "Opłaty drogowe", v: toll, src: `Szacunek · koszt kart na km, miesiąc ${RATES.month} (konfiguracja właściciela)` });
+  rows.push({ name: "AdBlue", v: mul(litres, RATES.adBlue), src: "Szacunek · stawka właściciela" });
+  if (i.wash === "ours") rows.push({ name: `Mycie cysterny (${i.washDate}${i.washTime ? " " + i.washTime : ""})`, v: dec(i.washAmount), src: "Pewne · wpisane przez dyspozytora" });
+  else rows.push({ name: "Mycie cysterny", v: ZERO, src: "Pewne · odpowiedź: bez mycia" });
+  const total = fr(B(endMin - startMin)), dayMin = fr(1440n);
+  rows.push({ name: "Pojazd (czas całego kursu)", v: div(mul(RATES.vehicleDay, total), dayMin), src: `Szacunek · stawka pojazdo-dnia, miesiąc ${RATES.month}` });
+  let labour = div(mul(RATES.driverDay, fr(B(sp.w))), dayMin), labourSrc = `Szacunek · stawka kierowcy na dzień, miesiąc ${RATES.month}`;
+  if (sp.e > 0) {
+    if (!i.weekend) { labour = null; missing.push("Zapytaj o weekend"); labourSrc = "Brak odpowiedzi o weekend"; }
+    else if (i.weekend === "homePoland") labourSrc += "; weekend: kierowca w domu (0)";
+    else if (i.weekend === "restAbroad") { labour = add(labour, mul(RATES.restFlat, fr(B(sp.k)))); labourSrc += `; weekend za granicą: ${sp.k} × stawka ryczałtowa`; }
+    else { labour = add(labour, div(mul(RATES.driverDay, fr(B(sp.e))), dayMin)); labourSrc += "; weekend: jedzie dalej"; }
+  }
+  rows.push({ name: "Praca kierowcy", v: labour, src: labourSrc });
+  let revenue = null, revenueSrc = "";
+  if (i.freight === "") missing.push("Brak ceny frachtu");
+  else if (i.currency === "EUR") { revenue = dec(i.freight); revenueSrc = "Pewne · fracht wpisany przez dyspozytora"; }
+  else { revenue = div(dec(i.freight), RATES.plnPerEur); revenueSrc = `Szacunek · ${money(dec(i.freight))} PLN po kursie 4,250000 z ostatniej tabeli przed datą (syntetyczny)`; }
+  const costKnown = rows.every((r) => r.v);
+  const costExact = costKnown ? rows.reduce((a, r) => add(a, r.v), ZERO) : null;
+  const shownSum = costKnown ? rows.reduce((a, r) => a + centsOf(r.v), 0n) : null;
+  const costCents = costKnown ? centsOf(costExact) : null;
+  const complete = missing.length === 0;
+  const resultCents = complete ? centsOf(revenue) - costCents : null;
+  const days = fr(B(endMin - startMin), 1440n), km = aKm + lKm;
+  return { id: ++S.quoteSeq, rows, missing, complete, aKm, lKm, km, revenue, revenueSrc,
+    costCents, reconcile: costKnown ? costCents - shownSum : 0n, resultCents,
+    perDay: complete ? div(fr(resultCents, 100n), days) : null,
+    perKm: complete ? div(fr(resultCents, 100n), fr(B(km))) : null,
+    freeAt: i.unloadIso, freePlace: i.unload, predecessor: `${t.place}@${t.at}`, stale: false, sp };
+}
+
+// ---------- rendering ----------
+function renderTrucks() {
+  const tb = $("truck-rows"); tb.replaceChildren();
+  for (const t of S.trucks) {
+    const tr = el("tr");
+    const th = el("th", t.name); th.scope = "row"; tr.append(th);
+    tr.append(el("td", t.place ? `${PLACES[t.place]}, ${fmtAt(t.at)}${t.origin === "start" ? " (start wpisany ręcznie)" : ""}` : "nieznane"));
+    tr.append(el("td", t.place ? (S.accepted.some((a) => a.truckId === t.id) ? "Dojazd otwarty, czeka na następny kurs" : "Gotowy do wyceny") : "Brak punktu startowego"));
+    const td = el("td"); const b = el("button", t.place ? "Wyceń kurs" : "Wpisz start");
+    b.type = "button"; b.setAttribute("aria-label", `${t.place ? "Wyceń kurs" : "Wpisz start"}: ${t.name}`);
+    b.addEventListener("click", () => startTrip(t.id)); td.append(b); tr.append(td); tb.append(tr);
+  }
+}
+function startTrip(truckId) {
+  const t = truck(truckId);
+  S.drafts.push({ id: ++S.seq, truckId, label: `Wariant ${S.drafts.filter((d) => d.truckId === truckId).length + 1}`, status: "szkic",
+    inputs: { load: "", unload: "", loadAt: "", unloadAt: "", freight: "", currency: "EUR", wash: "", washAmount: "", washDate: "", washTime: "", weekend: "" }, quote: null });
+  S.current = S.seq; fillForm(); clearErrors("kurs");
+  go(t.place ? "#kurs" : "#start");
+}
+function fillForm() {
+  const d = cur(); if (!d) return; const i = d.inputs;
+  $("load-place").value = i.load; $("unload-place").value = i.unload; $("load-at").value = i.loadAt; $("unload-at").value = i.unloadAt;
+  $("freight").value = i.freight; $("currency").value = i.currency;
+  document.querySelectorAll('input[name="wash"]').forEach((r) => { r.checked = r.value === i.wash; });
+  $("wash-amount").value = i.washAmount; $("wash-date").value = i.washDate; $("wash-time").value = i.washTime;
+  $("wash-details").hidden = i.wash !== "ours";
+  document.querySelectorAll('input[name="weekend"]').forEach((r) => { r.checked = r.value === i.weekend; });
+}
+function readForm() {
+  const d = cur(); if (!d) return; const i = d.inputs;
+  i.load = $("load-place").value; i.unload = $("unload-place").value; i.loadAt = $("load-at").value; i.unloadAt = $("unload-at").value;
+  i.freight = $("freight").value.trim(); i.currency = $("currency").value;
+  i.wash = (document.querySelector('input[name="wash"]:checked') || {}).value || "";
+  i.washAmount = $("wash-amount").value.trim(); i.washDate = $("wash-date").value; i.washTime = $("wash-time").value;
+  i.weekend = (document.querySelector('input[name="weekend"]:checked') || {}).value || "";
+}
+function onEdit() {
+  readForm(); $("wash-details").hidden = cur() ? cur().inputs.wash !== "ours" : true;
+  const d = cur(); if (d && d.quote && !d.quote.stale && d.status === "szkic") { d.quote.stale = true; announce("Wycena nieaktualna po zmianie danych."); }
+}
+function setError(id, msg) { const f = $(id); const e = $(id + "-err"); if (e) e.textContent = msg; if (f && f.tagName !== "FIELDSET") f.setAttribute("aria-invalid", msg ? "true" : "false"); }
+function clearErrors(scope) { document.querySelectorAll(`#${scope} .error`).forEach((e) => { e.textContent = ""; }); document.querySelectorAll(`#${scope} [aria-invalid]`).forEach((f) => f.removeAttribute("aria-invalid")); const s = $(scope + "-summary"); if (s) s.hidden = true; }
+function plural(n) { const t = n % 10, h = n % 100; return n === 1 ? "pole" : t >= 2 && t <= 4 && (h < 12 || h > 14) ? "pola" : "pól"; }
+function showSummary(scope, errs) {
+  const s = $(scope + "-summary"); s.replaceChildren(el("p", `Popraw ${errs.length} ${plural(errs.length)}:`));
+  const ul = el("ul"); for (const [id, msg] of errs) { const li = el("li"); const a = el("a", msg); a.href = "#" + id; a.addEventListener("click", (ev) => { ev.preventDefault(); $(id).focus(); }); li.append(a); ul.append(li); }
+  s.append(ul); s.hidden = false; $(errs[0][0]).focus();
+}
+
+function validateTrip() {
+  readForm(); clearErrors("kurs"); const i = cur().inputs, t = truck(cur().truckId), errs = [];
+  const req = (id, ok, msg) => { if (!ok) { setError(id, msg); errs.push([id, msg]); } };
+  req("load-place", i.load, "Wybierz miejsce załadunku.");
+  req("unload-place", i.unload, "Wybierz miejsce rozładunku.");
+  req("load-at", i.loadAt, "Podaj datę i godzinę załadunku.");
+  req("unload-at", i.unloadAt, "Podaj datę i godzinę końca rozładunku.");
+  i.loadIso = isoDT(i.loadAt); i.unloadIso = isoDT(i.unloadAt);
+  if (i.loadAt && !i.loadIso) req("load-at", false, "Wpisz datę i godzinę jako DD.MM.RRRR GG:MM.");
+  if (i.unloadAt && !i.unloadIso) req("unload-at", false, "Wpisz datę i godzinę jako DD.MM.RRRR GG:MM.");
+  if (i.loadIso && toMin(i.loadIso) < toMin(t.at)) req("load-at", false, `Zestaw jest wolny dopiero od ${fmtAt(t.at)}.`);
+  if (i.loadIso && i.unloadIso && toMin(i.unloadIso) <= toMin(i.loadIso)) req("unload-at", false, "Koniec rozładunku musi być po załadunku.");
+  if (i.freight !== "") { const f = dec(i.freight); req("freight", f && f.n > 0n, "Wpisz kwotę, np. 60,00, albo zostaw pole puste."); }
+  if (!i.wash) { setError("wash", "Odpowiedz: Bez mycia albo Nasze mycie."); errs.push(["wash-none", "Odpowiedz: Bez mycia albo Nasze mycie."]); }
+  if (i.wash === "ours") {
+    const a = dec(i.washAmount); req("wash-amount", a && a.n > 0n, "Podaj kwotę mycia, np. 5,00.");
+    req("wash-date", i.washDate, "Podaj datę mycia.");
+    if (i.washDate && !isoD(i.washDate)) req("wash-date", false, "Wpisz datę jako DD.MM.RRRR.");
+    if (i.washTime && !okTime(i.washTime)) req("wash-time", false, "Wpisz godzinę jako GG:MM albo zostaw puste.");
+  }
+  return errs;
+}
+
+function renderRoute() {
+  const d = cur(), t = truck(d.truckId), i = d.inputs;
+  bindAll("route-line", `${PLACES[t.place]} → ${PLACES[i.load]} → ${PLACES[i.unload]} · ${fmtAt(t.at)} – ${fmtAt(i.unloadIso)}`);
+  const tb = $("route-rows"); tb.replaceChildren();
+  const src = "Szacunek · trasa ciężarowa (dostawca tras, wynik syntetyczny)";
+  for (const [name, km] of [["Dojazd pusty (cały, od poprzedniego rozładunku)", APPROACH_KM[t.place][i.load]], ["Kurs z ładunkiem", LOADED_KM[i.load][i.unload]]]) {
+    const tr = el("tr"); tr.append(el("td", name), el("td", "PL")); const n = el("td", fmtScaled(B(km) * 1000n, 3), "num"); tr.append(n, el("td", src, "src")); tb.append(tr); }
+  const sp = split(toMin(t.at), toMin(i.unloadIso)); $("weekend-box").hidden = sp.e === 0;
+}
+
+function renderQuote() {
+  const d = cur(), q = d.quote, t = truck(d.truckId), i = d.inputs;
+  bindAll("quote-head", `${t.name} · ${PLACES[i.load]} → ${PLACES[i.unload]} · ${d.label} · wycena nr ${q.id}${q.outage ? "" : q.complete ? " · pełna" : " · niepełna"}`);
+  bindAll("pair", `${PLACES[i.load].replace(" (PL)", "")} → ${PLACES[i.unload].replace(" (PL)", "")}`);
+  $("outage-box").hidden = !q.outage; $("quote-body").hidden = !!q.outage;
+  $("stale-box").hidden = !q.stale || d.status !== "szkic";
+  const ml = $("missing-list"); ml.replaceChildren(); for (const m of q.missing || []) ml.append(el("li", m));
+  $("incomplete-box").hidden = q.outage || q.complete;
+  $("manual-fuel").hidden = q.outage || !(q.missing || []).includes("Cena paliwa PL");
+  if (!q.outage) {
+    const tb = $("cost-rows"); tb.replaceChildren();
+    for (const r of q.rows) { const tr = el("tr"); tr.append(el("td", r.name), el("td", r.v ? money(r.v) : "brak", "num"));
+      const s = el("td", "", "src"); s.append(el("span", r.v ? (r.src.startsWith("Pewne") ? "Pewne" : "Szacunek") : "Brak danych", "tag"), document.createTextNode(r.src.replace(/^(Pewne|Szacunek) · /, ""))); tr.append(s); tb.append(tr); }
+    if (q.reconcile !== 0n) { const tr = el("tr"); tr.append(el("td", "Wyrównanie zaokrągleń"), el("td", fmtScaled(q.reconcile, 2), "num"), el("td", "Suma liczona dokładnie, zaokrąglona raz", "src")); tb.append(tr); }
+    const tr = el("tr"); const th = el("th", "Koszt uwzględniony razem"); th.scope = "row"; tr.append(th, el("td", q.costCents === null ? "brak" : fmtScaled(q.costCents, 2), "num"), el("td", "Wszystkie kategorie z konfiguracji miesiąca są uwzględnione", "src")); tb.append(tr);
+    const fr2 = el("tr"); const fs = el("td", "", "src"); fs.append(el("span", q.revenue ? q.revenueSrc.split(" · ")[0] : "Brak danych", "tag"), document.createTextNode(q.revenue ? q.revenueSrc.split(" · ").slice(1).join(" · ") : "Brak ceny frachtu"));
+    fr2.append(el("td", "Fracht (przychód)"), el("td", q.revenue ? money(q.revenue) : "brak", "num"), fs); tb.append(fr2);
+    text($("result-line"), q.complete ? `Wynik: ${fmtScaled(q.resultCents, 2)} EUR` : "Wynik: brak, wycena niepełna");
+    text($("free-line"), `${PLACES[q.freePlace]}, ${fmtAt(q.freeAt)} (koniec rozładunku)`);
+  }
+  renderHistory(i); renderDrafts();
+  const loss = q.complete && q.resultCents < 0n; $("loss-field").hidden = !loss;
+  const canAccept = !q.outage && q.complete && !q.stale && d.status === "szkic";
+  $("accept-btn").disabled = !canAccept; $("add-variant").disabled = d.status !== "szkic";
+  text($("accept-hint"), d.status === "nieaktualny" ? "Ten wariant jest nieaktualny: przyjęto inny wariant od tego samego kursu." :
+    q.outage ? "Nie można przyjąć: brak danych źródłowych." : !q.complete ? "Nie można przyjąć niepełnej wyceny." : q.stale ? "Przelicz przed przyjęciem." : "");
+}
+
+function renderHistory(i) {
+  const box = $("history"); box.replaceChildren(); const mode = $("t-history").value; const key = `${i.load}>${i.unload}`;
+  if (mode === "down") { box.append(el("p", "Źródło historii faktur jest niedostępne. Wycena działa bez niej.")); }
+  const inv = mode === "down" ? [] : (INVOICES[key] || []);
+  const entered = S.accepted.filter((a) => a.pair === key);
+  if (mode !== "down" && inv.length === 0 && entered.length === 0) box.append(el("p", "Brak historii dla tej pary miejscowości w tym kierunku."));
+  if (inv.length || entered.length) {
+    const wrap = el("div", undefined, "table-wrap"); const tbl = el("table"); tbl.append(el("caption", "Podobne kursy: ta sama para miejscowości, ten sam kierunek", "sr-only"));
+    const h = el("tr"); for (const c of ["Data", "Źródło", "Cena", "Wynik planu", "Puste km"]) { const th = el("th", c); th.scope = "col"; h.append(th); }
+    const thead = el("thead"); thead.append(h); tbl.append(thead); const tb = el("tbody");
+    for (const r of inv) { const tr = el("tr"); tr.append(el("td", r.date)); const s = el("td"); s.append(el("span", "Szacunek", "tag"), document.createTextNode("faktura")); tr.append(s, el("td", `${money(dec(r.amount))} ${r.cur}`, "num"), el("td", "—"), el("td", "—")); tb.append(tr); }
+    for (const a of entered) { const tr = el("tr"); tr.append(el("td", a.date)); const s = el("td"); s.append(el("span", "Plan", "tag"), document.createTextNode("kurs wpisany w narzędziu")); tr.append(s, el("td", `${fmtScaled(a.freight, 2)} EUR`, "num"), el("td", `${fmtScaled(a.result, 2)} EUR`, "num"), el("td", String(a.emptyKm), "num")); tb.append(tr); }
+    tbl.append(tb); wrap.append(tbl); box.append(wrap);
+    box.append(el("p", "Faktury nie mają wyniku ani pustych km. Kwoty w różnych walutach nie są porównywane jako EUR.", "hint"));
+  }
+  if (mode === "unmatched") box.append(el("p", "2 faktury mają miejscowości, których nie dopasowano. Czekają na przegląd i nie są liczone jako podobne kursy."));
+}
+
+function sortKey(d, k) { const q = d.quote; return k === "freight" ? (q.revenue ? Number(centsOf(q.revenue)) : -Infinity) : k === "free" ? toMin(q.freeAt) : k === "perDay" ? Number(roundScaled(q.perDay, 6)) : k === "perKm" ? Number(roundScaled(q.perKm, 6)) : Number(q.resultCents); }
+function renderDrafts() {
+  const d = cur(); const pred = d.quote ? d.quote.predecessor : null;
+  const list = S.drafts.filter((x) => x.truckId === d.truckId && x.quote && !x.quote.outage && x.quote.complete && x.quote.predecessor === pred);
+  $("drafts-box").hidden = list.length < 2; if (list.length < 2) return;
+  const k = $("draft-sort").value; list.sort((a, b) => k === "free" ? sortKey(a, k) - sortKey(b, k) : sortKey(b, k) - sortKey(a, k));
+  const tb = $("draft-rows"); tb.replaceChildren();
+  for (const x of list) { const q = x.quote, tr = el("tr");
+    const th = el("th", x.label + (x.id === d.id ? " (otwarty)" : "")); th.scope = "row"; tr.append(th);
+    tr.append(el("td", money(q.revenue), "num"), el("td", fmtScaled(q.costCents, 2), "num"), el("td", fmtScaled(q.resultCents, 2), "num"),
+      el("td", fmtScaled(roundScaled(q.perDay, 6), 6), "num"), el("td", fmtScaled(roundScaled(q.perKm, 6), 6), "num"),
+      el("td", `${PLACES[q.freePlace]}, ${fmtAt(q.freeAt)}`), el("td", x.status === "szkic" ? (q.stale ? "Szkic, wycena nieaktualna" : "Szkic") : x.status === "przyjęty" ? "Przyjęty" : "Nieaktualny"));
+    const td = el("td"); if (x.id !== d.id) { const b = el("button", "Otwórz"); b.type = "button"; b.setAttribute("aria-label", `Otwórz ${x.label}`); b.addEventListener("click", () => { S.current = x.id; fillForm(); renderQuote(); announce(`Otwarto ${x.label}.`); $("h-wycena").focus(); }); td.append(b); } tr.append(td); tb.append(tr); }
+}
+
+function runQuote() {
+  readForm(); const d = cur(), t = truck(d.truckId);
+  $("quote-btn").disabled = true; $("quote-busy").hidden = false; $("h-trasa").parentElement.setAttribute("aria-busy", "true"); announce("Wyceniam…");
+  setTimeout(() => {
+    $("quote-btn").disabled = false; $("quote-busy").hidden = true; $("h-trasa").parentElement.removeAttribute("aria-busy");
+    if ($("t-outage").checked) { $("t-outage").checked = false; d.quote = { id: ++S.quoteSeq, outage: true, missing: [], complete: false, stale: false }; }
+    else d.quote = calculate(d, t);
+    go("#wycena"); announce(d.quote.outage ? "Nie udało się pobrać danych źródłowych." : d.quote.complete ? "Wycena gotowa." : "Wycena niepełna.");
+  }, 600);
+}
+
+// ---------- navigation ----------
+const SCREENS = ["zestawy", "start", "kurs", "trasa", "wycena", "przyjeto", "poza", "brak"];
+function guard(id) {
+  const d = cur();
+  if (id === "start") return d && !truck(d.truckId).place;
+  if (id === "kurs") return d && truck(d.truckId).place && d.status === "szkic";
+  if (id === "trasa") return d && d.status === "szkic" && validInputs(d);
+  if (id === "wycena") return d && d.quote;
+  if (id === "przyjeto") return !!S.lastAccepted;
+  return true;
+}
+function validInputs(d) { const i = d.inputs; return i.load && i.unload && i.loadIso && i.unloadIso && i.wash; }
+function go(hash) { if (location.hash === hash) show(); else location.hash = hash; }
+function show() {
+  let id = location.hash.slice(1) || "zestawy";
+  if (!SCREENS.includes(id)) { text($("brak-text"), "Ten adres nie prowadzi do żadnego ekranu makiety."); id = "brak"; }
+  else if (!guard(id)) { text($("brak-text"), "Brakuje wcześniejszego kroku: najpierw wybierz zestaw i wpisz dane kursu."); id = "brak"; }
+  for (const s of SCREENS) $(s).hidden = s !== id;
+  const step = { start: "kurs", przyjeto: "wycena" }[id] || id;
+  document.querySelectorAll("nav.steps a").forEach((a) => { if (a.dataset.step === step) a.setAttribute("aria-current", "step"); else a.removeAttribute("aria-current"); });
+  const d = cur();
+  if (d) { const t = truck(d.truckId); bindAll("truck-name", t.name); bindAll("truck-free", t.place ? `${PLACES[t.place]}, ${fmtAt(t.at)}` : "nieznane"); }
+  if (id === "zestawy") renderTrucks();
+  if (id === "trasa") renderRoute();
+  if (id === "wycena") renderQuote();
+  if (id === "przyjeto") { const a = S.lastAccepted; text($("accepted-line"), `${a.truckName}: ${a.route}. Wynik ${fmtScaled(a.result, 2)} EUR${a.reason ? ` · powód przyjęcia ze stratą: ${a.reason}` : ""}.`); text($("accepted-free"), `Zestaw wolny: ${PLACES[a.freePlace]}, ${fmtAt(a.freeAt)}.`); }
+  if (id === "poza") $("poza-back").setAttribute("href", S.outOrigin);
+  $("h-" + id).focus();
+}
+
+// ---------- events ----------
+window.addEventListener("hashchange", show);
+document.addEventListener("click", (ev) => { const a = ev.target.closest("a[data-out]"); if (a) { S.outOrigin = location.hash || "#zestawy"; bindAll("out-name", a.dataset.out); } });
+["load-place", "unload-place", "load-at", "unload-at", "freight", "currency", "wash-amount", "wash-date", "wash-time"].forEach((id) => { $(id).addEventListener("input", onEdit); $(id).addEventListener("change", onEdit); });
+document.querySelectorAll('input[name="wash"], input[name="weekend"]').forEach((r) => r.addEventListener("change", onEdit));
+$("start-form").addEventListener("submit", (ev) => {
+  ev.preventDefault(); clearErrors("start"); const errs = []; const p = $("start-place").value, at = $("start-at").value;
+  if (!p) { setError("start-place", "Wybierz miejsce startu."); errs.push(["start-place", "Wybierz miejsce startu."]); }
+  if (!at) { setError("start-at", "Podaj datę i godzinę."); errs.push(["start-at", "Podaj datę i godzinę."]); }
+  else if (!isoDT(at)) { setError("start-at", "Wpisz datę i godzinę jako DD.MM.RRRR GG:MM."); errs.push(["start-at", "Wpisz datę i godzinę jako DD.MM.RRRR GG:MM."]); }
+  if (errs.length) return showSummary("start", errs);
+  const t = truck(cur().truckId); t.place = p; t.at = isoDT(at); t.origin = "start"; announce(`Zapisano start ${t.name}.`); go("#kurs");
+});
+$("kurs-form").addEventListener("submit", (ev) => { ev.preventDefault(); const errs = validateTrip(); if (errs.length) return showSummary("kurs", errs); go("#trasa"); });
+$("trasa-form").addEventListener("submit", (ev) => { ev.preventDefault(); runQuote(); });
+$("requote").addEventListener("click", () => { const errs = validateTrip(); if (errs.length) { go("#kurs"); setTimeout(() => showSummary("kurs", validateTrip()), 0); return; } go("#trasa"); runQuote(); });
+$("retry").addEventListener("click", () => { go("#trasa"); runQuote(); });
+$("manual-fuel").addEventListener("submit", (ev) => {
+  ev.preventDefault(); const v = dec($("manual-fuel-price").value);
+  if (!v || v.n <= 0n) { setError("manual-fuel-price", "Wpisz cenę, np. 1,000000."); $("manual-fuel-price").focus(); return; }
+  setError("manual-fuel-price", ""); S.manualFuel = v; runQuote();
+});
+$("draft-sort").addEventListener("change", renderDrafts);
+$("t-history").addEventListener("change", () => { if (!$("wycena").hidden) renderQuote(); });
+$("add-variant").addEventListener("click", () => { const d = cur(); readForm(); const copy = JSON.parse(JSON.stringify(d.inputs)); startTrip(d.truckId); Object.assign(cur().inputs, copy, { freight: "" }); fillForm(); announce(`Zachowano ${d.label}. Nowy wariant ma te same dane bez frachtu.`); });
+$("accept-form").addEventListener("submit", (ev) => {
+  ev.preventDefault(); const d = cur(), q = d.quote, t = truck(d.truckId);
+  if ($("accept-btn").disabled) return;
+  const reason = $("loss-reason").value.trim();
+  if (q.resultCents < 0n && !reason) { setError("loss-reason", "Podaj krótki powód przyjęcia ze stratą."); $("loss-reason").focus(); return; }
+  setError("loss-reason", "");
+  d.status = "przyjęty";
+  S.drafts.filter((x) => x.truckId === d.truckId && x.id !== d.id && x.status === "szkic").forEach((x) => { x.status = "nieaktualny"; });
+  S.accepted.push({ truckId: t.id, pair: `${d.inputs.load}>${d.inputs.unload}`, date: d.inputs.unloadIso.slice(0, 10), freight: centsOf(q.revenue), result: q.resultCents, emptyKm: q.aKm });
+  S.lastAccepted = { truckName: t.name, route: `${PLACES[d.inputs.load]} → ${PLACES[d.inputs.unload]}`, result: q.resultCents, reason, freePlace: q.freePlace, freeAt: q.freeAt };
+  t.place = q.freePlace; t.at = q.freeAt; t.origin = "trip"; $("loss-reason").value = "";
+  go("#przyjeto"); announce("Wycena przyjęta.");
+});
+$("next-trip").addEventListener("click", () => { const tr = S.trucks.find((t) => t.name === S.lastAccepted.truckName); startTrip(tr.id); });
+$("reset").addEventListener("click", () => {
+  S = initialState(); document.querySelectorAll("form").forEach((f) => f.reset()); ["t-no-fuel", "t-outage"].forEach((id) => { $(id).checked = false; }); $("t-history").value = "ok";
+  ["start", "kurs"].forEach(clearErrors); setError("loss-reason", ""); setError("manual-fuel-price", ""); $("wash-details").hidden = true;
+  go("#zestawy"); announce("Symulacja zresetowana do stanu początkowego.");
+});
+show();
+</script>
+</body>
+</html>

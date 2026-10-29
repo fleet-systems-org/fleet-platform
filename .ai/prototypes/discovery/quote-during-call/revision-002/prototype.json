@@ -1,0 +1,54 @@
+{
+  "format": "discovery-prototype-v1",
+  "skill": "om-mockup-prototype",
+  "slug": "quote-during-call",
+  "revision": 2,
+  "revisionPath": ".ai/prototypes/discovery/quote-during-call/revision-002",
+  "previousRevision": ".ai/prototypes/discovery/quote-during-call/revision-001",
+  "brief": ".ai/specs/product-brief.md",
+  "flow": "dispatcher prices an offer during the call",
+  "panelReport": null,
+  "verification": "passed",
+  "files": [
+    {
+      "path": "index.html",
+      "sha256": "09272b3b044abe3faf527daad1ed382d6b47d569861a0b32558e6a0f0e0c8b49"
+    },
+    {
+      "path": "README.md",
+      "sha256": "579ef6477707d636d0941adebf46a4d20a09a7f5dec630843efb0fbf99bd4083"
+    },
+    {
+      "path": "evidence/01-kurs-bledy.png",
+      "sha256": "7dfb5307fb1730333addf076818d85b6d374a8c5daaa553e2a444fdd6360c655"
+    },
+    {
+      "path": "evidence/02-kurs-kalendarz.png",
+      "sha256": "8aa63ad928e1de30bd77dc63ddfefc98a5b444648eb2cc5e71dc19f9596e35d2"
+    },
+    {
+      "path": "evidence/03-wycena-rozbicie.png",
+      "sha256": "76df0edaf385d575a2fd3eec75c2329857824353d5506d55541261889db54922"
+    },
+    {
+      "path": "evidence/04-strata-rozbicie.png",
+      "sha256": "292d3cade6ce7a21fb1d4cc09753c6700ad2012bc126d0ae96db57dbf63366b6"
+    },
+    {
+      "path": "evidence/05-weekend-brak.png",
+      "sha256": "e9fdf3e44963e2cd0cbe3c3e128444dbe0710fcaee45e8926045b395a6a49644"
+    },
+    {
+      "path": "evidence/06-weekend-za-granica.png",
+      "sha256": "6193eeb4ea0fd1503500d64083cfd4929ffb0061a39cd05b50e4cd99b4d828bb"
+    },
+    {
+      "path": "evidence/07-start-kalendarz.png",
+      "sha256": "d8e7a04bd3e950d152a3a04a5477a3f5e3a45ff1431f54b8492892c8494f00be"
+    },
+    {
+      "path": "evidence/08-waski-kurs.png",
+      "sha256": "2e5b6444c3284e113ae9f7804fe7ac3c759097ef838df7eaeb0987590bf5c7da"
+    }
+  ]
+}
