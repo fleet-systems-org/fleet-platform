@@ -2,7 +2,7 @@
 
 Working log for the design system and its Storybook in `packages/ui`. Local branch `design-system-storybook` (from `main` 6588042); nothing is pushed. Read this file first when resuming.
 
-Sources the system is built from (reference IDs such as R06.4, antireferences such as A01 and token names refer to owner-provided reference and token tables kept outside this repository): `.ai/specs/product-brief.md`, `.ai/specs/backlog.md`, `.ai/specs/2026-10-26-e01-foundations.md`, `.ai/specs/2026-10-26-e01-trip-entry-and-quotation.md`, a screen audit and the existing `packages/ui`.
+Sources the system is built from (every source code such as R06.4, A01, N4b or Q3 is explained in [design-system-decisions.md](../../.ai/specs/design-system-decisions.md)): `.ai/specs/product-brief.md`, `.ai/specs/backlog.md`, `.ai/specs/2026-10-26-e01-foundations.md`, `.ai/specs/2026-10-26-e01-trip-entry-and-quotation.md`, a screen audit and the existing `packages/ui`.
 
 ## Stages
 
@@ -10,7 +10,7 @@ Sources the system is built from (reference IDs such as R06.4, antireferences su
 |---|---|
 | 0. Inventory and plan | done 2026-10-29, approved |
 | 1. Foundations | done 2026-10-29, waiting for owner "next" |
-| 2. Primitives | batches 1 and 2 done 2026-10-29 (batch 1 approved); batch 2 waits for owner "next"; batch 3 next |
+| 2. Primitives | batches 1 and 2 done and approved 2026-10-29; batch 3 next |
 | 3. Product components, patterns, screens | not started |
 | 4. Teaching pages | not started |
 | 5. Checks and report | not started |
@@ -67,6 +67,17 @@ Sources the system is built from (reference IDs such as R06.4, antireferences su
 - "(opcjonalne)" marks optional fields (required is the default): approved.
 - Grey field labels (`text-label`, text-muted, 6.0:1): approved.
 - Next: stage 2 batch 2 — Select, RadioGroup (wash question without a default choice, weekend case), status Badge (certain/estimate, loss, verification), Alert, and the documentation pages and stories of `DataTable` and the feedback messages (closes checklist item 6). Done 2026-10-29, see "Stage 2, batch 2".
+
+2026-10-29, owner instruction for stages 3 and 4 (structure, not look):
+
+- "Design system/Components" is a catalogue: every component with a live preview rendered from the real component, a one-line purpose and a link to its page, grouped by kind.
+- "Usage and accessibility" collects the cross-cutting rules: keyboard and focus, forms and feedback, colour, motion and content, responsive compositions, and the product rules the interface carries.
+- "What is missing" lists what is available, which backlog items already have reusable interface and what work remains before product use.
+- One page per epic: which steps of the user journey are covered, the connected screens in their states, the shared components used and the production work still required.
+- "Contributing" says how to add or change a component, what its documentation must contain, how tokens change, who owns and releases the system, and the local commands.
+- Product components are grouped by domain in `src/components/<domain>/` (proposed: trips, quotes, fleet, access; confirmed against the backlog epics at the start of stage 3).
+
+2026-10-29, owner answers after stage 2 batch 2: proposals 1–5 of batch 2 approved (weekend option names, no green badge, Alert only `neutral` and `error`, highlighted Select option with background and underline and vertical radio groups only, "Plan" badge on entered-trip history rows). The branch is pushed and opened as a pull request with batches 1 and 2; CI jobs for tokens and accessibility follow in a separate pull request.
 
 ## Stage 1 result
 
@@ -159,7 +170,7 @@ Checks: typecheck, lint, 118 unit tests at 100% coverage (statements 352/352, br
 
 Exception: the story "Select / Open list with groups" disables the axe rule `aria-hidden-focus`; while the list is open Radix hides the page with `aria-hidden` and traps focus in the list, which axe cannot see in a static open state.
 
-Proposals for the owner's decision (batch 2):
+Proposals of batch 2 (all five approved by the owner on 2026-10-29):
 
 1. Weekend option names translated from R13: "Wraca do domu w Polsce", "Odpoczywa za granicą", "Jedzie dalej", each with a one-line cost hint.
 2. No green badge at all; "Zgodne", "Niezweryfikowane", "Brak danych" share the neutral look and differ by word and icon.
@@ -186,4 +197,4 @@ Proposals for the owner's decision (batch 2):
 
 ## Next step
 
-Owner reviews batch 2 and the five proposals above and says "next"; then batch 3: Dialog, AlertDialog, DropdownMenu, Popover, Tooltip, Skeleton, plus the overlay shadow token, the 110 ms overlay appearance (Q5b) and applying both to the Select list.
+Owner says "next"; then batch 3: Dialog, AlertDialog, DropdownMenu, Popover, Tooltip, Skeleton, plus the overlay shadow token, the 110 ms overlay appearance (Q5b) and applying both to the Select list. Stages 3 and 4 follow the structure model recorded under "owner instruction for stages 3 and 4".

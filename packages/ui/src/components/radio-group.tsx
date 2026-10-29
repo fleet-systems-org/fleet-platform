@@ -6,7 +6,7 @@ import { RadioGroup as RadioGroupPrimitive } from "radix-ui"
 import { cn } from "@fleet-platform/ui/lib/utils"
 import { useFieldControl } from "@fleet-platform/ui/components/field"
 
-/** A group with no preselected option: a missing answer stays missing until the dispatcher chooses (R06, R13). */
+/** A group with no preselected option: a missing answer stays missing until the dispatcher chooses (R09, R13). */
 function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
   const control = useFieldControl(props)
   return <RadioGroupPrimitive.Root data-slot="radio-group" className={cn("group flex flex-col", className)} {...control} />

@@ -13,7 +13,7 @@ Makes the dispatcher give one explicit answer to a question that changes the quo
 
 ## 2. When to use
 
-- The mandatory wash question: "Bez mycia" or "Nasze mycie" with amount and date (R06, R09, trip entry step 4).
+- The mandatory wash question: "Bez mycia" or "Nasze mycie" with amount and date (R09, trip entry step 4).
 - The weekend case when the trip touches a weekend: three answers (R13, WKD-1, step 6).
 - Any required choice of two to five options where a missing answer must stay missing.
 
@@ -43,7 +43,7 @@ The option names of the weekend case translate R13 into the dispatcher's words; 
 
 | State | Look | Source |
 |---|---|---|
-| Default, nothing chosen | All circles empty; there is no default | R06, R09, WKD-1 |
+| Default, nothing chosen | All circles empty; there is no default | R09, WKD-1 |
 | Hover | Circle border in `action-primary` | proposal |
 | Focus | 2 px `focus-ring` outline around the circle | T4, WCAG 2.4.7 |
 | Selected | `action-primary` border and dot | N3a; the dot is the shape that says "chosen", not the colour alone (WCAG 1.4.1) |
