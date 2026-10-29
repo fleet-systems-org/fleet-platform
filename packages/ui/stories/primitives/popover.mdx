@@ -1,0 +1,96 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as PopoverStories from "./popover.stories";
+
+<Meta of={PopoverStories} />
+
+# Popover
+
+`import { Popover, PopoverTrigger, PopoverContent } from "@fleet-platform/ui/components/popover"`
+
+## 1. Purpose
+
+Shows the details behind a value next to it, on request, without leaving the screen or blocking it.
+
+## 2. When to use
+
+- Details of a figure: the exact kilometres (three decimals, R11), the source and its date, the reason for an estimate (EV-4, R11.1). `ValueWithSource` (stage 3) builds on it.
+- A short piece of extra information that the dispatcher asks for by clicking.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Information needed to decide, such as a missing weekend answer | Alert or text in the screen | It must be seen without a click (R07.4) |
+| Naming an icon button | Tooltip | Appears on hover and focus, holds only a name |
+| A form that runs a command | Dialog | A command needs a clear confirm and cancel |
+| Choosing from a list | Select or Dropdown menu | Keyboard and roles are built in |
+
+## 4. Anatomy
+
+Trigger (a text button on the value, or any button), panel (8 px radius, `border-input` border, overlay shadow T5, 12 px inside, lines up to 65 characters). The content is the consumer's; a definition list (`dl`) suits label and value pairs.
+
+## 5. Variants
+
+One. The panel opens below the trigger aligned to its left edge (`align="start"`) and flips above when there is no room.
+
+<Canvas of={PopoverStories.Open} />
+<Canvas of={PopoverStories.Estimate} />
+
+## 6. States
+
+| State | Look | Source |
+|---|---|---|
+| Opening | Fades in over 110 ms; at once with reduced motion | Q5b, T7 |
+| Open | Trigger has `aria-expanded="true"`; focus moves into the panel | WAI-ARIA APG Disclosure |
+| Closing | Instant on `Escape`, a click outside or the trigger; focus returns to the trigger | T7 |
+| Estimate inside | "Szacunek" badge and the reason in words | R11.1, P4 |
+| Error, loading, empty | The consumer's content: a missing value says "brak: …", never zero | R11.2, P3 |
+
+## 7. Behaviour and accessibility
+
+- The panel is a non-modal `role="dialog"`: give it a name with `aria-label` ("Szczegóły: dystans kursu") or `aria-labelledby`.
+- Opens on click, `Enter` or `Space`; `Escape` and a click outside close it; focus returns to the trigger. The page behind stays usable.
+- The panel never exceeds the space available on the screen; its lines stay at most 65 characters (audit finding 15).
+- Target: a text trigger is at least 36 px high (WCAG 2.5.8).
+
+## 8. Content
+
+- Labels as in the rest of the product: "Dokładna wartość", "Źródło", "Podział na kraje".
+- Values with unit and date; an estimate says why in one sentence.
+
+## 9. Responsive
+
+1440 and 768 px: as wide as the content, up to 65 characters. 320 px: never wider than the screen; long text wraps.
+
+## 10. API
+
+`Popover`: `open`, `defaultOpen`, `onOpenChange`. `PopoverContent`: `align` (default `start`), `side`, `sideOffset` (default 4), `aria-label`.
+
+<ArgTypes of={PopoverStories} />
+
+## 11. Code
+
+```tsx
+<Popover>
+  <PopoverTrigger asChild><Button variant="text" className="text-number">1 235 km</Button></PopoverTrigger>
+  <PopoverContent aria-label="Szczegóły: dystans kursu">
+    <dl className="grid gap-group">
+      <div className="grid gap-tight"><dt className="text-label">Dokładna wartość</dt><dd className="text-number">1 234,567 km</dd></div>
+    </dl>
+  </PopoverContent>
+</Popover>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Whole kilometres in the row, the exact value in the popover (R11). | Three decimals in every table cell. |
+| A popover the dispatcher opens. | A popover that opens by itself to explain the screen (B2). |
+| The reason for an estimate in words. | Only an icon that means "estimate". |
+
+## 13. Related
+
+Confused with: Tooltip (name on hover), Dialog (blocks the page). Used in: `ValueWithSource` details (stage 3).
+
+<Canvas of={PopoverStories.Keyboard} />

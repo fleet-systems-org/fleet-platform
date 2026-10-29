@@ -13,7 +13,8 @@ import { ShapeSamples } from "../../.storybook/blocks/tokens";
 |---|---|
 | Two radii: `rounded-control` (4 px) for inputs, buttons and badges; `rounded-panel` (8 px) for panels. | N4b |
 | No pills and no radius above 8 px. | N4b, G1 |
-| Separate content with a 1 px border or a section heading, not with shadows. There are no shadow tokens on work surfaces. | G1, audit decision 4 |
+| Separate content with a 1 px border or a section heading, not with shadows. Cards and panels have no shadow. | G1, audit decision 4, owner decision 2026-10-29 |
 | No card inside a card: inside a panel, use a section with a heading and a divider line. | Audit finding 4 |
-| Overlays (dialog, menu, popover) are separated by a `border-input` border; whether they also get a shadow is decided with the primitives in stage 2. | Open |
-| The existing `rounded-xl` (12 px) on `Card` is kept until the owner approves the change proposed in stage 2. | Existing token |
+| One shadow token, `shadow-overlay` (0 2px 6px, ink at 30 %), only on dialog, alert dialog, dropdown menu, popover and the Select list, always with a `border-input` border. Tailwind's default shadows are removed from the theme. | Owner decision 2026-10-29, T5 |
+| A modal dialog dims the page with `bg-scrim` (ink at 50 %). | T6 |
+| Tooltips are dark labels without shadow or arrow. | T8 |

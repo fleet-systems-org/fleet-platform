@@ -187,6 +187,7 @@ export function ShapeSamples() {
   return <div className="flex flex-wrap items-start gap-between text-body">
     <div className="flex flex-col gap-tight"><span className="block h-row w-40 rounded-control border border-input bg-panel" aria-hidden /><span>radius-control, 4 px: inputs, buttons, badges</span></div>
     <div className="flex flex-col gap-tight"><span className="block h-24 w-40 rounded-panel border border-divider bg-panel" aria-hidden /><span>radius-panel, 8 px: panels</span></div>
+    <div className="flex flex-col gap-tight"><span className="block h-24 w-40 rounded-panel border border-input bg-panel shadow-overlay" aria-hidden /><span>shadow-overlay: dialogs, menus, popovers</span></div>
   </div>;
 }
 

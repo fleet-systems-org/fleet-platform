@@ -14,3 +14,5 @@ Index of reusable findings, bug fixes and improvements. Read relevant entries be
 - [agent-browser needs a local Chromium on Linux ARM64](lessons/2026-10-19-agent-browser-linux-arm64.md): Chrome for Testing has no Linux ARM64 build; point `AGENT_BROWSER_EXECUTABLE_PATH` at a local Chromium outside the repository.
 
 - [Source granularity and quote-entry effort](lessons/2026-10-26-source-granularity-and-quote-entry.md): owner-selected town matching and routed estimates preserve source semantics and phone-call usability without claiming measured completeness.
+
+- [Overlay stories: fade-in timing and focus return from a menu](lessons/2026-10-29-overlay-stories-fade-and-focus.md): wait for an overlay to finish fading in before asserting or typing; return focus to the menu button when a menu item opens a dialog.

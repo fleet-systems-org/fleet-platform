@@ -1,0 +1,109 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as DialogStories from "./dialog.stories";
+
+<Meta of={DialogStories} />
+
+# Dialog
+
+`import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@fleet-platform/ui/components/dialog"`
+
+## 1. Purpose
+
+Asks the dispatcher for a short input that a step cannot continue without, such as the reason for cancelling an accepted trip, without leaving the screen.
+
+## 2. When to use
+
+- A command that needs one or two extra fields before it runs: cancelling an accepted trip with a reason, accepting a loss-making quote with a reason (R12).
+- The dispatcher opened it on purpose with a button or a menu item.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| A yes/no question before something irreversible, such as discarding a draft | Alert dialog | Focus starts on the safe answer; it cannot be dismissed by clicking outside |
+| Details of a table row while the list stays in view | Side panel (stage 3) | The dispatcher keeps the list (R08.4, proposal) |
+| Extra facts about a value: exact kilometres, source, date | Popover | Small, next to the value, does not block the screen (EV-4) |
+| Help, tips or a welcome message | Text in the screen | No pop-ups over the result and nothing that opens by itself (R07.4, B2) |
+| A whole form, such as trip entry | A page | A long form in a dialog hides the result it changes |
+
+## 4. Anatomy
+
+Scrim over the page (`bg-scrim`, T6), panel (8 px radius, `border-input` border, overlay shadow T5, 12 px inside), header with title (required) and description (optional), content, footer with buttons on the right, "Zamknij" icon button in the corner (optional, on by default).
+
+## 5. Variants
+
+One look. `showCloseButton={false}` removes the corner button when the footer has its own way back. Width: up to `max-w-measure` (65 characters), never wider than the screen minus 16 px on each side.
+
+<Canvas of={DialogStories.Open} />
+
+## 6. States
+
+<Canvas of={DialogStories.WithError} />
+
+| State | Look | Source |
+|---|---|---|
+| Closed | Only the trigger | |
+| Opening | Scrim and panel fade in over 110 ms; at once with reduced motion | Q5b, T7, WCAG 2.3.3 |
+| Open | Page behind is dimmed and inert; focus on the first field | WAI-ARIA APG Dialog (Modal) |
+| Field error | Error text with icon from `Field`, under the field; the dialog stays open with the input kept | Q3, audit finding 10 |
+| Closing | Instant; focus returns to the trigger | Q5b, T7 |
+| Loading, empty | Not applicable: the dialog collects input; the command's progress shows on the button or in the screen | |
+
+## 7. Behaviour and accessibility
+
+- WAI-ARIA APG Dialog (Modal) through Radix: `role="dialog"`, `aria-modal`, named by `DialogTitle`, described by `DialogDescription`. Without a description pass `aria-describedby={undefined}`.
+- Focus moves to the first focusable element, `Tab` stays inside, `Escape` closes, focus returns to the trigger. The page behind is hidden from screen readers.
+- A click on the scrim closes the dialog; the input is lost, so a dialog with typed text keeps a visible "Wróć" button as the expected way out.
+- Always modal: the scrim also centres and scrolls the panel, so a long dialog scrolls inside the screen at 320 px (WCAG 1.4.10).
+- Opened from a menu item, a dialog has no trigger of its own: return focus to the menu button in `onCloseAutoFocus` (see Dropdown menu).
+- Targets: footer buttons at least 36 px, corner button 32 × 32 px (WCAG 2.5.8).
+
+## 8. Content
+
+- Title is the question or the action: "Anulować przyjęty kurs?", not "Uwaga".
+- Description says the consequence in one or two sentences: what is kept and what changes.
+- Buttons say what they do: "Anuluj kurs" and "Wróć do kursu", never "OK" and "Anuluj" side by side.
+
+## 9. Responsive
+
+- 1440 and 768 px: centred, at most 65 characters wide.
+- 320 px: full width minus 16 px on each side; a long dialog scrolls inside the scrim; footer buttons wrap.
+
+## 10. API
+
+`Dialog` (Radix Root): `open`, `defaultOpen`, `onOpenChange`. `DialogContent`: `showCloseButton` (default `true`), Radix `onOpenAutoFocus`, `onCloseAutoFocus`, `onEscapeKeyDown`. `DialogClose` with `asChild` turns a Button into a closing button.
+
+<ArgTypes of={DialogStories} />
+
+## 11. Code
+
+```tsx
+<Dialog>
+  <DialogTrigger asChild><Button variant="secondary">Anuluj kurs</Button></DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Anulować przyjęty kurs?</DialogTitle>
+      <DialogDescription>Dowody i przyjęta wycena zostaną zachowane.</DialogDescription>
+    </DialogHeader>
+    <Field label="Powód anulowania" error={errors.reason} required><Textarea /></Field>
+    <DialogFooter>
+      <DialogClose asChild><Button variant="secondary">Wróć do kursu</Button></DialogClose>
+      <Button onClick={cancelTrip}>Anuluj kurs</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Ask for the cancellation reason in a dialog opened by "Anuluj kurs". | Open a dialog by itself when a quote is ready (B2). |
+| Keep the typed reason and show the error under the field. | Close the dialog on a server error and lose the text. |
+| "Anuluj kurs" and "Wróć do kursu". | "OK" and "Anuluj", which both sound like cancelling. |
+
+## 13. Related
+
+Confused with: Alert dialog (confirmation only), Popover (non-blocking details), a side panel (row details). Used in: trip cancellation and correction, acceptance of a loss-making quote (R12).
+
+<Canvas of={DialogStories.Keyboard} />

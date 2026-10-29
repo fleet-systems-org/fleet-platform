@@ -1,0 +1,89 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as TooltipStories from "./tooltip.stories";
+
+<Meta of={TooltipStories} />
+
+# Tooltip
+
+`import { Tooltip, TooltipTrigger, TooltipContent } from "@fleet-platform/ui/components/tooltip"`
+
+## 1. Purpose
+
+Shows the name of an icon button on hover and keyboard focus, so a dense toolbar or row stays readable without labels.
+
+## 2. When to use
+
+- An icon-only button: "Popraw kurs", "Akcje kursu". The tooltip text equals the button's `aria-label`.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Anything the dispatcher needs to know: a reason, a warning, a source | Text in the screen or a Popover | Hover is not seen on touch and is easy to miss (R07.4) |
+| A disabled button's reason | Visible hint text | A disabled button gets no hover or focus (audit finding 14) |
+| A button with a visible label | Nothing | The tooltip would repeat the label |
+
+## 4. Anatomy
+
+Trigger (the icon button), a dark label (`bg-tooltip`, white text, 4 px radius, T8) 4 px from the trigger. No arrow.
+
+## 5. Variants
+
+One. Appears at once on hover or focus (no delay) and fades in over 110 ms (Q5b, T7).
+
+<Canvas of={TooltipStories.Open} />
+
+## 6. States
+
+| State | Look | Source |
+|---|---|---|
+| Hover or focus | Label appears; trigger keeps its own hover and focus look | WCAG 1.4.13 |
+| Pointer moves onto the label | Label stays | WCAG 1.4.13 (hoverable) |
+| `Escape` | Label hides; focus stays on the trigger | WCAG 1.4.13 (dismissible) |
+| Error, loading, empty | Not applicable | |
+
+## 7. Behaviour and accessibility
+
+- Radix `role="tooltip"`, linked to the trigger with `aria-describedby` while open. The button keeps its own `aria-label`, because the tooltip exists only while shown.
+- Shown on hover and on keyboard focus, never on a timer; hides on `Escape`, blur or pointer leave.
+- Contrast: white on `ink-900` 14.71 : 1.
+- No provider needed at the application root; each tooltip brings its own.
+
+## 8. Content
+
+A name of two or three words, the same as the `aria-label`: "Popraw kurs". No sentences, no instructions.
+
+## 9. Responsive
+
+Touch screens show no tooltip; the icon button must still be understandable from its `aria-label` and place. Labels never exceed 65 characters.
+
+## 10. API
+
+`Tooltip`: `open`, `defaultOpen`, `onOpenChange`, `delayDuration` (default 0). `TooltipContent`: `side` (default `top`), `sideOffset` (default 4).
+
+<ArgTypes of={TooltipStories} />
+
+## 11. Code
+
+```tsx
+<Tooltip>
+  <TooltipTrigger asChild>
+    <Button variant="secondary" size="icon" aria-label="Popraw kurs"><IconPencil aria-hidden /></Button>
+  </TooltipTrigger>
+  <TooltipContent>Popraw kurs</TooltipContent>
+</Tooltip>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| "Popraw kurs" on a pencil button. | "Kliknij, aby poprawić dane kursu i policzyć wycenę ponownie". |
+| The reason for an estimate in a Popover. | The reason only in a tooltip. |
+| An icon button with `aria-label` and tooltip. | An icon button whose only name is the tooltip. |
+
+## 13. Related
+
+Confused with: Popover (opened by click, holds details). Used with: icon buttons in table rows and toolbars, the menu button of a row.
+
+<Canvas of={TooltipStories.HoverFocusEscape} />

@@ -1,0 +1,86 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as SkeletonStories from "./skeleton.stories";
+
+<Meta of={SkeletonStories} />
+
+# Skeleton
+
+`import { Skeleton } from "@fleet-platform/ui/components/skeleton"`
+
+## 1. Purpose
+
+Holds the place of a value that is loading, so the layout does not jump when it arrives and the dispatcher sees where the result will be.
+
+## 2. When to use
+
+- Values of a known layout that take a moment: the result bar while a quote is calculated (R07.1).
+- Always together with a `LoadingMessage` that says what is loading.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| A value that is missing, not loading | A dash with "brak: …" | A placeholder would suggest it is coming (R11.2, P3) |
+| A whole table loading | `DataTable` loading state | The table has its own message |
+| Loading that takes under a moment | Nothing | A flash of grey is noise |
+
+## 4. Anatomy
+
+A still block in the divider tone (`bg-divider`), 4 px radius, sized by the caller (`h-row w-full`, `h-4 w-40`). Hidden from screen readers.
+
+## 5. Variants
+
+One. Still: no pulse or shimmer (T9, Q5b). The real labels stay in place; only the values wait.
+
+<Canvas of={SkeletonStories.ResultBar} />
+
+## 6. States
+
+| State | Look | Source |
+|---|---|---|
+| Loading | Blocks in place of values; region has `aria-busy="true"`; `LoadingMessage` below | WCAG 4.1.3 |
+| Loaded | Blocks replaced by values in place, without animation | Q5b |
+| Error | Blocks replaced by an `ErrorMessage` or Alert that says what to do | Q3 |
+
+## 7. Behaviour and accessibility
+
+- `aria-hidden` on every block; the surrounding region carries `aria-busy` and the `LoadingMessage` (`role="status"`) announces what is loading.
+- The blocks are decorative, so the 3 : 1 contrast rule for interface parts does not apply (WCAG 1.4.11); the message is text at 6.0 : 1.
+- Nothing moves, so reduced motion needs no special case.
+
+## 8. Content
+
+The `LoadingMessage` says what is happening and when it ends: "Liczę wycenę. Wynik pojawi się tutaj, gdy trasa i ceny będą gotowe."
+
+## 9. Responsive
+
+Blocks take the width of their column; at 320 px the result bar keeps three columns and the message wraps.
+
+## 10. API
+
+`Skeleton`: `className` for size. No children.
+
+<ArgTypes of={SkeletonStories} />
+
+## 11. Code
+
+```tsx
+<section aria-labelledby="result-title" aria-busy={loading}>
+  <h2 id="result-title" className="text-section-title">Wynik wyceny</h2>
+  <span className="text-label">Koszt</span>
+  {loading ? <Skeleton className="h-row w-full" /> : <span className="text-number">{cost}</span>}
+  {loading ? <LoadingMessage>Liczę wycenę.</LoadingMessage> : null}
+</section>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Labels visible, values as blocks. | The whole bar as one grey block. |
+| A message under the blocks. | Blocks with nothing to read for a screen reader. |
+| A dash for a missing value. | A block that never goes away for a missing value. |
+
+## 13. Related
+
+Confused with: `LoadingMessage` (the words; used with the blocks), `EmptyState` (nothing to show). Used in: the quote result bar (stage 3).
