@@ -15,6 +15,10 @@ const checks: { name: string; pattern: RegExp }[] = [
   { name: "colour function", pattern: /\b(?:rgba?|hsla?|hwb|oklch|oklab|lch|lab)\(/g },
   { name: "Tailwind palette class", pattern: new RegExp(`(?<![\\w-])(?:[\\w-]+:)*-?(?:bg|text|border(?:-[trblxy])?|ring|ring-offset|outline|fill|stroke|from|via|to|divide|placeholder|decoration|accent|caret|shadow)-(?:${palette})(?:-\\d{2,3})?(?:/\\d+)?(?![\\w-])`, "g") },
   { name: "Tailwind arbitrary value", pattern: /(?<![\w-])(?:[\w-]+:)*-?[a-z][\w-]*-\[[^\]\s]+\](?!:)/g },
+  // Text is styled by named roles (text-page-title, text-body, text-meta…), never by bare size or weight.
+  { name: "text size or weight outside the roles", pattern: /(?<![\w-])(?:[\w-]+:)*(?:text-(?:xs|sm|base|lg|[2-9]?xl)|font-(?:thin|extralight|light|normal|medium|semibold|bold|extrabold|black))(?![\w-])/g },
+  // One icon set for the product: Tabler Icons.
+  { name: "icon library other than Tabler", pattern: /from\s+["'](?:lucide-react|@radix-ui\/react-icons|react-icons[^"']*|@heroicons\/[^"']+|@phosphor-icons\/[^"']+)["']/g },
 ];
 
 function files(path: string): string[] {

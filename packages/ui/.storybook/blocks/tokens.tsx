@@ -79,12 +79,12 @@ export function ColorRoles() {
   return <>
     <span ref={probe} hidden />
     <table className="w-full border-collapse text-body">
-      <thead><tr>{["Swatch", "Token", "Utility", "Value", "Use for", "Never for", "Source"].map(h => <th key={h} scope="col" className={`${cell} font-semibold`}>{h}</th>)}</tr></thead>
+      <thead><tr>{["Swatch", "Token", "Utility", "Value", "Use for", "Never for", "Source"].map(h => <th key={h} scope="col" className={`${cell} text-body-strong`}>{h}</th>)}</tr></thead>
       <tbody>{colorRoles.map((role, index) => <tr key={role.token}>
         <td className={cell}><span aria-hidden className="block size-8 rounded-control border border-input" style={{ background: `var(--${role.token})` }} /></td>
         <td className={cell}><code>--{role.token}</code></td>
         <td className={cell}><code>{role.utility}</code></td>
-        <td className={`${cell} tabular-nums`}>{values?.[index]}</td>
+        <td className={`${cell} text-number`}>{values?.[index]}</td>
         <td className={cell}>{role.use}</td>
         <td className={cell}>{role.avoid}</td>
         <td className={cell}>{role.source}</td>
@@ -102,8 +102,8 @@ export function ContrastTable() {
   return <>
     <span ref={probe} hidden />
     <table className="w-full border-collapse text-body">
-      <caption className="text-left text-label text-muted">Measured in this document from the resolved CSS variables (WCAG 2.x relative luminance).</caption>
-      <thead><tr>{["Sample", "Foreground", "Background", "Ratio", "Threshold", "Result", "Note"].map(h => <th key={h} scope="col" className={`${cell} font-semibold`}>{h}</th>)}</tr></thead>
+      <caption className="text-left text-meta">Measured in this document from the resolved CSS variables (WCAG 2.x relative luminance).</caption>
+      <thead><tr>{["Sample", "Foreground", "Background", "Ratio", "Threshold", "Result", "Note"].map(h => <th key={h} scope="col" className={`${cell} text-body-strong`}>{h}</th>)}</tr></thead>
       <tbody>{contrastPairs.map((pair, index) => {
         const ratio = ratios?.[index];
         const threshold = pair.kind === "text" ? 4.5 : 3;
@@ -112,8 +112,8 @@ export function ContrastTable() {
           <td className={cell}><span aria-hidden className="inline-block rounded-control px-group py-tight" style={pair.kind === "text" ? { color: `var(--${pair.fg})`, background: `var(--${pair.bg})` } : { border: `2px solid var(--${pair.fg})`, background: `var(--${pair.bg})` }}>{pair.kind === "text" ? "Aa 123" : "    "}</span></td>
           <td className={cell}><code>{pair.fg}</code></td>
           <td className={cell}><code>{pair.bg}</code></td>
-          <td className={`${cell} whitespace-nowrap tabular-nums`}>{ratio === undefined ? "—" : `${ratio.toFixed(2).replace(".", ",")} : 1`}</td>
-          <td className={`${cell} whitespace-nowrap tabular-nums`}>{threshold.toString().replace(".", ",")} : 1 ({pair.kind === "text" ? "text" : "interface"})</td>
+          <td className={`${cell} whitespace-nowrap text-number`}>{ratio === undefined ? "—" : `${ratio.toFixed(2).replace(".", ",")} : 1`}</td>
+          <td className={`${cell} whitespace-nowrap text-number`}>{threshold.toString().replace(".", ",")} : 1 ({pair.kind === "text" ? "text" : "interface"})</td>
           <td className={cell}>{ratio === undefined ? "—" : passes ? "Pass" : "Below threshold"}</td>
           <td className={cell}>{pair.note ?? ""}</td>
         </tr>;
@@ -123,23 +123,26 @@ export function ContrastTable() {
 }
 
 const typeRoles = [
-  { role: "Page heading", className: "text-page font-semibold", spec: "type-20, 20/28, 600", sample: "Wycena kursu" },
-  { role: "Section heading", className: "text-heading font-semibold", spec: "type-16, 16/24, 600", sample: "Trasa i kilometry" },
-  { role: "Body", className: "text-body", spec: "type-14, 14/20, 400", sample: "Kurs zaczyna się w miejscu poprzedniego rozładunku." },
-  { role: "Label", className: "text-label font-semibold", spec: "type-12, 12/16, 600", sample: "Dojazd" },
-  { role: "Metadata and source", className: "text-label text-muted", spec: "type-12, 12/16, 400, text-muted", sample: "wpisane, 29.10.2026 08:40" },
-  { role: "Numbers", className: "text-body tabular-nums", spec: "type-14, tabular-nums, right-aligned in columns", sample: "1 850,00 EUR  |  667,180 km" },
-  { role: "Code (documentation only)", className: "font-mono text-label", spec: "type-12, system monospace", sample: "text-muted" },
+  { role: "page-title", className: "text-page-title", spec: "20/28, 600", use: "One per screen: the screen name", source: "R14.1, N2a", sample: "Wycena kursu" },
+  { role: "section-title", className: "text-section-title", spec: "16/24, 600", use: "Panel and section headings", source: "R14.1", sample: "Trasa i kilometry" },
+  { role: "body", className: "text-body", spec: "14/20, 400", use: "Running text, values in rows", source: "R14.1, Q3-1", sample: "Kurs zaczyna się w miejscu poprzedniego rozładunku." },
+  { role: "body-strong", className: "text-body-strong", spec: "14/20, 600", use: "Table headers; the one emphasised value", source: "P7 (proposal), Q3-1", sample: "Wynik kursu" },
+  { role: "label", className: "text-label", spec: "12/16, 400, text-muted", use: "Field label, label above a value", source: "R07.1, R14.1", sample: "Dojazd" },
+  { role: "meta", className: "text-meta", spec: "12/16, 400, text-muted", use: "Source, date, secondary details", source: "R11.1, P2", sample: "wpisane, 29.10.2026 08:40" },
+  { role: "number", className: "text-number", spec: "14/20, 400, tabular-nums", use: "Amounts, kilometres, times; right-aligned in columns", source: "P8, R07.1, R15.1", sample: "1 850,00 EUR · 667,180 km" },
+  { role: "code", className: "text-code", spec: "12/16, system monospace", use: "Code in this documentation only", source: "Proposal", sample: "text-meta" },
 ];
 
 export function TypeRoles() {
-  return <table className="w-full border-collapse">
-    <thead><tr>{["Role", "Sample", "Token and weight", "Classes"].map(h => <th key={h} scope="col" className={`${cell} text-body font-semibold`}>{h}</th>)}</tr></thead>
+  return <table className="w-full border-collapse text-body">
+    <thead><tr>{["Role", "Class", "Sample", "Size, line, weight", "Use for", "Source"].map(h => <th key={h} scope="col" className={`${cell} text-body-strong`}>{h}</th>)}</tr></thead>
     <tbody>{typeRoles.map(role => <tr key={role.role}>
-      <td className={`${cell} text-body`}>{role.role}</td>
+      <td className={cell}>{role.role}</td>
+      <td className={cell}><code>{role.className}</code></td>
       <td className={cell}><span className={role.className}>{role.sample}</span></td>
-      <td className={`${cell} text-body`}>{role.spec}</td>
-      <td className={`${cell} text-body`}><code>{role.className}</code></td>
+      <td className={cell}>{role.spec}</td>
+      <td className={cell}>{role.use}</td>
+      <td className={cell}>{role.source}</td>
     </tr>)}</tbody>
   </table>;
 }
@@ -154,7 +157,7 @@ const spacingLevels = [
 
 export function SpacingLevels() {
   return <table className="w-full border-collapse text-body">
-    <thead><tr>{["Relation", "Token", "Utility", "Raw value", "Size"].map(h => <th key={h} scope="col" className={`${cell} font-semibold`}>{h}</th>)}</tr></thead>
+    <thead><tr>{["Relation", "Token", "Utility", "Raw value", "Size"].map(h => <th key={h} scope="col" className={`${cell} text-body-strong`}>{h}</th>)}</tr></thead>
     <tbody>{spacingLevels.map(level => <tr key={level.token}>
       <td className={cell}>{level.level}</td>
       <td className={cell}><code>--{level.token}</code></td>
@@ -167,11 +170,11 @@ export function SpacingLevels() {
 
 export function SpacingExample() {
   return <section aria-label="Spacing example" className="flex max-w-measure flex-col gap-between rounded-panel border border-divider bg-panel p-panel">
-    <h3 className="text-heading font-semibold">Trasa i kilometry</h3>
+    <h3 className="text-section-title">Trasa i kilometry</h3>
     <div className="flex gap-group">
       {[["Dojazd", "120,000 km"], ["Ładowne", "547,180 km"], ["Razem", "667,180 km"]].map(([label, value]) => <div key={label} className="flex flex-col gap-tight">
-        <span className="text-label text-muted">{label}</span>
-        <span className="text-body tabular-nums">{value}</span>
+        <span className="text-meta">{label}</span>
+        <span className="text-number">{value}</span>
       </div>)}
     </div>
   </section>;
@@ -194,7 +197,7 @@ export function MotionSample() {
 
 export function Frame({ width, children }: { width: number; children: ReactNode }) {
   return <figure className="flex flex-col gap-tight">
-    <figcaption className="text-label text-muted">{width} px</figcaption>
+    <figcaption className="text-meta">{width} px</figcaption>
     <div className="overflow-hidden rounded-panel border border-divider bg-page p-panel" style={{ width }}>{children}</div>
   </figure>;
 }

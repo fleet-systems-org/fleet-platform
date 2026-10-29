@@ -9,21 +9,25 @@ One typeface, IBM Plex Sans, bundled with the package from `@fontsource/ibm-plex
 
 ## Roles
 
-Use a role, not a size. Four sizes exist: 12, 14, 16 and 20 px.
+Text is styled by role, never by size. Each role is one class that sets size, line height, weight and, where the role needs it, colour or figure style. Pick the role by what the text is, not by how big it should look.
 
 <Unstyled>
   <TypeRoles />
 </Unstyled>
 
+`label` and `meta` share values today. They stay separate roles, so a later change to labels does not move source and date text.
+
 ## Rules
 
 | Rule | Source |
 |---|---|
+| Use a role class (`text-page-title`, `text-section-title`, `text-body`, `text-body-strong`, `text-label`, `text-meta`, `text-number`). Size and weight utilities such as `text-sm` or `font-semibold` are not used; `pnpm lint:tokens` reports them. | Owner decision 2026-10-29 |
 | IBM Plex Sans, not Inter, Arial or the system font stack. | N2a, R14.1, audit finding 3 |
-| Four sizes only: label 12/16, body 14/20, heading 16/24, page 20/28. No size outside the scale. | R14.1, N2a, audit finding 6 |
+| Four sizes behind the roles: 12/16, 14/20, 16/24, 20/28. | R14.1, N2a, audit finding 6 |
 | Body text is 14 px; the screen is dense but the type is not small. | Q3-1 |
-| Amounts, kilometres and times use `tabular-nums` and are right-aligned in columns. | P8, R07.1, R15.1 |
-| Table headers are semibold. | P7 (proposal), R14.1 |
+| One `text-page-title` per screen. | Q3-1 |
+| Amounts, kilometres and times use `text-number` and are right-aligned in columns. | P8, R07.1, R15.1 |
+| Table headers use `text-body-strong`. | P7 (proposal), R14.1 |
+| A label sits above its value in `text-label`; the source of a value follows in `text-meta`. | R07.1, R11.1, P2 |
 | Running text is at most about 65 characters per line (`max-w-measure`). | Audit finding 15 |
-| A label sits above its value in `text-label text-muted`. | R07.1 |
-| Code samples in this documentation use the system monospace font; the product shows no code. | Proposal |
+| `text-code` is for this documentation only; the product shows no code. | Proposal |

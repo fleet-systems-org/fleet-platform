@@ -30,7 +30,12 @@ Sources the system is built from (reference IDs such as R06.4, antireferences su
 - Q2a: the place of the actions next to a truck stays open on "What is missing".
 - Q3: a separate error token, always with an icon and words. Value `#da1e28` (IBM Carbon error red) is a proposal: 5,00 : 1 on panel, 4,77 : 1 on page.
 - Q4: only `DecimalField`, `ZonedDateTimeField`, `PlacePicker`, `ValueWithSource` and small badges go to `packages/ui`; screens are stories composed from real components.
-- Q5a lucide icons; Q5b motion 0 ms and 110 ms, nothing under reduced motion; Q5c no toast, avatar, tabs, switch or checkbox; Q5d character words and Q5e P1–P9 shown as proposals.
+- Q5a lucide icons (superseded on 2026-10-29, see below); Q5b motion 0 ms and 110 ms, nothing under reduced motion; Q5c no toast, avatar, tabs, switch or checkbox; Q5d character words and Q5e P1–P9 shown as proposals.
+
+2026-10-29, owner changes after stage 1:
+
+- **Icons: Tabler Icons replace Lucide** (supersedes Q5a). One set for the whole product, `@tabler/icons-react` 3.50.0 (MIT), outline only (proposal); `iconLibrary: "tabler"` in both `components.json`. Reason given by the owner: Lucide is the default shadcn look. Line width matched to IBM Plex Sans: the 400 stem measures 80/1000 em in the bundled font file, so `--icon-stroke` = 14 px x 0.08 = 1.12 px, applied to every `.tabler-icon` with `vector-effect: non-scaling-stroke` (same line at 16 and 20 px). `pnpm lint:tokens` reports imports from other icon libraries.
+- **Text styles are named roles, not sizes.** Utilities in `src/styles.css`: `text-page-title` (20/28, 600), `text-section-title` (16/24, 600), `text-body` (14/20, 400), `text-body-strong` (14/20, 600; table headers, proposal), `text-label` (12/16, muted), `text-meta` (12/16, muted), `text-number` (14/20, tabular figures), `text-code` (documentation only, proposal). The size-only theme tokens `text-label/body/heading/page` were removed. `pnpm lint:tokens` reports size and weight utilities (`text-sm`, `font-semibold`…): 12 in existing `packages/ui` components (stage 2) and 12 in app pages (outside the design system, not changed).
 
 ## Stage 1 result
 
@@ -54,7 +59,8 @@ Sources the system is built from (reference IDs such as R06.4, antireferences su
 - Error colour value `#da1e28` (proposal).
 - Shadow on overlays: border only, or border plus shadow (stage 2).
 - Existing `Card` (12 px radius, shadow, 24 px padding, two arbitrary values) and `DataTable`/`ErrorMessage`/`EmptyState` restyle (stage 2 proposal).
-- Icon sizes 16/20 px, 768 px breakpoint, monospace for documentation code (proposals).
+- Icon sizes 16/20 px, outline-only Tabler icons, `text-body-strong` role, 768 px breakpoint, monospace for documentation code (proposals).
+- App pages use 12 size/weight utilities outside the roles; changing them is app work outside this branch's scope.
 - Token script lives outside coverage (`packages/ui/scripts/`).
 
 ## Next step
