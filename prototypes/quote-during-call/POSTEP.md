@@ -65,13 +65,13 @@ Branch `prototype/e01-clickable` from `main` 266e9e4.
 Each gap gets the simplest version built from tokens and existing components, marked in code with `DS GAP Gxx` and listed in the stage report.
 
 - G02 zoned date-time field: date and time `Input`s labelled "Czas warszawski".
-- G03 place picker: `Input` with results in a `Popover`.
+- G03 place picker: **closed in Stage 1n**, shared `PlacePicker` after L09 (#62).
 - G08 table sorting: sort buttons in column headers.
-- G10 warning: `Alert` `neutral` with a Tabler icon and the word "Uwaga".
+- G10 warning/success: **closed in Stage 1n**, `Alert neutral` with icon + "Uwaga" and `SuccessMessage` (W1); no new status tokens.
 - G11 trip status words: `Badge` `neutral` with Szkic, Przyjęty, Anulowany, Nieaktualna, Do przeglądu.
-- G12 page frame, header and navigation.
+- G12 page frame/navigation/steps: **closed in Stage 1n**, shared `AppFrame` and `StepBar`; narrow Menu composed by page (see remaining limitation).
 - G13 trip sequence, country split and result panel.
-- G15 route schematic: simulated A → B → C geometry, dashed approach and solid loaded segment.
+- G15 route schematic: **closed in Stage 1n**, shared `RouteStops` (N7b supersedes schematic).
 
 Closed: G01 and G04 (#43), G05–G07 (#39); G09 not needed.
 
@@ -434,3 +434,29 @@ Owner decision S07-1, 2026-10-29: vehicle trip sequence belongs to E01's Fleet (
 - Any earlier s07 appearance feedback (including Stage 1b's right-hand-space item) is closed for Stage 1 as superseded by S07-1. No Stage 1 s07 redesign remains open.
 
 Validation: package typecheck/build, repository typecheck/lint and 198 tests (38 files), explicit prototype ESLint, detector 0, tokens 0 outside the eight unchanged approved N8a map declarations, unchanged prototype.js, protected diff 0, private-company scan 0 and whitespace checks passed. Browser at 1440/320: happy path 21.82 EUR, accepted s12 without trip link in Phase 1, disabled ordered menu entries, direct s07 entry, p19 restoring both links and active navigation, mobile Menu open/close, no horizontal overflow and runtime errors 0. Four screenshots saved externally under etap-1m; preview build replaced without removing prior evidence. Stage 2 requires separate authorization.
+
+
+## Stage 1n. Rebuild on design-system components (D1), part 1: frame, s09–s11
+
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 not started.
+
+### Goal and changes
+
+D1: screens live here, not as Storybook stories. Merged current main and open #62 (`design-system-e01-screens-1`) before composing shared components; no source edits to app/UI/stories.
+
+- Product screens s05–s19 use `AppFrame`, with page-owned permission/navigation entries, later entries and account/sign-out in the left panel. Authentication s01–s04 stays outside the signed-in product frame. Centred entry/place/route/quote flow, other work screens full width. Review bar and engine remain outside the product frame.
+- Shared `StepBar` (zero-based current index) and `RouteStops` replace local copies everywhere including s12–s16. Page formats Warsaw times, customer and exact/town-only endpoint labels. Removed obsolete local frame/step/route CSS.
+- s09 retains one open step and completed answers with Zmień; existing vehicle/customer proposals are unchanged. s10 uses shared `PlacePicker`, saved places and company towns in not-found/unavailable states. Town-only endpoints and their distances say Tylko miasto/Szacunek. Address save is one action and disappears after saving. No manual address/coordinates.
+- L08: searching stays until the simulated response, or indefinitely with the explicit searching scenario; no client cutoff. s11 pending state says Liczę trasę…; unavailable state offers labelled, whole-country km fields. Missing/invalid km never become zero; K2 quote unlocks only at its fixture distances. Other distances can be inspected but do not silently reuse K2's fixed quote.
+- W2: removed `allocate`. Every country uses km × its fuel/toll rate, exact micro-EUR BigInt; each displayed aggregate rounds once half-up. Reconciliation appears when displayed components disagree with the exact aggregate. Synthetic country rates: fuel 0.100000 empty / 0.200000 loaded; toll PL 0.100400, DE 0.099400, CZ 0.101000 EUR/km. Km 12/8/50/30; fuel 18.00, toll 10.00; 28.00 + 10.18 = 38.18 EUR, freight 60.00, result **21.82 EUR unchanged**.
+- W1: product warnings use neutral Alert + icon + Uwaga; successful save/acceptance uses SuccessMessage. All five G10 bridge aliases are still used by unchanged review comment CSS, so none is unused/deleted; these are review aliases, not product tokens.
+
+### Closed and remaining gaps
+
+G03, G10, G12 and G15 are closed by shared components/composition. G02's shared time control was already adopted; remaining G08, G11/G13 table/status/quote compositions are for part 2 (s12–s16), no new primitive invented here.
+
+DS GAP: AppFrame has no mobile-menu prop (its approved small layout is a plain navigation list). The page composes an existing Button and disclosure CSS below 768 px, preserving shared navigation/entries rather than copying them. AppFrame places its panel after content below 1280 px; this shared order now applies to the quotation panel. A different mobile title/summary/route order needs a later component decision; shared source is untouched.
+
+### Checks and handoff
+
+- External preview and screenshots were kept outside the repository; client-side availability was not verified.
