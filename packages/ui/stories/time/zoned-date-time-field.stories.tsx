@@ -11,6 +11,8 @@ const messages: Record<Exclude<ZonedDateTimeResult, { ok: true }>["reason"], str
   empty: "Wpisz datę i godzinę załadunku.",
   missingDate: "Wybierz datę załadunku.",
   missingTime: "Wpisz godzinę załadunku.",
+  invalidDate: "Nie rozpoznano daty. Wpisz ją jako dzień.miesiąc.rok, np. 12.11.2026.",
+  invalidTime: "Nie rozpoznano godziny. Wpisz ją w formacie 24-godzinnym, np. 09:30.",
   nonexistent: "Tej godziny nie ma: tej nocy zegar przesuwa się do przodu. Wpisz godzinę sprzed zmiany albo po niej.",
   ambiguous: "Wybierz, o którą z dwóch godzin chodzi.",
 };
@@ -43,7 +45,7 @@ export const States: Story = {
   render: () => <div className="grid gap-between">
     <Field label="Pusty" required><ZonedDateTimeField timeZone="Europe/Warsaw" zoneLabel="Czas warszawski" labels={labels} /></Field>
     <Field label="Wpisany" required><ZonedDateTimeField timeZone="Europe/Warsaw" zoneLabel="Czas warszawski" labels={labels} defaultDate="2026-11-12" defaultTime="09:30" /></Field>
-    <Field label="Błąd" error={messages.missingTime} required><ZonedDateTimeField timeZone="Europe/Warsaw" zoneLabel="Czas warszawski" labels={labels} defaultDate="2026-11-12" /></Field>
+    <Field label="Błąd" error={messages.invalidDate} required><ZonedDateTimeField timeZone="Europe/Warsaw" zoneLabel="Czas warszawski" labels={labels} defaultDate="2027-02-31" defaultTime="09:30" /></Field>
     <Field label="Zablokowany" hint="Dostępne po wybraniu auta" required><ZonedDateTimeField timeZone="Europe/Warsaw" zoneLabel="Czas warszawski" labels={labels} disabled /></Field>
   </div>,
 };
@@ -69,7 +71,7 @@ export const ClockBack: Story = {
 };
 
 export const Typing: Story = {
-  name: "Test: entry, missing time and the sent instant",
+  name: "Test: Polish entry, errors and the sent instant",
   render: () => <Loading />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -78,11 +80,17 @@ export const Typing: Story = {
     await expect(canvas.getByRole("group", { name: "Załadunek" })).toBeVisible();
     await expect(date).toHaveAccessibleDescription(expect.stringContaining("Czas warszawski"));
     // Moving from the date to the time does not check yet; leaving the field does.
-    await userEvent.type(date, "2026-11-12");
+    await userEvent.type(date, "12.11.2026");
     await userEvent.click(time);
     await expect(date).not.toHaveAttribute("aria-invalid");
     await userEvent.tab();
     await expect(canvas.getByText(messages.missingTime)).toBeVisible();
+    // A 12-hour time is not recognized; the text stays as typed.
+    await userEvent.type(time, "9:30 PM");
+    await userEvent.tab();
+    await expect(canvas.getByText(messages.invalidTime)).toBeVisible();
+    await expect(time).toHaveValue("9:30 PM");
+    await userEvent.clear(time);
     await userEvent.type(time, "09:30");
     await userEvent.tab();
     await expect(time).not.toHaveAttribute("aria-invalid");

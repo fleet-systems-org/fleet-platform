@@ -18,7 +18,9 @@ export const valueLabels: ValueLabels = {
 /** Polish words the application passes to ZonedDateTimeField. */
 export const zonedDateTimeLabels: ZonedDateTimeLabels = {
   date: "Data",
+  dateFormat: "DD.MM.RRRR",
   time: "Godzina",
+  timeFormat: "GG:MM",
   occurrence: "Ta godzina wystąpi tej nocy dwa razy. Którą wybierasz?",
   earlier: "przed cofnięciem zegara",
   later: "po cofnięciu zegara",

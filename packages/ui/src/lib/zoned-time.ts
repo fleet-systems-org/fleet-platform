@@ -1,4 +1,5 @@
-// Local wall-clock time in an IANA zone resolved to an exact instant (TIME-1). Uses Intl only; no time library.
+// Local wall-clock time in an IANA zone resolved to an exact instant (TIME-1), and the Polish text forms the
+// dispatcher types ("12.11.2026", "09:30"). Uses Intl only; no time library.
 
 /** How a local date and time exist in a zone: once, twice when the clock goes back, or never when it goes forward. */
 export type LocalResolution =
@@ -51,4 +52,32 @@ export function toInstant(date: string, time: string, offset: string): string {
   const sign = offset.startsWith("-") ? -1 : 1
   const [hours, minutes] = offset.slice(1).split(":").map(Number)
   return new Date(wallClock(date, time) - sign * (hours! * 60 + minutes!) * minute).toISOString()
+}
+
+const pad = (value: number) => String(value).padStart(2, "0")
+
+/**
+ * Reads a Polish date, "12.11.2026" (a one-digit day or month is accepted), as ISO "2026-11-12". Returns null for
+ * other text and for dates that do not exist, such as "31.02.2027".
+ */
+export function parseLocalDate(text: string): string | null {
+  const match = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(text.trim())
+  if (!match) return null
+  const [dayOfMonth, month, year] = match.slice(1).map(Number) as [number, number, number]
+  const check = new Date(Date.UTC(year, month - 1, dayOfMonth))
+  if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1 || check.getUTCDate() !== dayOfMonth) return null
+  return `${year}-${pad(month)}-${pad(dayOfMonth)}`
+}
+
+/** Reads a 24-hour time, "09:30" (a one-digit hour is accepted), as "09:30". Returns null for other text. */
+export function parseLocalTime(text: string): string | null {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(text.trim())
+  if (!match) return null
+  const [hour, minutes] = match.slice(1).map(Number) as [number, number]
+  return hour <= 23 && minutes <= 59 ? `${pad(hour)}:${pad(minutes)}` : null
+}
+
+/** ISO "2026-11-12" as the Polish "12.11.2026". */
+export function formatLocalDate(date: string): string {
+  return date.split("-").reverse().join(".")
 }

@@ -8,7 +8,9 @@ afterEach(cleanup);
 
 const labels: ZonedDateTimeLabels = {
   date: "Data",
+  dateFormat: "DD.MM.RRRR",
   time: "Godzina",
+  timeFormat: "GG:MM",
   occurrence: "Ta godzina wystąpi dwa razy. Którą wybierasz?",
   earlier: "przed cofnięciem zegara",
   later: "po cofnięciu zegara",
@@ -32,9 +34,10 @@ function loading(props: Partial<React.ComponentProps<typeof ZonedDateTimeField>>
 it("is a group named by the Field, with a date and a time box described by the hint and the zone", () => {
   const { date, time } = loading();
   expect(screen.getByRole("group", { name: "Załadunek" })).toBeTruthy();
-  expect(date.type).toBe("date");
-  expect(time.type).toBe("time");
-  expect(time.step).toBe("60");
+  expect(date.type).toBe("text");
+  expect(time.type).toBe("text");
+  expect(date.placeholder).toBe("DD.MM.RRRR");
+  expect(time.placeholder).toBe("GG:MM");
   expect(date.required && time.required).toBe(true);
   expect(describedBy(date)).toEqual(["Kiedy auto ma być załadowane", "Czas warszawski"]);
   expect(describedBy(time)).toEqual(["Kiedy auto ma być załadowane", "Czas warszawski"]);
@@ -51,7 +54,7 @@ it("marks both boxes invalid when the Field has an error", () => {
 
 it("resolves the local time to an exact instant when the dispatcher leaves the field, not between its boxes", () => {
   const { onZonedChange, date, time, leave } = loading();
-  fireEvent.change(date, { target: { value: "2026-11-12" } });
+  fireEvent.change(date, { target: { value: "12.11.2026" } });
   fireEvent.blur(date, { relatedTarget: time });
   expect(onZonedChange).not.toHaveBeenCalled();
   fireEvent.change(time, { target: { value: "09:30" } });
@@ -67,15 +70,32 @@ it("names what is missing", () => {
   leave(time);
   expect(onZonedChange).toHaveBeenLastCalledWith({ ok: false, reason: "missingDate" });
   fireEvent.change(time, { target: { value: "" } });
-  fireEvent.change(date, { target: { value: "2026-11-12" } });
+  fireEvent.change(date, { target: { value: "12.11.2026" } });
   leave(date);
   expect(onZonedChange).toHaveBeenLastCalledWith({ ok: false, reason: "missingTime" });
+});
+
+it("rejects text that is not a real date or a 24-hour time, and accepts a date without leading zeros", () => {
+  const { onZonedChange, date, time, leave } = loading();
+  fireEvent.change(date, { target: { value: "31.02.2027" } });
+  fireEvent.change(time, { target: { value: "09:30" } });
+  leave(time);
+  expect(onZonedChange).toHaveBeenLastCalledWith({ ok: false, reason: "invalidDate" });
+  fireEvent.change(date, { target: { value: "2.11.2026" } });
+  fireEvent.change(time, { target: { value: "25:00" } });
+  leave(time);
+  expect(onZonedChange).toHaveBeenLastCalledWith({ ok: false, reason: "invalidTime" });
+  fireEvent.change(time, { target: { value: "9:30" } });
+  leave(time);
+  expect(onZonedChange).toHaveBeenLastCalledWith(expect.objectContaining({ ok: true, date: "2026-11-02", time: "09:30", instant: "2026-11-02T08:30:00.000Z" }));
+  expect(date.value).toBe("2.11.2026");
 });
 
 it("accepts a date alone when the time is optional, without an instant", () => {
   const { onZonedChange, date, time, leave } = loading({ timeOptional: true, defaultDate: "2026-11-13" });
   expect(date.required).toBe(true);
   expect(time.required).toBe(false);
+  expect(date.value).toBe("13.11.2026");
   leave(date);
   expect(onZonedChange).toHaveBeenLastCalledWith({ ok: true, date: "2026-11-13", time: undefined, timeZone: "Europe/Warsaw" });
 });
@@ -110,6 +130,7 @@ it("works outside a Field and without a listener", () => {
   render(<ZonedDateTimeField timeZone="Europe/Warsaw" zoneLabel="Czas warszawski" labels={labels} defaultDate="2026-11-12" disabled />);
   const date = screen.getByLabelText("Data") as HTMLInputElement;
   expect(date.disabled).toBe(true);
+  expect(date.value).toBe("12.11.2026");
   expect(describedBy(date)).toEqual(["Czas warszawski"]);
   fireEvent.blur(date);
   expect(screen.getByLabelText("Godzina")).toBeTruthy();

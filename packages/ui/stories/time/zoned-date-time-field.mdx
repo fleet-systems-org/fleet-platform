@@ -9,7 +9,7 @@ import * as Stories from "./zoned-date-time-field.stories";
 
 ## 1. Purpose
 
-Lets the dispatcher enter a date and time as the client says it, in the place's zone, and turns it into an exact instant with its zone and offset (P07, TIME-1). A time that does not exist or exists twice because of a clock change is never guessed.
+Lets the dispatcher type a date and time as the client says it ("12.11.2026", "09:30"), in the place's zone, and turns it into an exact instant with its zone and offset (P07, TIME-1). A time that does not exist or exists twice because of a clock change is never guessed.
 
 ## 2. When to use
 
@@ -23,11 +23,12 @@ Lets the dispatcher enter a date and time as the client says it, in the place's 
 |---|---|---|
 | Showing a time | Text formatted by the application in the place's zone | Entry and display are separate |
 | A month or period (reports, closing) | A month picker, not yet in the system | E7 work; goes to "What is missing" |
+| Picking a date from a calendar | Nothing yet; may come later (owner decision 2026-10-29) | Typed text keeps the format independent of the browser |
 | A date in a flat reference form | Nothing yet: `CrudForm` has text, e-mail and textarea fields | The foundations keep `CrudForm`'s field API unchanged; a need goes to "What is missing" |
 
 ## 4. Anatomy
 
-Label, hint and error from `Field`; a group with the date box (the browser's calendar) and the time box (hours and minutes); the zone's name after them, also read as part of the description. When the time occurs twice, a required choice of the occurrence appears under the group.
+Label, hint and error from `Field`; a group with the date box ("DD.MM.RRRR") and the time box ("GG:MM", 24 hours), each showing its format while empty; the zone's name after them, also read as part of the description. When the time occurs twice, a required choice of the occurrence appears under the group.
 
 ## 5. Variants
 
@@ -46,8 +47,9 @@ The zone comes from the place (`timeZone`, IANA); the field does not let the dis
 
 | State | Look | Source |
 |---|---|---|
-| Empty | Empty boxes with the browser's placeholders; a required field says what to enter when the dispatcher leaves it | audit finding 10 |
-| Filled | Date and time as chosen; the zone always visible | P07 |
+| Empty | The formats "DD.MM.RRRR" and "GG:MM" in the boxes; a required field says what to enter when the dispatcher leaves it | audit finding 10 |
+| Filled | Text kept as typed, never reformatted; the zone always visible | P07, owner decision 2026-10-29 |
+| Not recognized | "31.02.2027", "25:00" or "9:30 PM" rejected with a message naming the format | owner decision 2026-10-29 |
 | Error | `border-error` on both boxes, error text with icon from `Field` | Q3 |
 | Clock goes forward | Rejected with a message; nothing is sent | TIME-1, E01 scenario 5 |
 | Clock goes back | A required choice: before or after the clock goes back, with the UTC offset | TIME-1, E01 scenario 5 |
@@ -60,15 +62,15 @@ The zone comes from the place (`timeZone`, IANA); the field does not let the dis
 
 ## 7. Behaviour and accessibility
 
-- Native `type="date"` and `type="time"` boxes (minute steps): the calendar, keyboard entry and the phone's pickers come from the browser; the values are ISO text ("2026-11-12", "09:30").
-- When focus leaves the whole field, it calls `onZonedChange` with the result: `{ ok: true, date, time, timeZone, offset, instant }`, or a reason: `empty`, `missingDate`, `missingTime`, `nonexistent`, `ambiguous` (with both offsets). Moving between its two boxes checks nothing; nothing is checked while typing (owner decision 2026-10-29).
+- Two text boxes, not the browser's date and time inputs, whose format follows the browser's language ("10/31/2027", "02:30 AM"); no calendar for now (owner decision 2026-10-29). The date is "DD.MM.RRRR" and the time "GG:MM" in 24 hours; a one-digit day, month or hour is accepted ("2.11.2026", "9:30"). Dates that do not exist ("31.02.2027") are rejected.
+- When focus leaves the whole field, it calls `onZonedChange` with the result: `{ ok: true, date, time, timeZone, offset, instant }`, or a reason: `empty`, `missingDate`, `missingTime`, `invalidDate`, `invalidTime`, `nonexistent`, `ambiguous` (with both offsets). `date` and `time` in the result are ISO ("2026-11-12", "09:30"). Moving between its two boxes checks nothing; nothing is checked while typing (owner decision 2026-10-29).
 - A repeated time shows the choice of occurrence; choosing reports the resolved value at once. Changing the date or time removes the choice until the field is checked again.
 - The group is named by the `Field` label; each box is named by the label and its own word ("Załadunek Data", "Załadunek Godzina"); hint, error and zone are in `aria-describedby`; `aria-invalid` and `required` come from `Field`.
 
 ## 8. Content
 
 - The zone is named in words the dispatcher uses: "Czas warszawski".
-- Every message says what to do: "Wpisz godzinę załadunku."
+- Every message says what to do: "Wpisz godzinę załadunku.", "Nie rozpoznano daty. Wpisz ją jako dzień.miesiąc.rok, np. 12.11.2026."
 - A skipped time says why and what to enter: "Tej godziny nie ma: tej nocy zegar przesuwa się do przodu. Wpisz godzinę sprzed zmiany albo po niej."
 - The choice of occurrence asks one question: "Ta godzina wystąpi tej nocy dwa razy. Którą wybierasz?", with "02:30 przed cofnięciem zegara" and "02:30 po cofnięciu zegara".
 
@@ -80,7 +82,7 @@ The boxes and the zone wrap to the next line in a narrow column; at 320 px nothi
 
 ## 10. API
 
-`ZonedDateTimeField`: `timeZone` (IANA, required), `zoneLabel`, `labels` (`date`, `time`, `occurrence`, `earlier`, `later`), `timeOptional`, `defaultDate`, `defaultTime`, `disabled`, `onZonedChange(result)`. `resolveLocalDateTime(date, time, timeZone)` → `unique` with the offset, `ambiguous` with both offsets (earlier instant first) or `nonexistent`; `toInstant(date, time, offset)` → ISO instant in UTC. Both use `Intl` only.
+`ZonedDateTimeField`: `timeZone` (IANA, required), `zoneLabel`, `labels` (`date`, `dateFormat`, `time`, `timeFormat`, `occurrence`, `earlier`, `later`), `timeOptional`, `defaultDate` (ISO, shown as "12.11.2026"), `defaultTime`, `disabled`, `onZonedChange(result)`. `resolveLocalDateTime(date, time, timeZone)` → `unique` with the offset, `ambiguous` with both offsets (earlier instant first) or `nonexistent`; `toInstant(date, time, offset)` → ISO instant in UTC; `parseLocalDate("12.11.2026")` → "2026-11-12" or null, `parseLocalTime("9:30")` → "09:30" or null, `formatLocalDate`. All use `Intl` and `Date` only.
 
 <ArgTypes of={Stories} />
 
@@ -105,6 +107,6 @@ const [result, setResult] = useState<ZonedDateTimeResult | null>(null);
 
 ## 13. Related
 
-Built on: `Field`, `RadioGroup`, the input styles of Input. Used in: trip entry (loading, unloading, wash date), vehicle start.
+Built on: `Field`, `RadioGroup`, the input styles of Input. Entry works like Decimal field: text kept as typed, checked when the dispatcher leaves the field. Used in: trip entry (loading, unloading, wash date), vehicle start.
 
 <Canvas of={Stories.Occurrence} />
