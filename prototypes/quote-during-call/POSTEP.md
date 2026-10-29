@@ -26,8 +26,8 @@ Branch `prototype/e01-clickable` from `main` 266e9e4.
 
 ### Screen order
 
-- Stage 1 (dispatcher, Kierowca A · DEMO 001, draft K2): s01 → s09 (step 1 vehicle) → s10 → s09 (times, freight 60,00 EUR, "Bez mycia") → s11 → s12 (cost 38,18, result 21,82, "free in Miejsce C from 13:00") → s13 → s16 → s12 accepted → s07.
-- Stage 2: s02–s05, s08, s14, s15, s18, every state, accounts and access gates; then the "show what comes later" control adds s06, s19 (Phase 2) and s17 (Phase 3).
+- Stage 1 (dispatcher, Kierowca A · DEMO 001, draft K2): s01 → s09 (step 1 vehicle) → s10 → s09 (times, freight 60,00 EUR, "Bez mycia") → s11 → s12 (cost 38,18, result 21,82, "free in Miejsce C from 13:00") → s13 → s16 → s12 accepted.
+- Stage 2: s02–s05, s08, s14, s15, s18, every state, accounts and access gates; then the "show what comes later" control adds s06, s07, s19 (Phase 2) and s17 (Phase 3); s07 moved to later by owner decision S07-1, 2026-10-29.
 - Stage 3: notes per screen, README with simulation limits, navigation tests, browser check at 320 and 1440 px and by keyboard. README in English lists every screen s01–s19 and its states, so the screen IDs are explained in this repository (owner decision 2026-10-29).
 
 ### Review bar and scenario controls
@@ -422,3 +422,15 @@ Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not sta
 - Not run: production build/coverage/integration, Storybook, cross-browser matrix or exhaustive accessibility audit. No production feature/specification changed; no PR opened or merge into main.
 
 Next: owner review of Stage 1l; Stage 2 requires separate authorization. No independent implementation task is authorized by this order.
+
+
+## Stage 1m. Vehicle trips (s07) moved to later screens (owner decision S07-1)
+
+Owner decision S07-1, 2026-10-29: vehicle trip sequence belongs to E01's Fleet (Phase 2), which states “Trip detail shows the sequence and any gap or overlap” ([specification](../../.ai/specs/2026-10-26-e01-trip-entry-and-quotation.md)). Phase 1 already shows the free place/time in accepted s12; its happy path ends there.
+
+- Moved Kursy aut below Później before Flota, using the same disabled/linked p19 behaviour as Flota and preserving aria-current.
+- Accepted quote links to s07 only with p19 set to later. New quote and the acceptance availability alert are unchanged.
+- s07 content and direct map/picker entry remain unchanged, using the existing s06 behaviour. The review picker/map has no later grouping; no grouping was introduced.
+- Any earlier s07 appearance feedback (including Stage 1b's right-hand-space item) is closed for Stage 1 as superseded by S07-1. No Stage 1 s07 redesign remains open.
+
+Validation: pending requested static and two-width browser checks. Stage 2 remains separately authorized.
