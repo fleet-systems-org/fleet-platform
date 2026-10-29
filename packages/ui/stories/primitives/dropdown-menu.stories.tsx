@@ -77,9 +77,19 @@ export const OpensConfirmation: Story = {
     await userEvent.click(trigger);
     await userEvent.click(await screen.findByRole("menuitem", { name: "Usuń szkic…" }));
     const dialog = await screen.findByRole("alertdialog", { name: "Usunąć szkic kursu?" });
-    await expect(screen.queryByRole("menu")).toBeNull();
-    await userEvent.click(within(dialog).getByRole("button", { name: "Zostaw szkic" }));
-    await waitFor(() => expect(trigger).toHaveFocus());
+    const keepDraft = within(dialog).getByRole("button", { name: "Zostaw szkic" });
+    // A closed menu can remain mounted until Radix Presence finishes its animation.
+    // Default role queries omit that hidden menu, even while it still hides the page.
+    await waitFor(() => {
+      expect(screen.queryByRole("menu", { hidden: true })).toBeNull();
+      expect(keepDraft).toHaveFocus();
+    });
+    await userEvent.click(keepDraft);
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
+      expect(trigger).toHaveFocus();
+      expect(trigger.closest('[aria-hidden="true"]')).toBeNull();
+    });
   },
 };
 
