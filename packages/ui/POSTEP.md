@@ -35,7 +35,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 2026-10-29, owner changes after stage 1:
 
 - **Icons: Tabler Icons replace Lucide** (supersedes Q5a). One set for the whole product, `@tabler/icons-react` 3.50.0 (MIT), outline only (proposal); `iconLibrary: "tabler"` in both `components.json`. Reason given by the owner: Lucide is the default shadcn look. Line width matched to IBM Plex Sans: the 400 stem measures 80/1000 em in the bundled font file, so `--icon-stroke` = 14 px x 0.08 = 1.12 px, applied to every `.tabler-icon` with `vector-effect: non-scaling-stroke` (same line at 16 and 20 px). `pnpm lint:tokens` reports imports from other icon libraries.
-- **Text styles are named roles, not sizes.** Utilities in `src/styles.css`: `text-page-title` (20/28, 600), `text-section-title` (16/24, 600), `text-body` (14/21 since the line-height decision below, 400), `text-body-strong` (14/20, 600; table headers, proposal), `text-label` (12/16, muted), `text-meta` (12/16, muted), `text-number` (14/20, tabular figures), `text-code` (documentation only, proposal). The size-only theme tokens `text-label/body/heading/page` were removed. `pnpm lint:tokens` reports size and weight utilities (`text-sm`, `font-semibold`…): 12 in existing `packages/ui` components (stage 2) and 12 in app pages (outside the design system, not changed).
+- **Text styles are named roles, not sizes.** Utilities in `src/styles.css`: `text-page-title` (20/28, 600), `text-section-title` (16/24, 600), `text-body` (14/21 since the line-height decision below, 500; N2b), `text-body-strong` (14/20, 600; table headers, proposal), `text-label` (12/16, 500, muted; N2b), `text-meta` (12/16, 500, muted; N2b), `text-number` (14/20, 500, tabular figures; N2b), `text-code` (documentation only, proposal). The size-only theme tokens `text-label/body/heading/page` were removed. `pnpm lint:tokens` reports size and weight utilities (`text-sm`, `font-semibold`…): 12 in existing `packages/ui` components (stage 2) and 12 in app pages (outside the design system, not changed).
 - **Line height of running text** (2026-10-29): running text and messages (`text-body`) at least 1.5 x font size, now 14/21 (`--type-14-leading-text`); table rows and single-line values keep 14/20 through the new role `text-table` (and `text-number`, `text-body-strong`), so the 36 px row stays. Labels and meta stay 12/16 (short, single line).
 - **WCAG 1.4.12 check on the Typography page** (2026-10-29): `.storybook/text-spacing.ts` applies line height 1.5, paragraph spacing 2 em, letter spacing 0.12 em and word spacing 0.16 em and reports clipped, truncated or overflowing text; the page has an interactive check on a 320 px sample with the real `Card`, and the story "Foundations/Typography/Text spacing (WCAG 1.4.12)" runs it in `pnpm test:storybook` (passes; a deliberately clipped probe fails as expected). Stage 2 component stories reuse the same helper.
 
@@ -89,7 +89,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 
 - Storybook 10.6.5 (`@storybook/react-vite`), addons docs + `remark-gfm`, a11y (`test: 'error'`), vitest; onboarding checklists, telemetry and update notices off; brand title "Fleet Platform".
 - Tokens in `src/styles.css`: raw, semantic (with source comments), component (`table-row-height`); shadcn names kept as aliases with unchanged values; default Tailwind palette and radius scale removed from the theme.
-- IBM Plex Sans 400/600 bundled from `@fontsource/ibm-plex-sans`.
+- IBM Plex Sans 500/600 (N2b) bundled from `@fontsource/ibm-plex-sans`.
 - Foundations pages: Color (roles, measured contrast), Typography, Spacing and layout, Shape and depth, Motion, Icons, Themes.
 - `pnpm lint:tokens` (`packages/ui/scripts/check-tokens.ts`): finds 2 existing arbitrary values in `card.tsx` (stage 2 decision).
 - Checks: build-storybook, typecheck, lint, unit tests with 100% coverage, app build; a11y test failure verified with a deliberate violation.
@@ -104,7 +104,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 | Borders | light `border-input`, buttons without border | `border-input` 3.16:1 on every control, 1 px border on every button | T1, WCAG 1.4.11 |
 | Shadow | `shadow-xs` on inputs and outline buttons, `shadow-sm` on cards | none; one light shadow only on dialog, menu, popover (later batch) | Owner 2026-10-29, G1 |
 | Inner spacing | button `px-4` 16 px, card `p-6` 24 px, card gap 24 px | button and input 12 px (`px-panel`), compact 8 px; card 12 px | Q3-1, owner 2026-10-29 |
-| Type | `text-sm`, `font-medium` | roles `text-body`, `text-label`, `text-section-title`; weights 400/600 only | Owner 2026-10-29, N2a |
+| Type | `text-sm`, `font-medium` | roles `text-body`, `text-label`, `text-section-title`; weights 500/600 only | Owner 2026-10-29, N2a, N2b |
 | Focus | 3 px `ring-ring/50` halo plus border colour | 2 px solid `focus-ring` outline, 2 px offset | T4, WCAG 2.4.7 |
 | Hover | `primary/90` transparency | `action-primary-hover` #1d4d3f (approved), secondary page background, text underline | proposal |
 | Disabled | `opacity-50` | page background, muted text, divider border; reason in visible text | Audit finding 14 |
@@ -352,3 +352,7 @@ Proposals 1–7 (in pull request #51) approved by the owner on 2026-10-29 and re
 ## Next step
 
 Conditions before screens are built (owner decision 2026-10-29): L08, the search time limit and what the dispatcher sees after it, is decided; L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next batch: evidence badge (EV-1, #53), then screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
+
+## N2b: ordinary text weight (2026-10-29)
+
+Approved N2b is implemented in the shared roles: body (14/21), table and number (14/20), label and meta (12/16) use IBM Plex Sans 500. Page and section headings and body-strong retain 600. The existing font dependency remains at 5.3.0; the unused 400 import and weight token are removed. Components already use roles and need no weight overrides. Sizes, line heights, colours, spacing and the independently measured icon stroke token are unchanged.
