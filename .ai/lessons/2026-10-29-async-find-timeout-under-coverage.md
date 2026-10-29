@@ -54,6 +54,6 @@ Cause (inferred from the Radix sources; not reproduced): when an overlay closes,
 
 Resolution: `packages/ui/.storybook/overlay.ts` adds `waitForFocusReturn(trigger)`, which waits until the trigger has focus and is no longer inside an `aria-hidden` region. It replaces the bare focus checks after closing an overlay in the Dropdown menu, Alert dialog, Dialog, Popover and Select stories and closes the play functions that end with an overlay closing. No timeout, retry or axe rule was changed.
 
-Verification: see the pull request; the Storybook CI job is re-run several times and compared with the failure rate above.
+Verification: on pull request #60 the Storybook CI job passed 6 of 6 attempts (run 40938976132), against 7 failures in 13 first attempts before; at that rate six passes in a row would happen about once in a hundred. Locally lint, typecheck and three full Storybook runs on two cores passed (128/128).
 
 Prevention (extends the rule above): after an overlay closes, wait for the behaviour its effects and timeouts restore (focus on the trigger, no `aria-hidden` around it) before asserting, acting or ending a story; use `waitForFocusReturn`.

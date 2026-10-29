@@ -16,4 +16,6 @@ Starting branch: fix/storybook-focus-race, from main 16ec278. Execution: coding 
 ## Validation and outcome
 
 - Passed locally: pnpm lint, pnpm typecheck, token check, three full Storybook test runs on two cores (128/128 each).
-- CI: pending; the Storybook job is re-run several times on the pull request as evidence, because the failure does not reproduce locally.
+- CI (#60, run 40938976132): all seven jobs passed; the Storybook job then passed five re-runs, 6 of 6 in total, against 7 failures in 13 first attempts before the fix.
+
+Outcome: fix complete; merge is the owner's decision.
