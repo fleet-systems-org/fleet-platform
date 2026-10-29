@@ -1,4 +1,4 @@
-import "../src/styles.css";
+import "./storybook.css";
 import type { Preview } from "@storybook/react-vite";
 
 // The interface language is Polish; screen readers and the axe checks need it on the document root.

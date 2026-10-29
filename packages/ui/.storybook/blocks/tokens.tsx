@@ -132,7 +132,7 @@ const typeRoles = [
   { role: "body-strong", className: "text-body-strong", spec: "14/20, 600", use: "Table headers; the one emphasised value", source: "P7 (proposal), Q3-1", sample: "Wynik kursu" },
   { role: "label", className: "text-label", spec: "12/16, 400, text-muted", use: "Field label, label above a value", source: "R07.1, R14.1", sample: "Dojazd" },
   { role: "meta", className: "text-meta", spec: "12/16, 400, text-muted", use: "Source, date, secondary details", source: "R11.1, P2", sample: "wpisane, 29.10.2026 08:40" },
-  { role: "number", className: "text-number", spec: "14/20, 400, tabular-nums", use: "Amounts, kilometres, times; right-aligned in columns", source: "P8, R07.1, R15.1", sample: "1 850,00 EUR · 667,180 km" },
+  { role: "number", className: "text-number", spec: "14/20, 400, tabular-nums", use: "Amounts, kilometres, times; right-aligned in columns", source: "P8, R07.1, R15.1", sample: "1 850,00 EUR · 667 km" },
   { role: "code", className: "text-code", spec: "12/16, system monospace", use: "Code in this documentation only", source: "Proposal", sample: "text-meta" },
 ];
 
@@ -175,7 +175,7 @@ export function SpacingExample() {
   return <section aria-label="Spacing example" className="flex max-w-measure flex-col gap-between rounded-panel border border-divider bg-panel p-panel">
     <h3 className="text-section-title">Trasa i kilometry</h3>
     <div className="flex gap-group">
-      {[["Dojazd", "120,000 km"], ["Ładowne", "547,180 km"], ["Razem", "667,180 km"]].map(([label, value]) => <div key={label} className="flex flex-col gap-tight">
+      {[["Dojazd", "120 km"], ["Ładowne", "547 km"], ["Razem", "667 km"]].map(([label, value]) => <div key={label} className="flex flex-col gap-tight">
         <span className="text-meta">{label}</span>
         <span className="text-number">{value}</span>
       </div>)}
@@ -217,7 +217,7 @@ export function TextSpacingSample() {
     </Card>
     <div className="flex flex-col gap-tight">
       <span className="text-label">Dojazd</span>
-      <span className="text-number">120,000 km</span>
+      <span className="text-number">120 km</span>
       <span className="text-meta">wpisane, 29.10.2026 08:40</span>
     </div>
     <div className="flex h-row items-center justify-between border-b border-divider text-table">

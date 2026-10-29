@@ -47,6 +47,8 @@ export function findTextSpacingFailures(root: HTMLElement): TextSpacingFailure[]
   const tolerance = 1;
   for (const element of root.querySelectorAll<HTMLElement>("*")) {
     if (element.closest("svg")) continue;
+    // A single-line input scrolls its own value; the text stays reachable with the caret, so it is not lost content.
+    if (element instanceof HTMLInputElement) continue;
     const style = getComputedStyle(element);
     const clipsX = ["hidden", "clip"].includes(style.overflowX);
     const clipsY = ["hidden", "clip"].includes(style.overflowY);

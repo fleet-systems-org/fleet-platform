@@ -6,6 +6,10 @@ import type { ApiResult } from "../api/apiCall";
 import { ErrorMessage } from "../feedback/ErrorMessage";
 import { LoadingMessage } from "../feedback/LoadingMessage";
 import { SuccessMessage } from "../feedback/SuccessMessage";
+import { Button } from "../../components/button";
+import { Input } from "../../components/input";
+import { Label } from "../../components/label";
+import { Textarea } from "../../components/textarea";
 
 export type CrudField = { name: string; label: string; type?: "text" | "email" | "textarea"; inputMode?: "text" | "decimal"; required?: boolean };
 export type CrudFormMessages = { submit: string; cancel: string; pending: string; success: string; translate: (key: string) => string };
@@ -69,8 +73,8 @@ export function CrudForm<T>({ schema, fields, initialValues, onSubmit, onCancel,
       event.preventDefault(); event.currentTarget.requestSubmit();
     } else if (event.key === "Escape") { event.preventDefault(); cancel(); }
   }
-  return <form ref={formRef} onSubmit={submit} onKeyDown={keyboard} noValidate aria-busy={pending} className="space-y-4">
-    <fieldset disabled={pending} className="space-y-4">
+  return <form ref={formRef} onSubmit={submit} onKeyDown={keyboard} noValidate aria-busy={pending} className="flex flex-col gap-between">
+    <fieldset disabled={pending} className="flex flex-col gap-between">
       {fields.map(field => {
         const inputId = `${id}-${field.name}`;
         const fieldErrors = errors[field.name] ?? errors[`body.${field.name}`];
@@ -78,18 +82,17 @@ export function CrudForm<T>({ schema, fields, initialValues, onSubmit, onCancel,
           id: inputId, name: field.name, value: values[field.name] ?? "", required: field.required,
           inputMode: field.inputMode, "aria-invalid": !!fieldErrors,
           "aria-describedby": fieldErrors ? `${inputId}-error` : undefined,
-          className: "w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-2",
           onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => { setValues(current => ({ ...current, [field.name]: event.target.value })); setSuccess(false); },
         };
-        return <div key={field.name} className="space-y-1">
-          <label htmlFor={inputId} className="text-sm font-medium">{field.label}</label>
-          {field.type === "textarea" ? <textarea {...props} /> : <input {...props} type={field.type ?? "text"} />}
+        return <div key={field.name} className="flex flex-col gap-tight">
+          <Label htmlFor={inputId}>{field.label}</Label>
+          {field.type === "textarea" ? <Textarea {...props} /> : <Input {...props} type={field.type ?? "text"} />}
           {fieldErrors && <ErrorMessage id={`${inputId}-error`}>{fieldErrors.map(messages.translate).join(" ")}</ErrorMessage>}
         </div>;
       })}
-      <div className="flex gap-2">
-        <button type="submit" className="rounded-md bg-primary px-4 py-2 text-primary-foreground">{messages.submit}</button>
-        <button type="button" onClick={cancel} className="rounded-md border px-4 py-2">{messages.cancel}</button>
+      <div className="flex gap-group">
+        <Button type="submit">{messages.submit}</Button>
+        <Button variant="secondary" onClick={cancel}>{messages.cancel}</Button>
       </div>
     </fieldset>
     {pending && <LoadingMessage>{messages.pending}</LoadingMessage>}

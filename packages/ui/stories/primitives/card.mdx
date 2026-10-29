@@ -1,0 +1,79 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as CardStories from "./card.stories";
+
+<Meta of={CardStories} />
+
+# Card
+
+`import { Card, CardHeader, CardTitle, CardDescription, CardAction, CardContent, CardFooter } from "@fleet-platform/ui/components/card"`
+
+## 1. Purpose
+
+Groups one main area of a screen, such as the trip form, the quote result or the history, so the dispatcher finds it at a glance.
+
+## 2. When to use
+
+Only for the main areas of a screen (audit decision 4): trip entry, quote result, past similar trips, a fleet summary.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| A part of an area | A section with a heading and a divider line | No card inside a card (audit finding 4) |
+| A list of trucks or trips | Table (`DataTable`) | Rows compare better than cards |
+| Three identical cards with an icon | One table or one panel | Generic look (G1) |
+| A row of big numbers | The result bar (stage 3) | P6, K2a |
+
+## 4. Anatomy
+
+Card: `border-divider`, `radius-panel` 8 px, panel background, 12 px inside, no shadow (owner decision 2026-10-29). Optional parts: header (title, description, action on the right), content, footer with actions.
+
+## 5. Variants
+
+None.
+
+## 6. States
+
+None of its own. Data states (loading, empty, error) belong to the content, through `LoadingMessage`, `EmptyState` and `ErrorMessage`.
+
+## 7. Behaviour and accessibility
+
+A card is not interactive and not focusable. `CardTitle` is a styled `div`. Put a heading of the right level inside it (`<CardTitle><h2>…</h2></CardTitle>`), so the screen has a heading structure (WCAG 1.3.1, 2.4.6).
+
+<Canvas of={CardStories.Structure} />
+
+## 8. Content
+
+- Title: the name of the area, 1 to 4 words: "Wynik kursu".
+- Description: status and source in `text-meta`: "Szacunek; ceny paliwa z 29.10.2026".
+
+## 9. Responsive
+
+Fills its column. In a narrow column the header action stays next to the title; the description wraps below.
+
+<Canvas of={CardStories.LongTitleNarrow} />
+
+## 10. API
+
+<ArgTypes of={CardStories} />
+
+All parts accept the attributes of a `div`.
+
+## 11. Code
+
+```tsx
+<Card><CardHeader><CardTitle><h2>Trasa i kilometry</h2></CardTitle></CardHeader><CardContent>…</CardContent></Card>
+```
+
+<Canvas of={CardStories.WithActionAndFooter} />
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Separate areas with a border. | A shadow as the only separation (G1). |
+| A section with a heading inside the card. | A card inside a card. |
+
+## 13. Related
+
+Confused with: dialog (an overlay) and the result bar (stage 3). Used in: trip entry, quote, history and fleet screens.

@@ -1,0 +1,117 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as ButtonStories from "./button.stories";
+
+<Meta of={ButtonStories} />
+
+# Button
+
+`import { Button } from "@fleet-platform/ui/components/button"`
+
+## 1. Purpose
+
+Lets the dispatcher start one action: quote, accept, save or open.
+
+## 2. When to use
+
+- The one main action of a screen or panel: "Policz wycenę", "Przyjmij ładunek" (`primary`; Q3-1: one highlighted thing).
+- Other actions next to it: "Zapisz jako wariant", "Anuluj" (`secondary`).
+- A light action inside text or a panel header: "Pokaż źródła" (`text`).
+- Pagination and row actions in a 36 px table row (`compact`).
+
+## 3. When not to use
+
+| Instead of a button | Use | Why |
+|---|---|---|
+| Going to another page | `Button asChild variant="text"` around an `<a>` | Navigation is a link (WCAG 2.4.4); `asChild` keeps the link semantics |
+| Several actions on one row | A menu (later batch) | One button per action fills the row (A01: column of buttons) |
+| Choosing one option | Radio group (later batch) | A choice is not an action |
+| Deleting or cancelling a trip | `primary` inside a confirmation dialog, labelled with the verb | There is no red button; red is for loss and errors only (N5a, Q3) |
+
+## 4. Anatomy
+
+Box with a 1 px border (`radius-control`), label (required), icon (optional, Tabler, 16 px, before the label). An icon-only button has no visible label and must have `aria-label`.
+
+## 5. Variants
+
+| Variant | When | Source |
+|---|---|---|
+| `primary` | The single main action; filled `action-primary` | N3a, Q3-1 |
+| `secondary` | Any other action; panel background, `border-input` | T1, proposal |
+| `text` | Light action or link; action colour, underline on hover | proposal |
+
+| Size | Height | When | Source |
+|---|---|---|---|
+| `default` | at least 36 px | Everywhere outside tables | owner decision 2026-10-29 |
+| `compact` | at least 32 px | Inside a 36 px table row | owner decision 2026-10-29 |
+| `icon`, `icon-compact` | 36 / 32 px square | Icon-only (close, remove a filter) | owner decision 2026-10-29 |
+
+The label wraps instead of overflowing, so the height grows with it (WCAG 1.4.10).
+
+<Canvas of={ButtonStories.Variants} />
+<Canvas of={ButtonStories.Sizes} />
+
+## 6. States
+
+<Canvas of={ButtonStories.States} />
+
+| State | Look | Notes |
+|---|---|---|
+| Default | As the variant | |
+| Hover | `primary`: `action-primary-hover`; `secondary`: page background; `text`: underline | Hover colour is a proposal |
+| Focus | 2 px `focus-ring` outline, 2 px offset | T4, WCAG 2.4.7 |
+| Pressed | Same as hover | proposal |
+| Disabled | Page background, `text-muted`, divider border | Prefer an enabled button that explains what is missing (audit finding 14). If it must be disabled, put the reason in visible text next to it and point to it with `aria-describedby` |
+| Saving | Disabled, `aria-busy`, label "Zapisywanie…" | No spinner (Motion); one submission at a time |
+| Selected, error | Not applicable | A button has no selected or invalid state; use a radio group or a field |
+
+## 7. Behaviour and accessibility
+
+- Activates with a click, `Enter` and `Space` (native `<button>`); default `type="button"`, so it never submits a form by accident; pass `type="submit"` in forms.
+- Tab order follows the document; no positive `tabindex`.
+- A screen reader announces the label and "button"; an icon button announces its `aria-label`.
+- Target at least 36 × 36 px (32 px compact), above the 24 × 24 px minimum (WCAG 2.5.8).
+
+## 8. Content
+
+- Verb plus object: "Przyjmij ładunek", "Policz wycenę", not "OK" or "Dalej" (Content guide).
+- Up to about 4 words; long labels wrap. Polish labels are often longer than English ones; leave room.
+- Numbers in a label only when they name the action: "Pokaż 7 dni".
+
+## 9. Responsive
+
+- 1440 px: buttons sit in a row after the content they act on.
+- 768 px: same; the row may wrap.
+- 320 px: labels wrap inside the button; buttons wrap to the next line.
+
+<Canvas of={ButtonStories.LongLabelNarrow} />
+
+## 10. API
+
+<ArgTypes of={ButtonStories} />
+
+## 11. Code
+
+```tsx
+<Button>Policz wycenę</Button>
+```
+
+```tsx
+<div className="flex gap-group">
+  <Button type="submit">Przyjmij ładunek</Button>
+  <Button variant="secondary" onClick={saveDraft}>Zapisz jako wariant</Button>
+</div>
+<Button asChild variant="text"><a href="/kursy">Wróć do kursów</a></Button>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| One `primary` button per panel: the eye goes to one place (Q3-1). | Two `primary` buttons next to each other. |
+| "Przyjmij ładunek": the label says what happens. | "OK": the user has to read the dialog again. |
+| Enabled "Przyjmij ładunek" that explains what is missing. | A greyed-out button with no reason (audit finding 14). |
+| `<Button asChild variant="text"><a href>` for navigation. | A `<div onClick>` styled as a button. |
+
+## 13. Related
+
+Confused with: a link (navigation) and a radio group (a choice). Used in: Field-based forms, `CrudForm`, `DataTable` pagination, Card footer, confirmation dialog (later batch).

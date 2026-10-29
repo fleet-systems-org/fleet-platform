@@ -23,6 +23,7 @@
   --paper-50: #f8faf9;
   --white: #ffffff;
   --green-800: #205b49;
+  --green-900: #1d4d3f; /* proposal: green-800 mixed 30% towards ink-900, hover and pressed action */
   --red-700: #a2191f; /* N5a: loss badge text */
   --red-600: #da1e28; /* Q3 proposal: error colour, distinct from loss */
   --red-100: #ffd7d9; /* N5a: loss badge background */
@@ -67,6 +68,7 @@
   --border-divider: var(--ink-200); /* R08.1, R14.1: lines between rows and sections; decorative only */
   --border-input: var(--ink-400); /* T1: input border, 3:1 against both surfaces */
   --focus-ring: var(--action-primary); /* G1, T4: not the library default blue-500 */
+  --action-primary-hover: var(--green-900); /* proposal: hover and pressed state of action-primary, white text 9.61:1 */
 
   /* Layer 2: status */
   --status-loss-text: var(--red-700); /* N5a, K1: trip result only, never a person (R01) */
@@ -98,6 +100,8 @@
 
   /* Layer 3: component tokens */
   --table-row-height: 36px; /* Q3-1, R08.1, T3 */
+  --control-height: 36px; /* buttons, inputs, selects (owner decision 2026-10-29) */
+  --control-height-compact: 32px; /* controls inside a 36 px table row (owner decision 2026-10-29) */
 
   /* Existing shadcn names kept as aliases (no values changed) */
   --background: var(--surface-page);
@@ -126,6 +130,7 @@
   --color-muted: var(--text-muted);
   --color-on-action: var(--text-on-action);
   --color-action: var(--action-primary);
+  --color-action-hover: var(--action-primary-hover);
   --color-divider: var(--border-divider);
   --color-input: var(--border-input);
   --color-focus: var(--focus-ring);
@@ -153,6 +158,8 @@
   --spacing-between: var(--space-between);
   --spacing-section: var(--space-section);
   --spacing-row: var(--table-row-height);
+  --spacing-control: var(--control-height);
+  --spacing-control-compact: var(--control-height-compact);
   --spacing-measure: var(--measure-text);
 
   --radius-control: var(--radius-4); /* N4b: inputs, buttons, badges */
