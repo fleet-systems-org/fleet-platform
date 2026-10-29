@@ -1,6 +1,6 @@
 # Clickable prototype Stage 1o — s12–s16
 
-Status: implementation verified; publication pending. Agent: Codex. Starting branch: prototype/e01-clickable, commit 1551664.
+Status: complete and published; waiting for owner review. Agent: Codex. Starting branch: prototype/e01-clickable, commit 1551664.
 
 ## Objective and authority
 
@@ -12,7 +12,7 @@ Owner order 2026-10-29, D1: compose existing design-system components in s12–s
 2. Compose quote evidence, details popovers, input dialog, draft table and acceptance; retain review engine.
 3. Compute every synthetic vehicle category as daily rate × elapsed seconds / 86400 using BigInt. Round aggregates once and reconcile displayed components.
 4. Run required static/unit checks and browser flow at 1440/1024/768/320, including loss, pending and overlay focus. Capture external screenshots and preserve preview evidence.
-5. Inspect diff, update progress and verification, commit. Ordinary push requires cockpit Guard confirmation because it changes a shared branch.
+5. Inspect diff, update progress and verification, commit. Ordinary push after publication authorization.
 
 ## Validation
 
@@ -29,8 +29,8 @@ Owner order 2026-10-29, D1: compose existing design-system components in s12–s
 
 ## Remaining
 
-Publication and owner review. G11/G13 quote compositions are closed; DS GAP G08 remains because DataTable has no sorting API. Stage 2, source services, repricing after input, driver/tractor/customer-directory work are unchanged. No PR or base merge.
+Owner review. G11/G13 quote compositions are closed; DS GAP G08 remains because DataTable has no sorting API. Stage 2, source services, repricing after input, driver/tractor/customer-directory work are unchanged. No PR or base merge.
 
 ## Publication
 
-Final build copied to the existing external preview, preserving earlier evidence. Index SHA256 138a0a2c4f300f90dc01c951492332a20cde940d289f799e27f3afb97314967c matches Mac mini. Preview index HTTP 200 through the private-network URL. Initial iCloud check confirmed index and all eight requested captures uploaded (9/10 including the still-pending report); final report/source snapshot checks follow. MacBook opening/download unverified. Ordinary push remains subject to the requested cockpit Guard. No PR or base merge.
+Final build copied to the existing external preview, preserving earlier evidence. Index SHA256 138a0a2c4f300f90dc01c951492332a20cde940d289f799e27f3afb97314967c matches Mac mini. Preview index HTTP 200 through the private-network URL. Final Swift check confirmed all 23/23 files uploaded, including report, requested screenshots, source manifest and 11 source snapshots; brctl caught-up. MacBook opening/download unverified. Owner instructed autonomous completion without further confirmation; ordinary push published implementation commit f0e6a16 to prototype/e01-clickable. Remote ancestry was verified immediately before push (0 remote-only / 1 local-only commits). No PR or base merge.
