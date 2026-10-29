@@ -18,8 +18,13 @@
 - Passed: pnpm install --frozen-lockfile; pnpm lint; pnpm typecheck; scoped token command (no values outside tokens); git diff --check.
 - Failed: first pnpm test:storybook run, 95/96 passed; existing Select / Test: click and keyboard expected CZK, received PLN. No stories changed.
 - Passed: repeated pnpm test:storybook, 96/96 tests across 18 files.
-- Not run: remote CI (pending).
+- Passed: remote CI run [40894819099](https://github.com/fleet-systems-org/fleet-platform/actions/runs/40894819099), all seven checks after rerunning the failed unit job.
+- Passed: Design tokens (packages/ui), 22 seconds; Storybook tests (interaction, axe, WCAG 1.4.12), 76 seconds.
+- Failed initially: existing CrudForm unit test could not find "Saved" (124/125 tests passed); failed-job rerun passed without source or test changes.
+- Passed: Lint, Typecheck, Unit tests (100% coverage), Build, Integration tests.
+- Not run locally: unit coverage, application build and integration tests; these passed in CI.
 
 ## Outcome and remaining work
 
-Implementation and required local validation complete; publication and remote CI pending. No component, story, test, dependency or coverage changes.
+PR [#41](https://github.com/fleet-systems-org/fleet-platform/pull/41) is open for review against main. Both new checks and all existing checks passed. Only workflow and this log changed. Final documentation commit will trigger the same CI checks again; final results are recorded in the PR.
+Owner review and merge remain; no approval, merge or auto-merge was performed. No component, story, test, dependency or coverage changes.
