@@ -31,3 +31,10 @@ The shared frame needs an explicit heading slot before its summary and detail sl
 ## Stage 1g: heading focus depends on navigation modality
 
 The unchanged review engine focuses h1 after navigation for accessibility. Suppress only `h1[tabindex="-1"]:focus:not(:focus-visible)` in prototype styles; removing focus or every outline would break keyboard orientation. Verified actual pointer clicks and Tab/Enter navigation at 1440/320 CSS pixels: focus stays on h1, pointer outline is none and keyboard outline is solid. Supporting finding only; no standing rule added.
+
+## Stage 1n: shared picker composition and native scenario controls
+
+- A saved map address must replace the matching provider option by ID, with saved places first; concatenating both sources produced duplicate React keys after one-action save. Verified in the isolated browser with console error collection as well as pageerror collection.
+- A native select does not consume Field's control context. Give the prototype-only scenario selector an explicit accessible name; verify getByLabel and keyboard selection rather than assuming a surrounding Field connects it.
+- Browser iterations need a full reload/reset: navigating only to a hash can retain the previous step. Test the updated disclosure button name after opening Menu.
+- Findings concern page composition/testing only; no shared component API or standing rule changed.

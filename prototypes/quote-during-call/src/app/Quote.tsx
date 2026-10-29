@@ -22,19 +22,15 @@ export function Quote() {
   </>;
 }
 
-// N7c: all step-4 screens have the same summary and saved route, title then summary on mobile.
-export function QuoteFrame({ amount, result, actions, route, title, children }: { amount: string; result: string; actions: ReactNode; route: ReactNode; title: ReactNode; children: ReactNode }) {
+// The existing quote summary is passed to AppFrame's panel slot.
+export function QuoteSummary({ amount, result, actions }: { amount: string; result: string; actions: ReactNode }) {
   const loss = result.startsWith('-');
-  return <div className="quote-layout">
-    <div className="quote-title">{title}</div>
-    <aside className="quote-summary"><Card><CardTitle>Podsumowanie wyceny</CardTitle>
+  return <Card><CardTitle>Podsumowanie wyceny</CardTitle>
       <div className="stack"><div><p className="text-meta">Wynik jednego kursu</p><div className="actions"><strong className={`quote-value${loss ? ' loss-result' : ''}`}>{loss ? 'Strata ' : ''}{money(result)} EUR</strong><Badge variant="estimate">Szacunek</Badge></div></div>
       <div className="availability"><p className="text-meta">Dostępność planowana</p><strong>Wolne w Miejscu C od 13:00</strong><p className="text-meta">12.11.2026 (Warszawa) · koniec rozładunku</p></div>
       <dl className="summary-totals"><div><dt>Fracht netto</dt><dd>{money(amount)} EUR</dd></div><div><dt>Koszt uwzględniony</dt><dd>{money(coveredCost)} EUR <Badge variant="estimate">Szacunek</Badge></dd></div></dl>
       <div className="stack quote-actions">{actions}</div></div>
-    </Card></aside>
-    <div className="quote-detail stack">{route}{children}</div>
-  </div>;
+    </Card>;
 }
 
 

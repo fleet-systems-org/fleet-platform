@@ -12,7 +12,7 @@ const customers = [
   { name: 'Klient Demo Epsilon', city: 'Miejsce E', places: ['Miejsce E'] },
   { name: 'Klient Demo Zeta', city: 'Miejsce C', places: ['Miejsce C'] },
 ];
-export type CustomerStopValue = { customer: string; place: string };
+export type CustomerStopValue = { customer: string; place: string; townOnly?: boolean };
 export const emptyStop = (): CustomerStopValue => ({ customer: '', place: '' });
 function Search({ id, label, value, options, onChange, onSelect, optional = false }: {
   optional?: boolean; id: string; label: string; value: string; options: { value: string; label: string }[];
