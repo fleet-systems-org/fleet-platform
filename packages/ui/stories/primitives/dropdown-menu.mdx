@@ -1,0 +1,99 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as MenuStories from "./dropdown-menu.stories";
+
+<Meta of={MenuStories} />
+
+# Dropdown menu
+
+`import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuSeparator } from "@fleet-platform/ui/components/dropdown-menu"`
+
+## 1. Purpose
+
+Keeps the less frequent actions of one object, such as a trip row, behind one button, so a dense table shows one emphasised thing per row (Q3-1, A01).
+
+## 2. When to use
+
+- Two or more actions on one row or object that are not the main action: "Popraw", "Anuluj kurs", "Usuń szkic".
+- Actions that depend on the object's state: an accepted trip and a draft have different items.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Choosing a value, such as a currency | Select | A menu acts; a select chooses |
+| The one main action of a screen, such as "Policz wycenę" | Button | It must stay visible |
+| A single action | Button or icon button with a tooltip | A menu with one item hides it for nothing |
+| Independent on/off options | Not in the system | No checkbox items (Q5c); goes to "What is missing" |
+
+## 4. Anatomy
+
+Trigger (usually a 36 px icon button with `IconDots` and an `aria-label` naming the object), list (4 px radius, `border-input` border, overlay shadow T5), items, group labels and separators (optional).
+
+## 5. Variants
+
+One. The list opens below the trigger aligned to its right edge (`align="end"`), because row actions sit at the end of a table row. There is no red "destructive" item: an irreversible item ends with "…" and opens an alert dialog (N5a).
+
+<Canvas of={MenuStories.Open} />
+
+## 6. States
+
+| State | Look | Source |
+|---|---|---|
+| Opening | Fades in over 110 ms; at once with reduced motion | Q5b, T7 |
+| Highlighted item | Page background and underline, as a Select option | WCAG 1.4.1, batch 2 proposal 4 (approved) |
+| Disabled item | Muted text; the item says why ("Usuń szkic (tylko przed przyjęciem)") | audit finding 14 |
+| Closing | Instant; focus returns to the trigger | T7 |
+| Empty, error, loading | Not applicable: the items are known with the row | |
+
+## 7. Behaviour and accessibility
+
+- WAI-ARIA APG Menu Button through Radix: `Enter`, `Space` or `ArrowDown` open the menu with focus on the first item; arrows move and stop at the ends; disabled items are skipped; typing a letter jumps; `Escape` closes; focus returns to the trigger.
+- While open, the page behind is inert; the story "Open" disables the axe rule `aria-hidden-focus`, as Select does.
+- An item that opens a dialog: the dialog has no trigger of its own, so return focus to the menu button in `AlertDialogContent onCloseAutoFocus` (story "Menu item opens a confirmation").
+- Targets: trigger 36 × 36 px, items at least 32 px high (WCAG 2.5.8).
+
+## 8. Content
+
+- Items are verbs as the dispatcher says them: "Popraw", "Anuluj kurs".
+- An item that asks for confirmation or more input ends with "…".
+- The trigger's `aria-label` names the object: "Akcje kursu ZS 01", not only "Akcje".
+
+## 9. Responsive
+
+The list never exceeds the space available on the screen; long items wrap at 320 px; the list scrolls when it is taller than the screen.
+
+<Canvas of={MenuStories.OpensConfirmation} />
+
+## 10. API
+
+`DropdownMenu`: `open`, `defaultOpen`, `onOpenChange`. `DropdownMenuContent`: `align` (default `end`), `sideOffset` (default 4). `DropdownMenuItem`: `onSelect`, `disabled`. Checkbox items, radio items, submenus and shortcuts of the shadcn source are left out until a screen needs them.
+
+<ArgTypes of={MenuStories} />
+
+## 11. Code
+
+```tsx
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="secondary" size="icon" aria-label={`Akcje kursu ${trip.truck}`}><IconDots aria-hidden /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem onSelect={correct}>Popraw</DropdownMenuItem>
+    <DropdownMenuItem onSelect={() => setCancelling(true)}>Anuluj kurs…</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| A disabled item that says why. | Hiding the item, so the dispatcher looks for it. |
+| "Usuń szkic…" opening an alert dialog. | Deleting at once from the menu. |
+| One menu button per row at the end of the row. | A column of buttons in every row (A01). |
+
+## 13. Related
+
+Confused with: Select (choose a value), Popover (shows information). Used in: trip and draft rows (stage 3), the place of truck actions is still open (Q2a).
+
+<Canvas of={MenuStories.Keyboard} />

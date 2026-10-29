@@ -1,6 +1,6 @@
 # Design system progress
 
-Working log for the design system and its Storybook in `packages/ui`. Local branch `design-system-storybook` (from `main` 6588042); nothing is pushed. Read this file first when resuming.
+Working log for the design system and its Storybook in `packages/ui`. Stage 1 and stage 2 batches 1–2 are in `main` (pull request #38, merge 196a2bb); batch 3 is on the branch `design-system-overlays`. Read this file first when resuming.
 
 Sources the system is built from (every source code such as R06.4, A01, N4b or Q3 is explained in [design-system-decisions.md](../../.ai/specs/design-system-decisions.md)): `.ai/specs/product-brief.md`, `.ai/specs/backlog.md`, `.ai/specs/2026-10-26-e01-foundations.md`, `.ai/specs/2026-10-26-e01-trip-entry-and-quotation.md`, a screen audit and the existing `packages/ui`.
 
@@ -10,7 +10,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 |---|---|
 | 0. Inventory and plan | done 2026-10-29, approved |
 | 1. Foundations | done 2026-10-29, waiting for owner "next" |
-| 2. Primitives | batches 1 and 2 done and approved 2026-10-29; batch 3 next |
+| 2. Primitives | batches 1 and 2 done and approved 2026-10-29; batch 3 done 2026-10-29, waiting for owner decisions on its proposals |
 | 3. Product components, patterns, screens | not started |
 | 4. Teaching pages | not started |
 | 5. Checks and report | not started |
@@ -178,6 +178,54 @@ Proposals of batch 2 (all five approved by the owner on 2026-10-29):
 4. Highlighted Select option: page background plus underline; radio groups are vertical only.
 5. "Plan" as a neutral badge on entered-trip history rows (the spec says they are labelled as plan results).
 
+## Stage 2, batch 3 (2026-10-29)
+
+Built: `Dialog`, `AlertDialog`, `DropdownMenu`, `Popover`, `Tooltip`, `Skeleton`. Tokens: `shadow-overlay` (T5), `bg-scrim` (T6), `animate-overlay-in` (T7), `bg-tooltip` and `text-on-tooltip` (T8); Tailwind's default shadows and animations removed from the theme. The Select list now has the overlay shadow and the 110 ms appearance. Docs pages with 13 sections for all six; Select, Motion and Shape and depth pages updated (the overlay shadow is no longer an open question). No new dependencies: all six come from `radix-ui` 1.8.1; sources fetched from the shadcn new-york-v4 registry JSON.
+
+Differences from shadcn in this batch:
+
+| Property | shadcn new-york | Fleet Platform | Decision |
+|---|---|---|---|
+| Overlay motion | fade and zoom in and out, slide from the side (`tw-animate-css`), 200 ms on dialogs | fade in only over 110 ms, instant close, 0 ms under reduced motion | Q5b, T7 |
+| Shadow | `shadow-lg` dialogs, `shadow-md` menus and popovers | one `shadow-overlay` with a `border-input` border | owner 2026-10-29, T5 |
+| Dialog scrim and layout | `bg-black/50`; panel fixed in the centre with `translate`, `max-w-lg` | `bg-scrim` (ink 50 %); the scrim centres and scrolls the panel, width up to 65 characters, 16 px from the screen edges | T6, WCAG 1.4.10 |
+| Dialog close button | opacity 70 % X with "Close" | 32 px text icon button, `aria-label="Zamknij"` | WCAG 2.5.8 |
+| Alert dialog | size `sm`, media slot, any button variant | one size; action always primary, cancel secondary and focused on open | N5a, Q3 |
+| Dropdown menu | checkbox and radio items, submenus, shortcuts, `destructive` items | items, labels, groups, separators; aligned to the trigger's right edge; highlight with underline | Q5c, N5a, batch 2 proposal 4 |
+| Popover | `w-72`, centred, header, title and description parts | as wide as the content up to 65 characters, never wider than the screen, aligned left; content is the consumer's | audit finding 15 |
+| Tooltip | `TooltipProvider` needed at the root, arrow, `text-xs` | provider built in, no arrow, `text-table` on `bg-tooltip` | T8 |
+| Skeleton | `animate-pulse`, `bg-accent` | still, `bg-divider`, always `aria-hidden` | T9, Q5b |
+
+Checks: typecheck, lint, 125 unit tests at 100% coverage (statements 389/389, branches 235/235, functions 129/129, lines 333/333), 96 story tests in two runs (interaction, axe, WCAG 1.4.12), `lint:tokens` 0 in `packages/ui`, app build, Storybook build; in the built Storybook each new page has 13 sections and no page errors, the dialog at 320 px keeps 16 px on both sides with no horizontal scroll, the overlay animation measures 0.11 s and 0 s with reduced motion.
+
+| # | Checklist item | Result |
+|---|---|---|
+| 1 | Contrast | Pass: axe colour-contrast in all 96 stories; tooltip white on ink 14.71:1; scrim and skeleton are not text or controls |
+| 2 | Targets at least 24 px | Pass: dialog buttons 36 px, close button 32x32, menu trigger 36x36, menu items 32 px, popover trigger 36 px |
+| 3 | Visible labels | Pass: dialog fields through `Field`; dialogs named by their title, popovers by `aria-label`, icon buttons by `aria-label` plus tooltip |
+| 4 | One icon set | Pass: only Tabler (`IconX`, `IconDots`, `IconPencil`) |
+| 5 | Colour not alone | Pass: highlighted menu item underlined; disabled item says why; estimate in a popover has the word "Szacunek" |
+| 6 | Empty, error, loading states | Pass: field error inside a dialog; skeleton with `aria-busy` and `LoadingMessage` |
+| 7 | Visible focus | Pass: focus moves into dialogs (first field or the safe answer), stays inside, returns to the trigger, also from a menu item via `onCloseAutoFocus` (tested) |
+| 8 | No invented data | Pass: cancellation keeps evidence and stales successor quotes, discarding a never-accepted draft, loss reason (R12), whole km with exact value in details (R11, EV-4), fuel price from the weekly bulletin (SRC-1); numbers, places and dates synthetic |
+| 9 | Only token variants | Pass: one variant per component; new tokens T5, T6, T8 in `src/styles.css` |
+| 10 | Zero values outside tokens | Pass in `packages/ui` (0); 12 remain in app pages, outside the design system |
+| 11 | Lines at most 75 characters | Pass: dialog, popover and tooltip limited to `max-w-measure` (65ch) |
+| 12 | Message says what happened and what to do | Pass: "Wpisz powód przyjęcia straty. Bez niego kursu nie da się przyjąć."; "Usunąć szkic kursu? … Tego nie da się cofnąć." |
+
+Exceptions: the open Dialog, Alert dialog and Dropdown menu stories disable the axe rule `aria-hidden-focus`, for the same reason as the open Select list.
+
+Proposals of batch 3 (waiting for the owner):
+
+1. Overlay shadow value 0 2px 6px in ink at 30 % (T5).
+2. Scrim behind a modal dialog: ink at 50 % (T6).
+3. Overlays only fade in; closing is instant (T7).
+4. Dark tooltip without arrow, shown at once on hover and focus (T8).
+5. Still skeleton without pulse (T9).
+6. No red or "destructive" item: an irreversible menu item ends with "…" and opens an alert dialog whose action is the primary button.
+7. Dropdown menu without checkbox and radio items, submenus and shortcuts until a screen needs them.
+8. A click on the scrim closes a Dialog (input lost, a "Wróć" button stays the expected way out); an Alert dialog ignores it.
+
 ## Plan
 
 - Storybook 10.6.5 with `@storybook/react-vite` in `packages/ui/.storybook`; addons: docs (MDX with `remark-gfm`), a11y (`test: 'error'`), vitest (stories as browser tests, Playwright Chromium); `msw` + `msw-storybook-addon` for `apiCall` responses. Separate `packages/ui/vitest.storybook.config.ts`; the root unit/coverage run stays unchanged.
@@ -187,8 +235,6 @@ Proposals of batch 2 (all five approved by the owner on 2026-10-29):
 
 ## Open questions
 
-- Shadow on overlays: border only, or border plus shadow (stage 2).
-- Existing `Card` (12 px radius, shadow, 24 px padding, two arbitrary values) and `DataTable`/`ErrorMessage`/`EmptyState` restyle (stage 2 proposal).
 - Icon sizes 16/20 px, outline-only Tabler icons, `text-body-strong` role, 768 px breakpoint, monospace for documentation code (proposals).
 - App pages use 12 size/weight utilities outside the roles; changing them is app work outside this branch's scope.
 - Token script lives outside coverage (`packages/ui/scripts/`).
@@ -197,4 +243,4 @@ Proposals of batch 2 (all five approved by the owner on 2026-10-29):
 
 ## Next step
 
-Owner says "next"; then batch 3: Dialog, AlertDialog, DropdownMenu, Popover, Tooltip, Skeleton, plus the overlay shadow token, the 110 ms overlay appearance (Q5b) and applying both to the Select list. Stages 3 and 4 follow the structure model recorded under "owner instruction for stages 3 and 4".
+Owner decides proposals 1–8 of batch 3 and reviews the pull request of `design-system-overlays`. Then stage 3 (product components by domain, patterns, screens) and stage 4 follow the structure model recorded under "owner instruction for stages 3 and 4".

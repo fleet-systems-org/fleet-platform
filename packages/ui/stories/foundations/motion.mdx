@@ -12,10 +12,13 @@ Motion only shows that something appeared or changed state. Nothing moves for de
 | `motion-instant` | 0 ms | `duration-instant` | Every state change in place: hover, selection, validation | Q5b |
 | `motion-overlay` | 110 ms | `duration-overlay` | A dialog, menu or popover appearing | Q5b; IBM Carbon fast-02 |
 | `motion-easing` | cubic-bezier(0.2, 0, 0.38, 0.9) | `ease-standard` | With `motion-overlay` | Q5b; IBM Carbon productive easing |
+| `animate-overlay-in` | fade from transparent, `motion-overlay`, `motion-easing` | `animate-overlay-in` | Dialog and alert dialog scrim, menu, popover, tooltip, Select list | T7 |
 
 | Rule | Source |
 |---|---|
 | With `prefers-reduced-motion: reduce`, `motion-overlay` becomes 0 ms; nothing animates. | WCAG 2.3.3 |
+| Overlays only fade in: no zoom, slide or bounce; closing is instant; Tailwind's default animations (pulse, spin, ping, bounce) are removed from the theme. | T7 |
+| A skeleton placeholder stays still; loading is said in words by `LoadingMessage`. | T9 |
 | A value never disappears or resets silently; a change is shown in place ("zmienione, było 120"). | R04.3, Z2 (proposal) |
 | No welcome windows, tours or animations on entry. | B2, R07.4 |
 | Results update as soon as a filter changes; there is no manual refresh button. | R02.3, Z1 (proposal) |

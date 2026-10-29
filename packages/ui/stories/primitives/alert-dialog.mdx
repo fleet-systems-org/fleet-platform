@@ -1,0 +1,100 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as AlertDialogStories from "./alert-dialog.stories";
+
+<Meta of={AlertDialogStories} />
+
+# Alert dialog
+
+`import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@fleet-platform/ui/components/alert-dialog"`
+
+## 1. Purpose
+
+Stops the dispatcher once before an action that cannot be undone, so it never happens by a stray click or Enter.
+
+## 2. When to use
+
+- Discarding a draft that was never accepted: the draft and its quote are deleted.
+- Overwriting a value the dispatcher entered with a new one from a source (R04.3, Z2, proposal).
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| The action needs an input, such as a reason | Dialog | An alert dialog only asks yes or no |
+| The action can be undone or corrected later | No confirmation | A question on every action teaches the dispatcher to click through it |
+| Reporting that something failed | Alert or `ErrorMessage` in the screen | An error is information, not a question |
+
+## 4. Anatomy
+
+Scrim, panel (same look as Dialog), title (required, the question), description (required, the consequence), footer with the cancel button (secondary) and the action button (primary). No corner button.
+
+## 5. Variants
+
+One. The confirming action is always the primary button: there is no red button; the title and the button label carry the weight (N5a, Q3).
+
+<Canvas of={AlertDialogStories.Open} />
+
+## 6. States
+
+| State | Look | Source |
+|---|---|---|
+| Opening | Fades in over 110 ms; at once with reduced motion | Q5b, T7 |
+| Open | Focus on the cancel button; page behind dimmed and inert | WAI-ARIA APG Alert Dialog |
+| Click outside | Nothing happens: the dispatcher must answer | WAI-ARIA APG Alert Dialog |
+| Closing | Instant; focus returns to the trigger | T7 |
+| Error, loading | Not applicable inside the dialog; a failure of the action shows in the screen | Q3 |
+
+## 7. Behaviour and accessibility
+
+- `role="alertdialog"`, named by the title, described by the description; Radix reads both when it opens.
+- Focus starts on `AlertDialogCancel`, so a quick Enter keeps things as they are. `Tab` moves to the action; `Escape` cancels.
+- A click on the scrim does not close it (unlike Dialog).
+- Targets: both buttons at least 36 px high (WCAG 2.5.8).
+
+## 8. Content
+
+- Title asks the question with the object: "Usunąć szkic kursu?".
+- Description says what disappears and that it cannot be undone.
+- Cancel says what stays ("Zostaw szkic"); the action repeats the verb of the trigger ("Usuń szkic").
+
+## 9. Responsive
+
+Same as Dialog: at most 65 characters wide, 16 px from the edges at 320 px, buttons wrap.
+
+## 10. API
+
+`AlertDialog`: `open`, `defaultOpen`, `onOpenChange`. `AlertDialogAction`: `onClick` runs the action and closes. `AlertDialogCancel`: closes. `AlertDialogContent`: Radix `onCloseAutoFocus` for a dialog opened from a menu.
+
+<ArgTypes of={AlertDialogStories} />
+
+## 11. Code
+
+```tsx
+<AlertDialog>
+  <AlertDialogTrigger asChild><Button variant="secondary">Usuń szkic</Button></AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Usunąć szkic kursu?</AlertDialogTitle>
+      <AlertDialogDescription>Szkic nie był przyjęty, więc zniknie razem z wyceną. Tego nie da się cofnąć.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Zostaw szkic</AlertDialogCancel>
+      <AlertDialogAction onClick={discardDraft}>Usuń szkic</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| "Zostaw szkic" / "Usuń szkic". | "Nie" / "Tak": the dispatcher has to reread the question. |
+| Confirm only what cannot be undone. | Confirm saving a draft. |
+| Primary button for the action, words for the weight. | A red button: red is reserved for a loss on a trip result (N5a). |
+
+## 13. Related
+
+Confused with: Dialog (collects input), Alert (a message in the screen). Used in: discarding a draft, overwriting an entered value (proposal).
+
+<Canvas of={AlertDialogStories.Keyboard} />

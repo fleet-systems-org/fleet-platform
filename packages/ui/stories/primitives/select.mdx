@@ -22,7 +22,7 @@ Lets the dispatcher pick one value from a known list without typing it, so the v
 |---|---|---|
 | Two to five options the dispatcher must compare, such as the wash or weekend question | Radio group | All options stay visible; nothing is preselected (R09, WKD-1) |
 | A place (loading, unloading) | `PlacePicker` (stage 3) | Places are searched, not listed (Q4) |
-| An action, such as "Popraw" or "Anuluj kurs" | Button or a menu (later batch) | A select chooses a value; it does not act |
+| An action, such as "Popraw" or "Anuluj kurs" | Button or Dropdown menu | A select chooses a value; it does not act |
 
 ## 4. Anatomy
 
@@ -35,7 +35,7 @@ Trigger (required: chosen value or placeholder, `IconChevronDown`), list (opens 
 | `default` | at least 36 px | Forms | owner decision 2026-10-29 |
 | `compact` | at least 32 px | Inside a 36 px table row, for example rows per page | owner decision 2026-10-29 |
 
-Long values wrap and the trigger grows; nothing is cut off with an ellipsis (WCAG 1.4.10, 1.4.12). Shadow and the 110 ms appearance of the list come with the overlay batch (owner decision 2026-10-29: one light shadow on menus and popovers; Q5b).
+Long values wrap and the trigger grows; nothing is cut off with an ellipsis (WCAG 1.4.10, 1.4.12). The open list has the overlay shadow (T5) and fades in over 110 ms, at once with reduced motion (Q5b, T7), like the other overlays.
 
 <Canvas of={SelectStories.Sizes} />
 <Canvas of={SelectStories.Groups} />
@@ -110,6 +110,6 @@ Long values wrap and the trigger grows; nothing is cut off with an ellipsis (WCA
 
 ## 13. Related
 
-Confused with: Radio group (few options, all visible), `PlacePicker` (search), a menu (actions). Used in: trip entry (currency, truck), `DataTable` page size, policy configuration.
+Confused with: Radio group (few options, all visible), `PlacePicker` (search), Dropdown menu (actions). Used in: trip entry (currency, truck), `DataTable` page size, policy configuration.
 
 <Canvas of={SelectStories.ClickAndKeyboard} />

@@ -6,7 +6,7 @@
 
 /*
  * Design tokens. This is the only file that may hold raw colour, size or time values.
- * Layer 1 (raw): --ink-*, --paper-*, --white, --green-*, --red-*, --type-*, --space-*, --radius-*, --duration-*.
+ * Layer 1 (raw): --ink-*, --paper-*, --white, --green-*, --red-*, --type-*, --space-*, --radius-*, --duration-*, --shadow-raw-*.
  * Layer 2 (semantic): named by purpose; components use only these, through the Tailwind theme below.
  * Layer 3 (component): only where a component needs its own value.
  * Source codes: R##.# reference feature, A##/G1/B# antireference, N#/Q#/T#/P# owner decision or
@@ -25,7 +25,7 @@
   --green-800: #205b49;
   --green-900: #1d4d3f; /* approved 2026-10-29: green-800 mixed 30% towards ink-900, hover and pressed action */
   --red-700: #a2191f; /* N5a: loss badge text */
-  --red-600: #da1e28; /* Q3 proposal: error colour, distinct from loss */
+  --red-600: #da1e28; /* Q3: error colour, distinct from loss (approved 2026-10-29) */
   --red-100: #ffd7d9; /* N5a: loss badge background */
 
   /* Layer 1: raw type scale, size / line height (R14.1, N2a) */
@@ -55,6 +55,8 @@
   --duration-0: 0ms;
   --duration-110: 110ms;
   --easing-productive: cubic-bezier(0.2, 0, 0.38, 0.9);
+  --shadow-raw-overlay: 0 2px 6px color-mix(in srgb, var(--ink-900) 30%, transparent); /* T5: IBM Carbon overlay shadow, ink instead of black */
+  --scrim-raw: color-mix(in srgb, var(--ink-900) 50%, transparent); /* T6: IBM Carbon overlay scrim, ink instead of black */
 
   /* Layer 2: surfaces and text */
   --surface-page: var(--paper-50); /* existing page background */
@@ -62,6 +64,7 @@
   --text-default: var(--ink-900); /* values, names, routes */
   --text-muted: var(--ink-600); /* R07.1 small label above a value */
   --text-on-action: var(--white); /* text on action-primary */
+  --surface-scrim: var(--scrim-raw); /* T6: page behind a modal dialog */
 
   /* Layer 2: action, borders, focus */
   --action-primary: var(--green-800); /* N3a: the existing green stays the action colour */
@@ -95,6 +98,9 @@
   --motion-overlay: var(--duration-110); /* dialogs, menus, popovers appearing */
   --motion-easing: var(--easing-productive);
 
+  /* Layer 2: depth (owner decision 2026-10-29: one light shadow, only on dialog, menu and popover) */
+  --elevation-overlay: var(--shadow-raw-overlay); /* T5 */
+
   /* Layer 2: layout */
   --measure-text: 65ch; /* audit finding 15: running text stays readable */
 
@@ -102,6 +108,8 @@
   --table-row-height: 36px; /* Q3-1, R08.1, T3 */
   --control-height: 36px; /* buttons, inputs, selects (owner decision 2026-10-29) */
   --control-height-compact: 32px; /* controls inside a 36 px table row (owner decision 2026-10-29) */
+  --tooltip-bg: var(--ink-900); /* T8: dark tooltip, as the shadcn default; white text 14.71:1 */
+  --tooltip-text: var(--white); /* T8 */
 
   /* Existing shadcn names kept as aliases (no values changed) */
   --background: var(--surface-page);
@@ -123,6 +131,11 @@
   /* Remove the default Tailwind palette so classes such as bg-zinc-900 cannot be used (rule: values come from tokens). */
   --color-*: initial;
   --radius-*: initial;
+  /* Only the overlay shadow and the overlay appearance exist (owner decision 2026-10-29, Q5b); no decorative motion. */
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --animate-*: initial;
 
   --color-page: var(--surface-page);
   --color-panel: var(--surface-panel);
@@ -139,6 +152,9 @@
   --color-error: var(--status-error);
   --color-estimate: var(--badge-estimate-text);
   --color-estimate-subtle: var(--badge-estimate-bg);
+  --color-scrim: var(--surface-scrim);
+  --color-tooltip: var(--tooltip-bg);
+  --color-on-tooltip: var(--tooltip-text);
 
   /* Existing utility names used by current components */
   --color-background: var(--background);
@@ -169,6 +185,13 @@
   --duration-instant: var(--motion-instant);
   --duration-overlay: var(--motion-overlay);
   --ease-standard: var(--motion-easing);
+
+  --shadow-overlay: var(--elevation-overlay); /* T5: dialog, menu, popover, Select list */
+  /* T7: overlays fade in over motion-overlay (110 ms, Q5b); 0 ms under reduced motion; closing is instant. */
+  --animate-overlay-in: overlay-in var(--motion-overlay) var(--motion-easing);
+  @keyframes overlay-in {
+    from { opacity: 0; }
+  }
 }
 
 /*

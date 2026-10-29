@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, screen, userEvent, within } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { Field } from "@fleet-platform/ui/components/field";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@fleet-platform/ui/components/select";
 import { applyTextSpacing, findTextSpacingFailures } from "../../.storybook/text-spacing";
@@ -93,7 +93,9 @@ export const ClickAndKeyboard: Story = {
     await expect(trigger).toHaveTextContent("PLN");
     trigger.focus();
     await userEvent.keyboard("{Enter}");
-    await expect(await screen.findByRole("listbox")).toBeVisible();
+    // The list fades in over 110 ms (Q5b); wait until it is fully shown before using the arrows.
+    const list = await screen.findByRole("listbox");
+    await waitFor(() => expect(list).toBeVisible());
     await userEvent.keyboard("{ArrowDown}{Enter}");
     await expect(args.onValueChange).toHaveBeenLastCalledWith("CZK");
     await expect(trigger).toHaveFocus();
