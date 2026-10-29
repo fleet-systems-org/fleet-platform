@@ -15,11 +15,11 @@
   --shadow-md: var(--elevation-overlay);
   --shadow-xl: var(--elevation-overlay);
   --shadow-focus: var(--elevation-overlay); /* DS GAP G12: no focus shadow; product controls use the existing outline. */
-  --status-success-icon: var(--text-muted); /* DS GAP G10: no success token; words carry the status. */
-  --status-warning-icon: var(--text-muted); /* DS GAP G10: no warning palette. */
-  --status-warning-border: var(--border-input); /* DS GAP G10 */
-  --status-warning-bg: var(--surface-page); /* DS GAP G10 */
-  --status-warning-text: var(--text-default); /* DS GAP G10 */
+  --status-success-icon: var(--text-muted); /* Review engine alias: resolved comment pins. */
+  --status-warning-icon: var(--text-muted); /* Review engine alias: unsaved comment pins. */
+  --status-warning-border: var(--border-input); /* Review engine alias: unsaved comments. */
+  --status-warning-bg: var(--surface-page); /* Review engine alias: unsaved comments. */
+  --status-warning-text: var(--text-default); /* Review engine alias: unsaved comments. */
   --muted: var(--surface-page);
   --ring: var(--focus-ring);
   /* DS GAP G12: the review engine owns its stacking order; no product stacking tokens exist. */
