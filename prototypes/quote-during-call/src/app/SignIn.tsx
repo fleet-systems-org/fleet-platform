@@ -5,7 +5,7 @@ import { Badge } from "@fleet-platform/ui/components/badge";
 import { Field } from "@fleet-platform/ui/components/field";
 import { Input } from "@fleet-platform/ui/components/input";
 import { Alert } from "@fleet-platform/ui/components/alert";
-import { europeLand, demoRoutes, demoCities } from "./europe-map";
+import { MAPA } from "./europe-map";
 
 export function SignIn({ newComputer, onSignedIn }: { newComputer: boolean; onSignedIn: () => void }) {
   const [state, setState] = useState<"login" | "request" | "computer">("login");
@@ -18,10 +18,35 @@ export function SignIn({ newComputer, onSignedIn }: { newComputer: boolean; onSi
   function back() { setState("login"); setError(""); setSent(false); setShowPassword(false); }
   return <div className="sign-in-layout">
     <div className="sign-in-map" aria-hidden="true">
-      <svg viewBox="0 0 900 750" focusable="false"><path className="sign-in-land" d={europeLand} />
-        <g className="sign-in-routes">{demoRoutes.map(route => <path key={route} d={route} />)}</g>
-        {demoCities.map(([cx, cy]) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4" />)}
-      </svg><div className="sign-in-company">Firma Demo</div>
+      <div className="sign-in-map-perspective">
+        <svg viewBox={`0 0 ${MAPA.szer} ${MAPA.wys}`} fill="none" aria-hidden="true" focusable="false">
+          <defs>
+            <filter id="map-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" /></filter>
+            <filter id="map-light" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="1.6" /></filter>
+          </defs>
+          <path d={MAPA.lad} className="sign-in-land" strokeWidth="0.8" strokeLinejoin="round" />
+          <path d={MAPA.drogi} className="sign-in-roads" strokeWidth="0.7" strokeLinecap="round" strokeLinejoin="round" />
+          <g filter="url(#map-glow)" opacity="0.4" className="sign-in-route-glow">
+            {MAPA.trasy.map(route => <path key={route.id} d={route.d} strokeWidth="9" strokeLinecap="round" />)}
+            {MAPA.miasta.map(([cx, cy]) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="9" />)}
+          </g>
+          <g strokeLinecap="round" strokeLinejoin="round">
+            <g filter="url(#map-light)" opacity="0.8">
+              {MAPA.trasy.map(route => <g key={route.id}>
+                <path d={route.przod} className="sign-in-headlights" strokeWidth="2.6" />
+                <path d={route.tyl} className="sign-in-taillights" strokeWidth="2.6" />
+              </g>)}
+            </g>
+            {MAPA.trasy.map(route => <g key={route.id}>
+              <path d={route.przod} className="sign-in-headlights" opacity="0.7" strokeWidth="0.9" />
+              <path d={route.tyl} className="sign-in-taillights" opacity="0.8" strokeWidth="0.9" />
+            </g>)}
+          </g>
+          {MAPA.miasta.map(([cx, cy]) => <circle key={`${cx}-${cy}`} className="sign-in-city" cx={cx} cy={cy} r="1.8" />)}
+        </svg>
+      </div>
+      <div className="sign-in-map-fade-top" /><div className="sign-in-map-fade-bottom" />
+      <div className="sign-in-company">Firma Demo</div>
     </div>
     <div className="sign-in-panel">
       <Badge variant="neutral" className="sign-in-badge">Logowanie systemu biura — symulacja</Badge>

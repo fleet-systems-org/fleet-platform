@@ -382,3 +382,15 @@ Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not sta
 Should Auto 01 in the right-hand route panel, s12 quotation heading, s16 confirmation and s07 vehicle trips also become driver + tractor registration? These locations deliberately remain unchanged in Stage 1i. Driver identity still requires a separate specification decision before production implementation.
 
 Next: owner review of Stage 1i and the label question; Stage 2 needs separate authorization.
+
+## Stage 1j. Sign-in map one to one with the office system (N8a)
+
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
+
+- Corrects the custom map from 1h/1i to the owner's N8a reference: original Mercator crop, land, 5,207 road chains and twelve fictional road-following routes; 800 px perspective, 50-degree X tilt, 150% scale and 64 px translation; red/gold twin light trails with glow and top/bottom background fades. Static SVG, aria-hidden; no animation, logo or private company name.
+- Standard-library generator reads external Natural Earth ne_50m_land/ne_10m_roads public-domain GeoJSON. Generated data is 243,088 bytes, below 260 KB, with source/license header. Eight colours live only in --map-* CSS variables with the N8a owner-approved R08.5 exception.
+- Passed: package typecheck/build; repository typecheck/lint and 198 tests in 38 files; explicit prototype ESLint; mechanical detector 0. Token check reports exactly eight approved map values, not a clean-token pass; checker remains enabled. Engine byte-identical; protected sources unchanged; form/states and form/mobile CSS byte-identical; private-name scan 0; whitespace check passed.
+- Browser: actual 1440×900, 1920×1080 and 320×900; no horizontal overflow; map hidden at 320; static glow, roads, crop and fades visually checked. Evidence hides only review chrome through temporary browser CSS for equal reference dimensions; shipped source retains review chrome. Four requested screenshots including reference | prototype comparison saved externally. Build replaces preview index/assets, preserving earlier evidence.
+- Not run: production build, coverage, integration, Storybook, cross-browser matrix or exhaustive accessibility audit. No production feature or specification changed. No PR or merge.
+
+Next: owner compares Stage 1j with the reference; Stage 2 still requires separate authorization. Publication/cloud verification is recorded in the run log.
