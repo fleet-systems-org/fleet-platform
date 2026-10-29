@@ -127,12 +127,12 @@ export function ContrastTable() {
 const typeRoles = [
   { role: "page-title", className: "text-page-title", spec: "20/28, 600", use: "One per screen: the screen name", source: "R14.1, N2a", sample: "Wycena kursu" },
   { role: "section-title", className: "text-section-title", spec: "16/24, 600", use: "Panel and section headings", source: "R14.1", sample: "Trasa i kilometry" },
-  { role: "body", className: "text-body", spec: "14/21, 500", use: "Running text and messages; line height 1.5 x size", source: "N2b, R14.1, owner decision 2026-10-29, WCAG 1.4.8", sample: "Kurs zaczyna się w miejscu poprzedniego rozładunku i niesie cały pusty dojazd." },
-  { role: "table", className: "text-table", spec: "14/20, 500", use: "Table rows and single-line values", source: "N2b, Q3-1, T3, owner decision 2026-10-29", sample: "Zestaw 03 · Poznań · 30.10.2026 14:00" },
+  { role: "body", className: "text-body", spec: "14/21, 400", use: "Running text and messages; line height 1.5 x size", source: "R14.1, owner decision 2026-10-29, WCAG 1.4.8", sample: "Kurs zaczyna się w miejscu poprzedniego rozładunku i niesie cały pusty dojazd." },
+  { role: "table", className: "text-table", spec: "14/20, 400", use: "Table rows and single-line values", source: "Q3-1, T3, owner decision 2026-10-29", sample: "Zestaw 03 · Poznań · 30.10.2026 14:00" },
   { role: "body-strong", className: "text-body-strong", spec: "14/20, 600", use: "Table headers; the one emphasised value", source: "P7 (proposal), Q3-1", sample: "Wynik kursu" },
-  { role: "label", className: "text-label", spec: "12/16, 500, text-muted", use: "Field label, label above a value", source: "N2b, R07.1, R14.1", sample: "Dojazd" },
-  { role: "meta", className: "text-meta", spec: "12/16, 500, text-muted", use: "Source, date, secondary details", source: "N2b, R11.1, P2", sample: "wpisane, 29.10.2026 08:40" },
-  { role: "number", className: "text-number", spec: "14/20, 500, tabular-nums", use: "Amounts, kilometres, times; right-aligned in columns", source: "N2b, P8, R07.1, R15.1", sample: "1 850,00 EUR · 667 km" },
+  { role: "label", className: "text-label", spec: "12/16, 400, text-muted", use: "Field label, label above a value", source: "R07.1, R14.1", sample: "Dojazd" },
+  { role: "meta", className: "text-meta", spec: "12/16, 400, text-muted", use: "Source, date, secondary details", source: "R11.1, P2", sample: "wpisane, 29.10.2026 08:40" },
+  { role: "number", className: "text-number", spec: "14/20, 400, tabular-nums", use: "Amounts, kilometres, times; right-aligned in columns", source: "P8, R07.1, R15.1", sample: "1 850,00 EUR · 667 km" },
   { role: "code", className: "text-code", spec: "12/16, system monospace", use: "Code in this documentation only", source: "Proposal", sample: "text-meta" },
 ];
 
