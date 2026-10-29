@@ -11,7 +11,7 @@ function PlaceInput({ id, label, onSelect }: { id: string; label: string; onSele
   const [query, setQuery] = useState(''); const [open, setOpen] = useState(false); const [index, setIndex] = useState(0);
   const results = query.trim() ? places.filter(p => p.label.toLocaleLowerCase('pl').includes(query.trim().toLocaleLowerCase('pl'))) : [];
   function choose(value: string) { setQuery(value); onSelect(value); setOpen(false); }
-  return <div className="stack"><label htmlFor={id} className="text-label">{label}</label><Input id={id} role="combobox" autoComplete="off" aria-autocomplete="list" aria-expanded={open && results.length > 0} aria-controls={`${id}-list`} aria-activedescendant={open && results[index] ? `${id}-${index}` : undefined}
+  return <div className="stack search-field"><label htmlFor={id} className="text-label">{label}</label><Input id={id} role="combobox" autoComplete="off" aria-autocomplete="list" aria-expanded={open && results.length > 0} aria-controls={`${id}-list`} aria-activedescendant={open && results[index] ? `${id}-${index}` : undefined}
     value={query} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)} onChange={e => { setQuery(e.target.value); onSelect(''); setIndex(0); setOpen(true); }} onKeyDown={e => {
       if (['Escape', 'ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) e.stopPropagation();
       if (e.key === 'Escape') { setOpen(false); e.preventDefault(); }

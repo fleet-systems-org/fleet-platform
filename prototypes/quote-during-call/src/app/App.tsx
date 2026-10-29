@@ -13,7 +13,10 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, A
 import { parseDecimalInput } from "@fleet-platform/ui/lib/decimal";
 import { cents, decimal, coveredCost, screenNames, screenId, vehicles, valueLabels } from "./model";
 
-import { RouteSchematic } from "./RouteSchematic";
+import { RouteStops } from "./RouteStops";
+import { StepBar } from "./StepBar";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@fleet-platform/ui/components/dialog";
+import { ZonedDateTimeField } from "@fleet-platform/ui/components/time/zoned-date-time-field";
 import { PlacePicker } from "./PlacePicker";
 import { CountryCosts } from "./CountryCosts";
 import { Quote } from "./Quote";
@@ -37,6 +40,8 @@ function Figure({ label, value, unit = "EUR", certain = false, source = "Przykł
 }
 
 export function App() {
+  const [entryStep, setEntryStep] = useState(1);
+  const [completedStep, setCompletedStep] = useState(0);
   const [active, setActive] = useState("s01");
   const [role, setRole] = useState("dispatcher");
   const [later, setLater] = useState(false);
@@ -65,6 +70,7 @@ export function App() {
     && loadingDate === "2026-11-12" && loadingTime === "12:00" && unloadingDate === "2026-11-12" && unloadingTime === "13:00";
   const invalidate = () => { setQuoted(false); setMessage(""); };
   function reset() {
+    setEntryStep(1); setCompletedStep(0);
     setEntryVersion(v => v + 1);
     setVehicle(""); setLoading(emptyStop()); setUnloading(emptyStop()); setFreight(""); setWash(""); setAccepted(false); setQuoted(false); setMessage("");
     setLoadingDate("2026-11-12"); setLoadingTime("12:00"); setUnloadingDate("2026-11-12"); setUnloadingTime("13:00");
@@ -78,14 +84,25 @@ export function App() {
     return () => { document.removeEventListener("prototype:screen-change", changed); stopLocalizing(); };
   }, []);
 
-  const header = <header className="product-header">
-    <nav aria-label="Nawigacja produktu" className="actions">
-      <Button variant="text" aria-current={active !== "s07" ? "page" : undefined} onClick={reset}>Nowa wycena</Button><Button variant="text" aria-current={active === "s07" ? "page" : undefined} asChild><a href="#s07">Kursy aut</a></Button>
-      {later && <Link to="s06">Flota</Link>}
+  const navigation = (id: string, close?: () => void) => <div className="navigation-content">
+    <strong className="navigation-company">Firma Demo</strong>
+    <nav aria-label="Nawigacja produktu" className="stack">
+      <Button variant="text" aria-current={["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) ? "page" : undefined} onClick={() => { reset(); close?.(); }}>Nowa wycena</Button>
+      <Button variant="text" aria-current={id === "s07" ? "page" : undefined} asChild><a href="#s07" onClick={close}>Kursy aut</a></Button>
+      <p className="text-meta">Później</p>
+      {later ? <Button variant="text" aria-current={id === "s06" ? "page" : undefined} asChild><a href="#s06" onClick={close}>Flota</a></Button> : <Button variant="text" disabled>Flota</Button>}
     </nav>
-    <div className="actions"><span className="text-meta">{role === "owner" ? "wlasciciel" : "dyspozytor"}@firma-demo.example</span>
-      <Button variant="text" onClick={() => { reset(); go("s01"); }}>Wyloguj</Button></div>
-  </header>;
+    <div className="navigation-account stack"><span className="text-meta">{role === "owner" ? "wlasciciel" : "dyspozytor"}@firma-demo.example</span>
+      <Button variant="text" onClick={() => { reset(); go("s01"); close?.(); }}>Wyloguj</Button></div>
+  </div>;
+  const dateLabels = { date: "Data", dateFormat: "DD.MM.RRRR", time: "Godzina", timeFormat: "GG:MM", occurrence: "Którą godzinę wybierasz?", earlier: "przed cofnięciem zegara", later: "po cofnięciu zegara" };
+  const dateField = (kind: "loading" | "unloading") => <Field label={kind === "loading" ? "Czas załadunku" : "Koniec rozładunku"} required error={!(kind === "loading" ? loadingDate : unloadingDate) ? "Wpisz poprawną datę DD.MM.RRRR i godzinę GG:MM." : undefined}><ZonedDateTimeField key={`${kind}-time-${entryVersion}`} required timeZone="Europe/Warsaw" zoneLabel="czas warszawski" labels={dateLabels} defaultDate="2026-11-12" defaultTime={kind === "loading" ? "12:00" : "13:00"} onZonedChange={value => {
+    (kind === "loading" ? setLoadingDate : setUnloadingDate)(value.ok ? value.date : "");
+    (kind === "loading" ? setLoadingTime : setUnloadingTime)(value.ok ? value.time || "" : ""); invalidate();
+  }} /></Field>;
+  const route = <RouteStops vehicle={accepted ? "Auto 01" : vehicle} loading={accepted ? acceptedStops.loading : loading} unloading={accepted ? acceptedStops.unloading : unloading}
+    loadingDate={loadingDate.split("-").reverse().join(".")} loadingTime={loadingTime} unloadingDate={unloadingDate.split("-").reverse().join(".")} unloadingTime={unloadingTime}/>;
+  function advance(step: number) { setCompletedStep(value => Math.max(value, step)); setEntryStep(step + 1); }
   const content: Record<string, ReactNode> = {
     s01: <Card><CardTitle><h1 className="text-page-title">Logowanie</h1></CardTitle><CardDescription>Firma Demo · dane fikcyjne</CardDescription>
       <Alert title="Symulacja logowania">Hasło nie jest sprawdzane ani zapisywane. Nie wpisuj prawdziwego hasła. Sposób logowania czeka na decyzję.</Alert>
@@ -97,25 +114,24 @@ export function App() {
     s09: <><h1 className="text-page-title">Nowa wycena</h1>
       <p className="text-meta">Etap 1: przykład K2 · Auto 01 · 12.11.2026 · 60,00 EUR · bez mycia. Obliczenia i trasa są symulowane.</p>
       {accepted ? <Alert title="Ten kurs został przyjęty" action={<Button onClick={reset}>Nowa wycena</Button>}>Przyjęta wycena jest zachowana w symulacji. Zacznij nową wycenę, aby wpisać kolejny kurs.</Alert> : <div className="entry-layout"><div className="stack">
-      <Card><CardTitle>1. Wybierz auto</CardTitle><Field label="Auto" required>
+      <EntryStep number={1} title="Auto" current={entryStep} completed={completedStep} onEdit={setEntryStep} summary={`${vehicle} · ${hasAccepted ? "wolne w Miejscu C od 12.11.2026, 13:00" : "wolne w Miejscu A od 12.11.2026, 11:00"}`}><Field label="Auto" required>
         <RadioGroup value={vehicle} onValueChange={value => { setVehicle(value); invalidate(); }}>
           {vehicles.map(([name, free]) => <RadioGroupItem key={name} value={name} label={name} hint={name === "Auto 01" && hasAccepted ? "Wolne w Miejscu C od 12.11.2026, 13:00" : free} />)}
         </RadioGroup></Field>
         {vehicle && vehicle !== "Auto 01" && <Alert title="To auto dojdzie w etapie 2" action={<Link to="s08">Punkt startowy auta</Link>}>Ścieżka etapu 1 korzysta z Auta 01.</Alert>}
-      </Card>
-      <Card><CardTitle>2. Miejsca i czasy</CardTitle>
-        <div className="form-grid"><CustomerStop key={`loading-${entryVersion}`} kind="loading" value={loading} onChange={value => { setLoading(value); invalidate(); }}/><CustomerStop key={`unloading-${entryVersion}`} kind="unloading" value={unloading} onChange={value => { setUnloading(value); invalidate(); }}/></div>
-        <div className="actions"><span>{places ? "Miejsce B (DE) → Miejsce C (CZ)" : "Wybierz miejsce załadunku i rozładunku"}</span><Link to="s10">Wybierz miejsca</Link></div>
-        {/* DS GAP G02: separate native date and time inputs, fixed and labelled company timezone. */}
-        <p className="text-meta">Czas warszawski (Europe/Warsaw). Godzina załadunku 12:00 jest fikcyjna. Start kursu: Miejsce A, 12.11.2026, 11:00 — koniec rozładunku K1.</p>
-        <div className="form-grid">
-          <Field label="Data załadunku" required><Input type="date" value={loadingDate} onChange={e => { setLoadingDate(e.target.value); invalidate(); }} /></Field>
-          <Field label="Godzina załadunku" required><Input type="time" value={loadingTime} onChange={e => { setLoadingTime(e.target.value); invalidate(); }} /></Field>
-          <Field label="Data końca rozładunku" required><Input type="date" value={unloadingDate} onChange={e => { setUnloadingDate(e.target.value); invalidate(); }} /></Field>
-          <Field label="Godzina końca rozładunku" required><Input type="time" value={unloadingTime} onChange={e => { setUnloadingTime(e.target.value); invalidate(); }} /></Field>
+        <Button disabled={!vehicle} onClick={() => advance(1)}>Dalej: miejsca i czasy</Button>
+      </EntryStep>
+      <EntryStep number={2} title="Miejsca i czasy" current={entryStep} completed={completedStep} onEdit={setEntryStep} summary={`${loading.place} · ${loadingDate.split("-").reverse().join(".")}, ${loadingTime} → ${unloading.place} · ${unloadingTime}`}>
+
+        <div className="stop-fields">
+          <section className="stack"><h2 className="text-section-title">Załadunek</h2><CustomerStop key={`loading-${entryVersion}`} kind="loading" value={loading} onChange={value => { setLoading(value); invalidate(); }}>{dateField("loading")}</CustomerStop></section>
+          <section className="stack"><h2 className="text-section-title">Rozładunek</h2><CustomerStop key={`unloading-${entryVersion}`} kind="unloading" value={unloading} onChange={value => { setUnloading(value); invalidate(); }}>{dateField("unloading")}</CustomerStop></section>
         </div>
-      </Card>
-      <Card><CardTitle>3. Fracht i mycie</CardTitle><div className="form-grid">
+        <p className="text-meta">Baza klientów — propozycja spoza specyfikacji; dane fikcyjne. Zarządzanie bazą — poza prototypem.</p>
+        <p className="text-meta">Czas warszawski. Godzina załadunku 12:00 jest fikcyjna.</p>
+        <Button disabled={!loading.place || !unloading.place || !loadingDate || !loadingTime || !unloadingDate || !unloadingTime} onClick={() => advance(2)}>Dalej: fracht i mycie</Button>
+      </EntryStep>
+      <EntryStep number={3} title="Fracht i mycie" current={entryStep} completed={completedStep} onEdit={setEntryStep} summary={`${freight} EUR · ${wash === "none" ? "bez mycia" : "nasze mycie"}`}><div className="form-grid">
         {/* DS PROPOSAL: amount input left-aligned */}
         <Field label="Fracht netto" hint="W przykładzie wpisz 60,00" required><DecimalField className="amount-left" kind="amount" currency="EUR" unit="EUR" value={freight} onChange={e => { setFreight(e.target.value); invalidate(); }} /></Field>
         <Field label="Waluta" required><Select defaultValue="EUR"><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="EUR">EUR</SelectItem></SelectContent></Select></Field>
@@ -126,11 +142,12 @@ export function App() {
         {wash === "ours" && <Alert title="Nasze mycie dojdzie w etapie 2">Ten etap pokazuje przykład bez mycia.</Alert>}
         <Field label="Numer zlecenia" optionalText="opcjonalne"><Input autoComplete="off" /></Field>
         {message && <Alert title={message} />}
-        <Button onClick={() => { if (hasAccepted) setMessage("W etapie 1 przyjęto już K2. Resetuj symulację, aby powtórzyć przykład."); else if (demoReady) go("s11"); else setMessage("Wybierz Auto 01, miejsca B → C, czasy przykładu, fracht 60,00 i Bez mycia."); }}>Dalej: trasa i kraje</Button>
-      </Card></div><aside className="stack"><Card><CardTitle>Podsumowanie trasy</CardTitle>{places ? <RouteSchematic/> : <p>Wybierz miejsca, aby zobaczyć schemat trasy.</p>}<p>{vehicle || "Wybierz auto"} · fracht {freight || "—"} EUR</p><p className="text-meta">Dojazd od końca K1: Miejsce A, 11:00. Po K2 wolne w Miejscu C od 13:00, czas warszawski.</p></Card></aside></div>}
+        <Button onClick={() => { if (hasAccepted) setMessage("W etapie 1 przyjęto już K2. Resetuj symulację, aby powtórzyć przykład."); else if (demoReady) { setCompletedStep(3); go("s11"); } else setMessage("Wybierz Auto 01, miejsca B → C, czasy przykładu, fracht 60,00 i Bez mycia."); }}>Dalej: trasa i kraje</Button>
+      </EntryStep></div><aside className="stack">{route}</aside></div>}
+
     </>,
     s10: <><h1 className="text-page-title">Wybór miejsca</h1><Card><CardTitle>Załadunek i rozładunek</CardTitle>
-      <PlacePicker key={entryVersion} onApply={() => { setLoading(value => ({ ...value, place: "Miejsce B" })); setUnloading(value => ({ ...value, place: "Miejsce C" })); invalidate(); go("s09"); }}/>
+      <PlacePicker key={entryVersion} onApply={() => { setLoading(value => ({ ...value, place: "Miejsce B" })); setUnloading(value => ({ ...value, place: "Miejsce C" })); invalidate(); setEntryStep(2); go("s09"); }}/>
       <Link to="s09">Wróć do wpisu kursu</Link>
     </Card></>,
     s11: <><h1 className="text-page-title">Trasa i kraje</h1>
@@ -143,7 +160,7 @@ export function App() {
     s12: <><h1 className="text-page-title">Wycena K2 · Auto 01 <Badge variant="neutral">{accepted ? "Przyjęty" : "Szkic"}</Badge></h1>
       {accepted && <Alert title="Kurs przyjęty. Auto 01 wolne w Miejscu C od 13:00." />}
       {!quoted && !accepted ? <Alert title="Najpierw wpisz i wyceń kurs" action={<Link to="s09">Przejdź do wpisu</Link>}>Ścieżka etapu 1 korzysta z przykładu K2.</Alert> : <>
-      <Quote amount={amount} result={result} customers={<CustomerRoute loading={accepted ? acceptedStops.loading : loading} unloading={accepted ? acceptedStops.unloading : unloading}/>} actions={accepted ? <><Button onClick={reset}>Nowa wycena</Button><Link to="s07">Kursy auta</Link></> : <><Button asChild><a href="#s16">Przyjmij kurs</a></Button><Link to="s09">Zmień dane</Link></>}/>
+      <Quote amount={amount} result={result} route={route} actions={accepted ? <><Button onClick={reset}>Nowa wycena</Button><Link to="s07">Kursy auta</Link></> : <><Button asChild><a href="#s16">Przyjmij kurs</a></Button><Link to="s09">Zmień dane</Link></>}/>
       </>}
     </>,
     s13: <><h1 className="text-page-title">Szczegóły wartości</h1><Card><CardTitle>K2 · źródła danych</CardTitle>
@@ -187,8 +204,12 @@ export function App() {
     <main className="doc">
       <nav id="screen-map" className="doc-head stack" aria-label="Mapa ekranów"><h1 className="text-page-title">Prototyp: wycena podczas rozmowy — mapa ekranów</h1><div className="actions">{screenNames.map((name, i) => <Link key={name} to={screenId(i)}>{screenId(i)} · {name}</Link>)}</div></nav>
       {screenNames.map((name, i) => { const id = screenId(i); return <section className="screen" id={id} key={id} aria-label={`${id} · ${name}`}>
-        <div className="screen-meta text-meta">{id} · {name}</div><div className="frame">{i > 3 && header}<div className="screen-content stack">
-          {content[id] ?? <><h1 className="text-page-title">{name}</h1><Card><p>Ten ekran dojdzie w etapie 2.</p><Link to="s09">Wróć do nowej wyceny</Link></Card></>}
+        <div className="screen-meta text-meta">{id} · {name}</div><div className={`frame${i > 3 ? " product-frame" : ""}`}>
+          {i > 3 && <><aside className="product-navigation">{navigation(id)}</aside><MobileNavigation render={navigation} id={id}/></>}
+          <div className="screen-content stack">
+          {["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) && <StepBar current={id === "s09" ? entryStep : id === "s10" ? 2 : 4}/>}
+
+          {["s10", "s11", "s13", "s16"].includes(id) ? <div className="entry-layout"><div className="stack">{content[id]}</div><aside>{route}</aside></div> : content[id] ?? <><h1 className="text-page-title">{name}</h1><Card><p>Ten ekran dojdzie w etapie 2.</p><Link to="s09">Wróć do nowej wyceny</Link></Card></>}
         </div></div><div className="notes"><p className="note text-meta">Prototyp · symulacja, dane fikcyjne · etap 1.</p></div>
       </section>; })}
     </main>
@@ -197,4 +218,18 @@ export function App() {
       <AlertDialogFooter><AlertDialogCancel>Anuluj</AlertDialogCancel><AlertDialogAction onClick={() => { setAcceptedStops({ loading: { ...loading }, unloading: { ...unloading } }); setAccepted(true); setHasAccepted(true); go("s12"); }}>Przyjmij kurs K2</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent></AlertDialog>
   </>;
+}
+
+function EntryStep({ number, title, current, completed, onEdit, summary, children }: {
+  number: number; title: string; current: number; completed: number; onEdit: (step: number) => void; summary: string; children: ReactNode;
+}) {
+  const done = number <= completed && number !== current;
+  return <Card className={number > current && !done ? "entry-waiting" : undefined}>
+    <div className="step-heading"><CardTitle>{number}. {title}</CardTitle>{done && <><Badge variant="neutral">Gotowe</Badge><span className="step-answer">{summary}</span><Button variant="text" onClick={() => onEdit(number)} aria-label={`Zmień: ${title}`}>Zmień</Button></>}</div>
+    <div className="stack" hidden={number !== current}>{children}</div>
+  </Card>;
+}
+function MobileNavigation({ render, id }: { render: (id: string, close?: () => void) => ReactNode; id: string }) {
+  const [open, setOpen] = useState(false);
+  return <div className="mobile-navigation"><Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button variant="secondary">Menu</Button></DialogTrigger><DialogContent showCloseButton={false}><DialogTitle>Menu</DialogTitle><DialogDescription>Firma Demo · nawigacja produktu</DialogDescription>{render(id, () => setOpen(false))}<DialogClose asChild><Button variant="secondary">Zamknij menu</Button></DialogClose></DialogContent></Dialog></div>;
 }

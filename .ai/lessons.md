@@ -19,6 +19,6 @@ Index of reusable findings, bug fixes and improvements. Read relevant entries be
 
 - [Async queries time out under coverage on CI runners](lessons/2026-10-29-async-find-timeout-under-coverage.md): give `findBy…` an explicit timeout when it waits for several asynchronous steps.
 
-- [Verify prototype composition at the rendered control](lessons/2026-10-29-prototype-composition-verification.md): wrapper styling, child-state reset and actual browser viewport/evidence checks.
+- [Verify prototype composition at the rendered control](lessons/2026-10-29-prototype-composition-verification.md): wrapper styling, child-state reset, stable suggestion geometry and actual browser viewport/evidence checks.
 
 - [Prototype Back clearance and route text scale](lessons/2026-10-29-prototype-back-and-route-scale.md): match the review selector specificity and keep route labels outside scaling geometry; record both-width overlap measurements.
