@@ -26,7 +26,7 @@ Branch `prototype/e01-clickable` from `main` 266e9e4.
 
 ### Screen order
 
-- Stage 1 (dispatcher, Auto 01, draft K2): s01 → s09 (step 1 vehicle) → s10 → s09 (times, freight 60,00 EUR, "Bez mycia") → s11 → s12 (cost 38,18, result 21,82, "free in Miejsce C from 13:00") → s13 → s16 → s12 accepted → s07.
+- Stage 1 (dispatcher, Kierowca A · DEMO 001, draft K2): s01 → s09 (step 1 vehicle) → s10 → s09 (times, freight 60,00 EUR, "Bez mycia") → s11 → s12 (cost 38,18, result 21,82, "free in Miejsce C from 13:00") → s13 → s16 → s12 accepted → s07.
 - Stage 2: s02–s05, s08, s14, s15, s18, every state, accounts and access gates; then the "show what comes later" control adds s06, s19 (Phase 2) and s17 (Phase 3).
 - Stage 3: notes per screen, README with simulation limits, navigation tests, browser check at 320 and 1440 px and by keyboard. README in English lists every screen s01–s19 and its states, so the screen IDs are explained in this repository (owner decision 2026-10-29).
 
@@ -94,7 +94,7 @@ Status: **done, waiting for owner review** (2026-10-29). Stages 2 and 3 remain n
 - Review engine copied with `prototype.js` byte-identical; comments ID `quote-during-call`; light-only token bridge. A separate integration module translates review labels without modifying the engine.
 - Permanent s01–s19 sections; screen picker, map, presentation, Back, comments, reset. Only p02 dispatcher/owner and p19 Phase 1/later-preview controls. Future screens explicitly say they arrive in Stage 2.
 - Happy path: s01 → s09 vehicle → s10 places → s09 times/freight/wash → s11 → s12 → s13 → s16 → accepted s12 → s07.
-- Auto 01, K2, freight 60.00 EUR, cost 38.18 EUR, result 21.82 EUR and next availability in Miejsce C at 13:00 Europe/Warsaw. Cost rows: fuel 18.00, toll 10.00, AdBlue 0.18, wash 0.00, vehicle 6.00, labour 4.00. Source details use ValueWithSource; the nine-category vehicle-day fixture is explained in s13.
+- Kierowca A · DEMO 001, K2, freight 60.00 EUR, cost 38.18 EUR, result 21.82 EUR and next availability in Miejsce C at 13:00 Europe/Warsaw. Cost rows: fuel 18.00, toll 10.00, AdBlue 0.18, wash 0.00, vehicle 6.00, labour 4.00. Source details use ValueWithSource; the nine-category vehicle-day fixture is explained in s13.
 - Accepted K2 survives starting a blank quotation; K3 becomes stale and the terminal approach stays unassigned. Reset clears the simulation. Only the fixed example is quotable in this stage; other inputs are kept and explicitly directed to the supported example.
 - Money is decimal text; result subtraction uses integer cents with BigInt. Whole kilometres on screens, exact three-decimal distances in details. No live provider or authentication calls; passwords are neither checked nor stored.
 
@@ -256,7 +256,7 @@ Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not sta
 - Z1 c / TIME-1: reused the delivered ZonedDateTimeField, with text DD.MM.RRRR and GG:MM inputs and a Warsaw-time label, inside Field for accessible naming/errors. Invalid or empty dates/times block progression and explain the required format. The fixed example still uses 12.11.2026, 12:00/13:00; loading time is visibly fictional. DecimalField, EUR, mandatory wash with no default and optional order reference retain their behaviour.
 - N7b, R19.1: start/loading/unloading stop blocks replace the obsolete route schematic and its styles. Each shows a left label, 16 px time, date (Warsaw), place/country and label–value details; unselected customers produce no customer row. Whole kilometres (D65), empty approach/loaded wording, fictional loading-time warning, next free place and map-simulation caveat remain visible. s11 country tables and N6a/R17.1 quote table/summary are preserved.
 - Responsive click correction: customer/place suggestions now overlay the following content. Closing suggestions on blur no longer moves the next action between pointer-down and pointer-up. Keyboard selection remains unchanged; the existing composition-verification lesson records the finding.
-- Money and the K2 example are unchanged: Auto 01, 60.00 EUR freight, 38.18 EUR covered cost, 21.82 EUR result. No application, shared-component or story source edited. No production specification marked implemented.
+- Money and the K2 example are unchanged: Kierowca A · DEMO 001, 60.00 EUR freight, 38.18 EUR covered cost, 21.82 EUR result. No application, shared-component or story source edited. No production specification marked implemented.
 
 ### Validation
 
@@ -274,9 +274,9 @@ Not run: production application build, production integration/coverage or Storyb
 ### Questions for owner review
 
 1. **Resolved 2026-10-29:** the owner answered "yes"; step 4 “Wycena” is current on s11, s12, s13 and s16.
-2. Navigation currently has no icons, as requested. Should it remain text-only in the final product?
+2. Resolved 2026-10-29: text-only for now (N7g).
 
-Next: review Stage 1d; only the navigation-icon question remains open before authorizing Stage 2. The separate customer-directory specification questions from Stage 1c remain open.
+Next: review Stage 1d; navigation is resolved by N7g; Stage 2 still requires authorization. The separate customer-directory specification questions from Stage 1c remain open.
 
 Publication: implementation `721d2d3`; baseline merges `2bd966c` and `82d9245`. Normal push verified. Preview server HTTP 200 and index SHA-256 match verified; preview index cloud upload confirmed, second-device download unverified. Full browser and publication results are recorded in the Stage 1d run log.
 
@@ -290,7 +290,7 @@ Direct screen-picker entry to s13, and entry after a simulation reset, showed em
 
 ### Changes
 
-- N7b/R19.1: distinct live entry route for s09/s10 and viewed K2 snapshot for s11/s12/s13/s16. The snapshot always contains Auto 01, A/PL at 11:00, B/DE at 12:00, C/CZ at 13:00, 20 km approach and 80 km loaded. Customer selections are captured when the supported entry advances; editing a later entry cannot alter the viewed quote. Direct screen selection and reset open the fixed K2 example, including its 60.00 EUR freight and 21.82 EUR result.
+- N7b/R19.1: distinct live entry route for s09/s10 and viewed K2 snapshot for s11/s12/s13/s16. The snapshot always contains Kierowca A · DEMO 001, A/PL at 11:00, B/DE at 12:00, C/CZ at 13:00, 20 km approach and 80 km loaded. Customer selections are captured when the supported entry advances; editing a later entry cannot alter the viewed quote. Direct screen selection and reset open the fixed K2 example, including its 60.00 EUR freight and 21.82 EUR result.
 - N7c/N6a: one shared summary-first frame for all four quotation screens. At desktop widths the same 360 px panel contains result, estimate, availability, freight, covered cost and state-dependent actions; at 320 px it precedes the route and screen content. Accept is primary only in the summary; on s16 it opens the existing confirmation. Accepted actions retain new quotation/trip navigation. The route precedes main content.
 - EV-4/D65/FIN-3: s13 is the accessible exact-value view, with values, certainty, source, date and estimate reason exposed in table cells rather than hidden in paragraphs/popovers. Kilometres/litres retain three decimals, rates/consumption six, EUR amounts two. Separate empty/loaded consumption rows and vehicle/labour daily-rate formulas preserve the synthetic example. Narrow rows retain all six labelled fields without horizontal scrolling.
 - R17.1: vehicle costs expand into the same nine category rows used on s12 (amount, percentage of whole trip cost and action-colour share bar). The existing exact-cent allocation is unchanged.
@@ -309,7 +309,7 @@ The repeatable `scripts/check-quote-route.js` browser-evaluator expression check
 
 ### Simulation limits
 
-All data, country allocation, source dates and vehicle categories are fictional. No live lookup, persisted quote, customer directory or financial-policy change is introduced. The exact table exposes the fixture's evidence inline; this is not implementation of the production evidence API. Production E01 specifications remain approved and unimplemented. Stage 2 and the navigation-icon/customer-directory questions remain open.
+All data, country allocation, source dates and vehicle categories are fictional. No live lookup, persisted quote, customer directory or financial-policy change is introduced. The exact table exposes the fixture's evidence inline; this is not implementation of the production evidence API. Production E01 specifications remain approved and unimplemented. Stage 2 and the customer-directory questions remain open. Navigation resolved by N7g.
 
 Publication: implementation `3638c1a`; baseline synchronization `e4392c2`. Protected application/shared UI/story diff against main is empty; no protected source was edited by this stage. Built-preview direct-entry/reset regression passed. Preview index and assets were replaced; final served-index hash and cloud synchronization are checked in the run log. Normal push to the existing prototype branch; no pull request and no base-branch merge.
 
@@ -372,14 +372,14 @@ Publication: implementation `7573e91`, normal push. Explicit preview index HTTP 
 Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
 
 - s09 step 1 now shows the three synthetic driver/tractor pairs as native radio tiles: three columns from 48rem, one below. Driver name uses 16 px/600; registration uses tabular meta; availability uses 14 px. Selected outline adds no layout shift; keyboard focus is visible. The group and proposal disclaimer identify the driver detail as outside the approved E01 specification.
-- Existing Auto 01/02/03 IDs map to the synthetic drivers/tractors. Completed step 1 shows the chosen name and registration. Calculations and the K2 snapshot are unchanged.
+- Existing Kierowca A · DEMO 001/02/03 IDs map to the synthetic drivers/tractors. Completed step 1 shows the chosen name and registration. Calculations and the K2 snapshot are unchanged.
 - s01 generator clipping extends to -40..80 longitude and 20..85 latitude; projection, routes and city coordinates are unchanged. Extended geometry also needs SVG overflow visible inside the clipped map panel: otherwise the SVG viewport itself still cuts Scandinavia. Generated source is 116,171 bytes (limit 120 KB).
 - Passed: package typecheck/build; repository typecheck/lint/198 tests; explicit prototype ESLint; tokens 0; mechanical detector 0. Engine byte comparison, routes/cities comparison, protected source diff against main and private-name scan passed. Browser at actual 1440/320 CSS pixels passed pointer selection, arrows/space, visible focus, stable tile dimensions, collapsed answer and happy path to 21.82 EUR. Map captures at 1440/1920 visually verified without artificial land edge.
 - Five requested captures and built preview published outside Git; prior evidence preserved. No PR opened and no merge into main. Production coverage/integration/Storybook/cross-browser checks were not run for this prototype-only change.
 
 ### Open question for the owner
 
-Should Auto 01 in the right-hand route panel, s12 quotation heading, s16 confirmation and s07 vehicle trips also become driver + tractor registration? These locations deliberately remain unchanged in Stage 1i. Driver identity still requires a separate specification decision before production implementation.
+Resolved 2026-10-29: use driver + tractor registration throughout these locations (N7f, Stage 1l). Driver identity still requires a separate specification decision before production implementation.
 
 Next: owner review of Stage 1i and the label question; Stage 2 needs separate authorization.
 
@@ -399,11 +399,26 @@ Next: owner compares Stage 1j with the reference; Stage 2 still requires separat
 
 Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
 
-- s09 step 1 has twelve explicitly synthetic driver/tractor choices. Existing Auto 01/02/03 mappings are preserved; nine more choices use the same Stage 2 notice and existing non-K2 path. Only Auto 01 can satisfy the unchanged K2 calculation gate.
+- s09 step 1 has twelve explicitly synthetic driver/tractor choices. Existing Kierowca A · DEMO 001/02/03 mappings are preserved; nine more choices use the same Stage 2 notice and existing non-K2 path. Only Kierowca A · DEMO 001 can satisfy the unchanged K2 calculation gate.
 - Compact tiles use 8/12 px padding, 8 px grid gaps, single-line 600-weight names with ellipsis, smaller tabular registrations and 12 px availability. All fixtures share the fixed quote day (12 November 2026), so redundant dates are omitted. Unknown availability remains muted. Four columns from 48rem, two below, no horizontal overflow at 320 px.
-- Chronological order uses the displayed availability time with tractor registration as tie-breaker; unknowns come last. Auto 01's existing accepted-K2 availability remains 13:00 in Miejsce C and participates in sorting. Group label and proposal disclaimer retained.
+- Chronological order uses the displayed availability time with tractor registration as tie-breaker; unknowns come last. Kierowca A · DEMO 001's existing accepted-K2 availability remains 13:00 in Miejsce C and participates in sorting. Group label and proposal disclaimer retained.
 - Passed: package typecheck/build, repository typecheck/lint/198 tests, explicit prototype ESLint; tokens 0 outside the unchanged eight approved N8a map colours; mechanical detector 0; unchanged prototype.js byte comparison; protected source diff 0; private-name scan 0; diff whitespace check.
 - Real VPS browser at 1440×900 and 320×900: twelve choices in expected order, four/two columns, no horizontal overflow, every tile selectable by pointer, native arrows/Space and visible keyboard focus; full happy path through s11 to s12 remains 21.82 EUR at both widths. Screenshots and built preview are external, not committed.
 - No production source, calculation, other step or specification changed. No PR opened and no merge. Production build/coverage/integration/Storybook and cross-browser checks were not run for this prototype-only refinement.
 
 Next: owner review of Stage 1k; Stage 2 requires separate authorization.
+
+
+## Stage 1l. Invented driver labels, whole-cost shares on s11, text-only navigation
+
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
+
+- N7f: twelve plainly invented labels, Kierowca A–L mapped to DEMO 001–012. Driver/registration replaces old vehicle labels in entry guidance, the collapsed answer, live and snapshot routes, quote heading, acceptance dialog/alert, confirmation, vehicle trips and progress notes. Internal vehicle IDs, chronological order, availability and K2 snapshot/calculations remain unchanged.
+- N7e: s11 country bars and percentages use the same 38.18 EUR whole-trip cost as s12. PL 6.3%, approach DE 4.2%, loaded DE 39.3%, CZ 23.6%; whole course 73.3%, calculated from exact country amounts before rounding (the displayed rounded shares sum to 73.4%). Group headers retain no share. Added the requested denominator explanation below the table.
+- N7g: Resolved 2026-10-29: text-only for now (N7g). No navigation code changed.
+- Passed: package typecheck/build, repository typecheck/lint and 198 tests in 38 files, explicit prototype ESLint, exact BigInt share assertions, detector 0, tokens 0 outside the eight unchanged approved N8a map values, engine byte comparison, protected-source diff 0, private-company scan 0, git grep of every former given name/surname 0, old vehicle labels in screen content 0 and whitespace check.
+- Isolated VPS browser at actual 1440×900 and 320×900: twelve labels and unchanged order, four/two columns, collapsed step 1 and route identity, s11 percentages/bar widths/group headers, s12 result 21.82 EUR, s16, acceptance alert and s07 all passed with no horizontal overflow. Runtime errors 0 in an isolated context. Initial shared-context run hit browser-extension messaging errors; no application workaround was added.
+- Four requested screenshots were saved outside Git and visually inspected. Build published to the existing preview root, preserving earlier evidence; preview and four captures return HTTP 200 through the Mac mini private-network address. iCloud upload confirmation remains pending at verification time; MacBook download/opening unverified.
+- Not run: production build/coverage/integration, Storybook, cross-browser matrix or exhaustive accessibility audit. No production feature/specification changed; no PR opened or merge into main.
+
+Next: owner review of Stage 1l; Stage 2 requires separate authorization. No independent implementation task is authorized by this order.

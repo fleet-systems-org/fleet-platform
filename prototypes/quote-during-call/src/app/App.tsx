@@ -100,10 +100,10 @@ export function App() {
     const time = (free: string) => free.match(/\d{2}:\d{2}/)?.[0] ?? "99:99";
     return time(a[1]).localeCompare(time(b[1])) || a[3].localeCompare(b[3]);
   });
-  const entryRoute = <RouteStops vehicle={vehicle} loading={loading} unloading={unloading}
+  const entryRoute = <RouteStops vehicle={vehicles.find(([name]) => name === vehicle)?.slice(2).join(" · ") ?? ""} loading={loading} unloading={unloading}
     loadingDate={loadingDate.split("-").reverse().join(".")} loadingTime={loadingTime} unloadingDate={unloadingDate.split("-").reverse().join(".")} unloadingTime={unloadingTime}/>;
   // The viewed K2 fixture is a snapshot, independent of a new or edited entry.
-  const quoteRoute = <RouteStops vehicle="Auto 01" loading={accepted ? acceptedStops.loading : quoteStops.loading} unloading={accepted ? acceptedStops.unloading : quoteStops.unloading}
+  const quoteRoute = <RouteStops vehicle="Kierowca A · DEMO 001" loading={accepted ? acceptedStops.loading : quoteStops.loading} unloading={accepted ? acceptedStops.unloading : quoteStops.unloading}
     loadingDate="12.11.2026" loadingTime="12:00" unloadingDate="12.11.2026" unloadingTime="13:00"/>;
   const quoteActions = accepted ? <><Button onClick={reset}>Nowa wycena</Button><Link to="s07">Kursy auta</Link></> : <>
     <Button onClick={() => { if (active === "s16") setConfirm(true); else go("s16"); }}>Przyjmij kurs</Button><Link to="s09">Zmień dane</Link></>;
@@ -112,7 +112,7 @@ export function App() {
     s01: <SignIn key={signInVersion} newComputer={newComputer} onSignedIn={() => go("s09")} />,
     ...Object.fromEntries(["s02", "s03", "s04"].map(id => [id, <div key={id} className="stack"><p>Nie występuje przy logowaniu systemu biura (W2).</p><Link to="s01">Wróć do logowania</Link></div>])),
     s09: <><h1 className="text-page-title">Nowa wycena</h1>
-      <p className="text-meta">Etap 1: przykład K2 · Auto 01 · 12.11.2026 · 60,00 EUR · bez mycia. Obliczenia i trasa są symulowane.</p>
+      <p className="text-meta">Etap 1: przykład K2 · Kierowca A · DEMO 001 · 12.11.2026 · 60,00 EUR · bez mycia. Obliczenia i trasa są symulowane.</p>
       {accepted ? <Alert title="Ten kurs został przyjęty" action={<Button onClick={reset}>Nowa wycena</Button>}>Przyjęta wycena jest zachowana w symulacji. Zacznij nową wycenę, aby wpisać kolejny kurs.</Alert> : <div className="entry-layout"><div className="stack">
       <EntryStep number={1} title="Auto" current={entryStep} completed={completedStep} onEdit={setEntryStep} summary={vehicles.find(([name]) => name === vehicle)?.slice(2).join(" · ") ?? ""}>
         <fieldset className="vehicle-options"><legend className="text-meta">Kierowca i ciągnik · 12 aut</legend>
@@ -124,7 +124,7 @@ export function App() {
           </label>)}</div>
         </fieldset>
         <p className="text-meta">Kierowca i numer ciągnika — propozycja spoza specyfikacji; dane fikcyjne.</p>
-        {vehicle && vehicle !== "Auto 01" && <Alert title="To auto dojdzie w etapie 2" action={<Link to="s08">Punkt startowy auta</Link>}>Ścieżka etapu 1 korzysta z Auta 01.</Alert>}
+        {vehicle && vehicle !== "Auto 01" && <Alert title="To auto dojdzie w etapie 2" action={<Link to="s08">Punkt startowy auta</Link>}>Przykład etapu 1: Kierowca A · DEMO 001.</Alert>}
         <Button disabled={!vehicle} onClick={() => advance(1)}>Dalej: miejsca i czasy</Button>
       </EntryStep>
       <EntryStep number={2} title="Miejsca i czasy" current={entryStep} completed={completedStep} onEdit={setEntryStep} summary={`${loading.place} · ${loadingDate.split("-").reverse().join(".")}, ${loadingTime} → ${unloading.place} · ${unloadingTime}`}>
@@ -148,7 +148,7 @@ export function App() {
         {wash === "ours" && <Alert title="Nasze mycie dojdzie w etapie 2">Ten etap pokazuje przykład bez mycia.</Alert>}
         <Field label="Numer zlecenia" optionalText="opcjonalne"><Input autoComplete="off" /></Field>
         {message && <Alert title={message} />}
-        <Button onClick={() => { if (hasAccepted) setMessage("W etapie 1 przyjęto już K2. Resetuj symulację, aby powtórzyć przykład."); else if (demoReady) { setCompletedStep(3); setQuoteStops({ loading: { ...loading }, unloading: { ...unloading } }); go("s11"); } else setMessage("Wybierz Auto 01, miejsca B → C, czasy przykładu, fracht 60,00 i Bez mycia."); }}>Dalej: trasa i kraje</Button>
+        <Button onClick={() => { if (hasAccepted) setMessage("W etapie 1 przyjęto już K2. Resetuj symulację, aby powtórzyć przykład."); else if (demoReady) { setCompletedStep(3); setQuoteStops({ loading: { ...loading }, unloading: { ...unloading } }); go("s11"); } else setMessage("Wybierz Kierowca A · DEMO 001, miejsca B → C, czasy przykładu, fracht 60,00 i Bez mycia."); }}>Dalej: trasa i kraje</Button>
       </EntryStep></div><aside className="stack">{entryRoute}</aside></div>}
 
     </>,
@@ -161,14 +161,14 @@ export function App() {
       <CountryCosts/>
       <div className="actions"><Link to="s09">Wróć do wpisu</Link><Button onClick={() => { go("s12"); }}>Wyceń</Button></div></>,
     s12: <>
-      {accepted && <Alert title="Kurs przyjęty. Auto 01 wolne w Miejscu C od 13:00." />}
+      {accepted && <Alert title="Kurs przyjęty. Kierowca A · DEMO 001 wolne w Miejscu C od 13:00." />}
       <Quote/>
     </>,
     s13: <><ValueDetails/><div className="actions"><Link to="s12">Wróć do wyceny</Link></div></>,
-    s16: <><Card><CardTitle>Przyjęcie zachowa wycenę K2</CardTitle><p>Auto 01 · Miejsce B → Miejsce C · fracht 60,00 EUR · koszt 38,18 EUR · wynik 21,82 EUR.</p>
+    s16: <><Card><CardTitle>Przyjęcie zachowa wycenę K2</CardTitle><p>Kierowca A · DEMO 001 · Miejsce B → Miejsce C · fracht 60,00 EUR · koszt 38,18 EUR · wynik 21,82 EUR.</p>
       <Link to="s12">Anuluj przyjęcie</Link>
     </Card></>,
-    s07: <><h1 className="text-page-title">Kursy auta · Auto 01</h1>
+    s07: <><h1 className="text-page-title">Kursy auta · Kierowca A · DEMO 001</h1>
       {/* DS GAP G11 and G13: neutral status badges and a chronological list. */}
       <div className="two-columns"><Card><CardTitle>Kolejność kursów</CardTitle><ol className="stack">
         <li className="sequence"><Badge variant="neutral">Przyjęty</Badge><strong>K1</strong><p>Koniec rozładunku: Miejsce A · 12.11.2026, 11:00 (Warszawa).</p></li>
@@ -203,12 +203,12 @@ export function App() {
           <div className="screen-content stack">
           {["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) && <StepBar current={id === "s09" ? entryStep : id === "s10" ? 2 : 4}/>}
 
-          {["s11", "s12", "s13", "s16"].includes(id) ? <QuoteFrame amount="60.00" result="21.82" route={quoteRoute} actions={quoteActions} title={<h1 className="text-page-title">{id === "s12" ? <>Wycena K2 · Auto 01 <Badge variant="neutral">{accepted ? "Przyjęty" : "Szkic"}</Badge></> : id === "s11" ? "Trasa i kraje" : id === "s13" ? "Szczegóły wartości" : "Przyjęcie kursu"}</h1>}>{content[id]}</QuoteFrame> : id === "s10" ? <div className="entry-layout"><div className="stack">{content[id]}</div><aside>{entryRoute}</aside></div> : content[id] ?? <><h1 className="text-page-title">{name}</h1><Card><p>Ten ekran dojdzie w etapie 2.</p><Link to="s09">Wróć do nowej wyceny</Link></Card></>}
+          {["s11", "s12", "s13", "s16"].includes(id) ? <QuoteFrame amount="60.00" result="21.82" route={quoteRoute} actions={quoteActions} title={<h1 className="text-page-title">{id === "s12" ? <>Wycena K2 · Kierowca A · DEMO 001 <Badge variant="neutral">{accepted ? "Przyjęty" : "Szkic"}</Badge></> : id === "s11" ? "Trasa i kraje" : id === "s13" ? "Szczegóły wartości" : "Przyjęcie kursu"}</h1>}>{content[id]}</QuoteFrame> : id === "s10" ? <div className="entry-layout"><div className="stack">{content[id]}</div><aside>{entryRoute}</aside></div> : content[id] ?? <><h1 className="text-page-title">{name}</h1><Card><p>Ten ekran dojdzie w etapie 2.</p><Link to="s09">Wróć do nowej wyceny</Link></Card></>}
         </div></div><div className="notes"><p className="note text-meta">Prototyp · symulacja, dane fikcyjne · etap 1.</p>{["s12", "s13"].includes(id) && <p className="note text-meta">Podział kosztów auta jest fikcyjną ilustracją stawki dziennej; nie jest konfiguracją firmy. Praca: tylko suma i zatwierdzona stawka przykładu, bez danych płacowych. Źródła są symulowane, bez połączeń z usługami.</p>}</div>
       </section>; })}
     </main>
     <AlertDialog open={confirm && active === "s16"} onOpenChange={setConfirm}><AlertDialogContent>
-      <AlertDialogHeader><AlertDialogTitle>Przyjąć kurs K2?</AlertDialogTitle><AlertDialogDescription>Symulacja: zapisze wycenę 21,82 EUR z kursem. Auto 01 będzie wolne w Miejscu C od 13:00. Pozostałe szkice staną się nieaktualne.</AlertDialogDescription></AlertDialogHeader>
+      <AlertDialogHeader><AlertDialogTitle>Przyjąć kurs K2?</AlertDialogTitle><AlertDialogDescription>Symulacja: zapisze wycenę 21,82 EUR z kursem. Kierowca A · DEMO 001 będzie wolne w Miejscu C od 13:00. Pozostałe szkice staną się nieaktualne.</AlertDialogDescription></AlertDialogHeader>
       <AlertDialogFooter><AlertDialogCancel>Anuluj</AlertDialogCancel><AlertDialogAction onClick={() => { setAcceptedStops({ loading: { ...quoteStops.loading }, unloading: { ...quoteStops.unloading } }); setAccepted(true); setHasAccepted(true); go("s12"); }}>Przyjmij kurs K2</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent></AlertDialog>
   </>;
