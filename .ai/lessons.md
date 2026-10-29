@@ -16,3 +16,5 @@ Index of reusable findings, bug fixes and improvements. Read relevant entries be
 - [Source granularity and quote-entry effort](lessons/2026-10-26-source-granularity-and-quote-entry.md): owner-selected town matching and routed estimates preserve source semantics and phone-call usability without claiming measured completeness.
 
 - [Overlay stories: fade-in timing and focus return from a menu](lessons/2026-10-29-overlay-stories-fade-and-focus.md): wait for an overlay to finish fading in before asserting or typing; return focus to the menu button when a menu item opens a dialog.
+
+- [Async queries time out under coverage on CI runners](lessons/2026-10-29-async-find-timeout-under-coverage.md): give `findBy…` an explicit timeout when it waits for several asynchronous steps.

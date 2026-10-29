@@ -20,11 +20,12 @@ describe("CrudForm", () => {
     const { onSubmit } = setup();
     fireEvent.change(screen.getByLabelText("Amount"), { target: { value: "invalid" } });
     fireEvent.click(screen.getByText("Save"));
-    await screen.findByText("validation.invalid"); expect(onSubmit).not.toHaveBeenCalled();
+    // Validation and submit run asynchronously; under coverage on a CI runner this test took 1.3 s, past the 1 s default.
+    await screen.findByText("validation.invalid", undefined, { timeout: 5_000 }); expect(onSubmit).not.toHaveBeenCalled();
     expect(screen.getByLabelText("Amount").getAttribute("aria-invalid")).toBe("true");
     fireEvent.change(screen.getByLabelText("Amount"), { target: { value: "12345678901234567890.12" } });
     fireEvent.click(screen.getByText("Save"));
-    await screen.findByText("Saved");
+    await screen.findByText("Saved", undefined, { timeout: 5_000 });
     expect(onSubmit).toHaveBeenCalledWith({ amount: "12345678901234567890.12" });
   });
   it("shows server field errors and retains unsaved input", async () => {
