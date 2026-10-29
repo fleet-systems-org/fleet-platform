@@ -1,0 +1,12 @@
+/* DS PROPOSAL B1: medium body weight — source card R07.1. */
+/* DS PROPOSAL C1: medium body weight — source card R04 (grouped calculator). */
+@import "@fontsource/ibm-plex-sans/500.css";
+.quote-B, .quote-C { --proposal-weight: 500; font-weight: var(--proposal-weight); }
+/* DS PROPOSAL B2: cost-group ink and surface — source card R07.1. */
+/* DS PROPOSAL C2: cost-group ink and surface — source card R04 (grouped calculator). */
+.quote-B, .quote-C { --proposal-ink: #173f67; --proposal-bg: #eaf2fa; }
+/* DS PROPOSAL C3: proposed profit badge, pending owner decision — source card R08 (value badges). */
+.quote-C { --proposal-profit-ink: #3e2867; --proposal-profit-bg: #eee8fa; }
+.quote-B .quote-bar, .quote-C .cost-group { color: var(--proposal-ink); background: var(--proposal-bg); }
+.quote-C .proposed-profit { color: var(--proposal-profit-ink); background: var(--proposal-profit-bg); }
+.quote-B .quote-bar .text-label { color: var(--proposal-ink); }
