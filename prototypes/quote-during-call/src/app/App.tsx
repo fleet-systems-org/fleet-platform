@@ -148,11 +148,8 @@ export function App() {
     </Card></>,
     s11: <>
       {/* DS GAP G13: token-based segment and country list, no route editor or map service. */}
-      <Card><CardTitle>K2 · cały dojazd od K1</CardTitle><p>Start: Miejsce A · 12.11.2026, 11:00 (Warszawa). Koniec: Miejsce C · 13:00.</p>
-        <CountryCosts/>
-        <p className="text-meta">Przedział 12.11.2026, 11:00–13:00 nie obejmuje weekendu.</p>
-        <div className="actions"><Link to="s09">Wróć do wpisu</Link><Button onClick={() => { go("s12"); }}>Wyceń</Button></div>
-      </Card></>,
+      <CountryCosts/>
+      <div className="actions"><Link to="s09">Wróć do wpisu</Link><Button onClick={() => { go("s12"); }}>Wyceń</Button></div></>,
     s12: <>
       {accepted && <Alert title="Kurs przyjęty. Auto 01 wolne w Miejscu C od 13:00." />}
       <Quote/>

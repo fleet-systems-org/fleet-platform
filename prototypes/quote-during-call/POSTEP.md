@@ -325,3 +325,18 @@ Owner approved Stage 1e s12 as the quotation-screen reference on 2026-10-29. Thi
 - Browser verification on the built preview at actual 1440/320 CSS pixels: s11, s12 draft, s12 accepted, s13, s16; title order, 500/600 computed weights and h1 focus on screen navigation passed. Ten external screenshots in the Stage 1f preview folder; build replaced the preview index/assets.
 - Observation outside this stage: accepting the confirmation dialog leaves focus on body after dialog close; navigating between screens still focuses h1. The dialog and review engine were not changed.
 - No PR or merge into main. Production specifications remain approved/unimplemented.
+
+
+## Stage 1g. Route and countries grouped by leg (N7e)
+
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
+
+- s11 retains the shared title/step-4/360 px quotation summary and K2 RouteStops. One table replaces the segment cards, duplicate start/end paragraph and separate trip-total card. Each leg has a rowgroup heading with km, fuel, toll and total; four country rows reuse R17.1 share classes and exact BigInt helpers. The closing row totals 100 km, 18.00 fuel, 10.00 toll and 28.00 EUR. Remaining costs, full quote total, fictional-data note and weekend sentence follow it; existing actions sit below the card.
+- Shares use the whole route's 28.00 EUR: 8.6 / 5.7 / 53.6 / 32.1 percent; displayed sum 100.0. Existing integer-cent allocation is unchanged. At 320 px, km/fuel/toll move under each country, group and total label; amount and share remain columns. Only horizontal rules, tabular right-aligned numbers; group rows use the same panel background as the s12 total.
+- Programmatic h1 focus is retained. Pointer navigation hides its outline; keyboard Tab/Enter navigation keeps :focus-visible. Other screen content, shared UI and engine source are unchanged. N7e/R20.1 were read from origin/docs/quote-route-groups; no decision file copied.
+
+Validation: package typecheck/build; repository typecheck/lint/test (37 files, 196 tests); explicit prototype ESLint; exact-share assertions including sum 100.0; token scan of src/app and main entry (0); mechanical detector (0); whitespace check; byte-identical prototype.js; protected diff against origin/main empty. Main was already an ancestor, so no synchronization merge was needed.
+
+Browser: actual 1440/320 CSS pixels; s11 scrolled to bottom without horizontal overflow, mobile ordering and metadata verified, desktop summary 360 px and identical DOM to s12. Actual pointer click and keyboard Enter on “Wyceń” confirm h1 focus and the appropriate outline at both widths. Console errors: 0. Three full-page captures remain outside Git in the Stage 1g preview evidence folder; index/assets replaced while earlier evidence was preserved.
+
+Not run: production build/integration/coverage, Storybook tests, Stage 2 scenarios, exhaustive accessibility or cross-browser audit. Production source is unchanged. No PR opened or merge into main. Next: owner review of Stage 1g; Stage 2 needs separate authorization.
