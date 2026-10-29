@@ -38,3 +38,10 @@ The unchanged review engine focuses h1 after navigation for accessibility. Suppr
 - A native select does not consume Field's control context. Give the prototype-only scenario selector an explicit accessible name; verify getByLabel and keyboard selection rather than assuming a surrounding Field connects it.
 - Browser iterations need a full reload/reset: navigating only to a hash can retain the previous step. Test the updated disclosure button name after opening Menu.
 - Findings concern page composition/testing only; no shared component API or standing rule changed.
+
+## Stage 1o: inherited table rules and shared value controls
+
+- Existing page table selectors that changed every button's padding/height also changed newly composed ValueWithSource controls. Remove those selectors rather than styling component interiors.
+- With fixed-layout tables, size the header cells: widths applied only to body cells do not reliably determine the column geometry. At 320 px, budget room for the estimate word and percentage, and keep forced word breaking on source text only; a zero-overflow assertion alone does not prove readable words/units.
+- Verify both collapsed and expanded vehicle-category tables at 1440/1024/768/320. The independently rounded fixed vehicle fixture still totals 6.00 EUR, so the absence of a reconciliation line is valid; total equality alone does not prove that an allocation algorithm follows the independent rate-times-time formula.
+- Verified by built-browser walkthrough, screenshot inspection and an independent Decimal arithmetic check. Supporting findings only; no standing rule or financial policy introduced.
