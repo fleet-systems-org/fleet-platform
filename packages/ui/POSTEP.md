@@ -349,9 +349,32 @@ Checks: typecheck, lint, unit tests at 100% coverage, story tests (interaction, 
 
 Proposals 1–7 (in pull request #51) approved by the owner on 2026-10-29 and recorded under PLACE-2, PLACE-3 in the decisions record: the page searches; kind words "Zapisane miejsce", "Adres", "Tylko miasto"; same-named towns marked "Do potwierdzenia" without confirming; another spelling shown, no alias saved; saved places selectable when the provider fails; "Dodaj miejsce…" under the box with `places.write`; L08 open.
 
+## Stage 3, batch 4 (2026-10-29)
+
+Built in `src/components/values/`: `EvidenceBadge` (EV-1, EV-2) on Badge with Tabler icons; `ValueWithSource` now shows its estimate through it and takes the evidence words as `labels.evidence` (replacing its own `estimated` and `conflicting`). Docs page with 13 sections; stories under "Product/Values" (states, history rows). No new dependencies and no new tokens.
+
+Checks: typecheck, lint, 158 unit tests at 100% coverage, 113 story tests (interaction, axe, WCAG 1.4.12), `lint:tokens` 0 in `packages/ui`.
+
+| # | Checklist item | Result |
+|---|---|---|
+| 1 | Contrast | Pass: axe colour-contrast; estimate 11.12:1, neutral 14.71:1 |
+| 2 | Targets at least 24 px | Not applicable: badges are not interactive |
+| 3 | Visible labels | Pass: the history table names the column "Pewność" |
+| 4 | One icon set | Pass: Tabler `IconCircleOff`, `IconAlertTriangle` |
+| 5 | Colour not alone | Pass: every badge is a word; icons are `aria-hidden` and beside words |
+| 6 | Empty, error, loading states | Pass: a certain value renders nothing; badges have no other states |
+| 7 | Visible focus | Not applicable: no focusable element |
+| 8 | No invented data | Pass: words from EV-1, P4 and the History section; prices synthetic |
+| 9 | Only token variants | Pass: existing `neutral` and `estimate` variants |
+| 10 | Zero values outside tokens | Pass in `packages/ui` (0); 12 remain in app pages, unchanged |
+| 11 | Lines at most 75 characters | Pass: one or two words per badge |
+| 12 | Message says what happened and what to do | Not applicable: the reason belongs to `ValueWithSource` details |
+
+Owner answers (2026-10-29) to the proposals in pull request #53: 1–4 approved (one component; missing and conflicting neutral with word and icon; no estimate on missing or conflicting; "Plan" only where passed). 5 rejected: `ValueWithSource` uses `EvidenceBadge` now, so "Szacunek" has one source. Recorded under EV-1 in the decisions record. The kilometre check badge is not built (Phase 2); its open question is recorded at #24 in the E01 specification.
+
 ## Next step
 
-Conditions before screens are built (owner decision 2026-10-29): L08, the search time limit and what the dispatcher sees after it, is decided; L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next batch: evidence badge (EV-1, #53), then screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
+Conditions before screens are built (owner decision 2026-10-29): L08, the search time limit and what the dispatcher sees after it, is decided; L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next: screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
 
 ## N2b: ordinary text weight (2026-10-29)
 

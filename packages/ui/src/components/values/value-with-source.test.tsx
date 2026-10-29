@@ -9,7 +9,7 @@ beforeAll(() => {
 afterEach(cleanup);
 
 const labels: ValueLabels = {
-  estimated: "Szacunek", certain: "Pewne", missing: "brak", conflicting: "Sprzeczne dane", details: "Szczegóły",
+  evidence: { plan: "Plan", estimated: "Szacunek", missing: "Brak danych", conflicting: "Sprzeczne dane" }, certain: "Pewne", missing: "brak", details: "Szczegóły",
   exactValue: "Dokładna wartość", certainty: "Pewność", source: "Źródło", sourceDate: "Data źródła", reason: "Powód",
 };
 const nbsp = " ";
