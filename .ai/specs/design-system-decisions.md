@@ -64,6 +64,7 @@ Code families:
 - **N7c** — The entry, route and quote screens share one frame: centred content, a 360 px panel on the right and the same step bar, so moving between them changes the content, not the layout (owner decision 2026-10-29).
 - **N7d** — Navigation lives in a left side panel on every screen, never in the top bar; entries of later phases appear muted under "Później" until they exist (owner decision 2026-10-29).
 - **N7e** — The route and countries screen (s11) groups costs by leg: "Dojazd A → B" and "Z ładunkiem B → C", each header showing kilometres, fuel, toll and the leg total; below each header every country is a row with kilometres, fuel, toll and total and a thin share bar of the route's fuel and toll in the action colour; a "Cały kurs" row closes the list, followed by the remaining quote costs and the total cost (R20.1, R17.1) (owner decision 2026-10-29).
+- **N8a** — The sign-in screen follows the existing office system sign-in that the panel uses: a left half with a dark map of Europe and fictional routes, the sign-in form centred in the right half, and a single column with the form on narrow screens. The map uses design-system colours and carries no company name or logo. It is the only decorative element allowed, an owner-approved exception to R08.5 (owner decision 2026-10-29).
 
 ## Proposals
 
