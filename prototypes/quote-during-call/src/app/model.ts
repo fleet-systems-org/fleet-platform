@@ -24,10 +24,20 @@ export const screenNames = [
   "Przyjęcie kursu", "Podobne kursy", "Korekta, anulowanie", "Kontrola km",
 ];
 export const screenId = (index: number) => `s${String(index + 1).padStart(2, "0")}`;
+// All availability fixtures are on the fixed quote day, 12 November 2026.
 export const vehicles = [
-  ["Auto 01", "Wolne w Miejscu A od 12.11.2026, 11:00", "Adam Nowak", "DEMO 001"],
+  ["Auto 01", "Wolne od 11:00 · Miejsce A", "Adam Nowak", "DEMO 001"],
   ["Auto 02", "Nieznane", "Piotr Zieliński", "DEMO 002"],
-  ["Auto 03", "Wolne w Miejscu B od 12.11.2026, 15:00 · fikcyjne", "Marek Wójcik", "DEMO 003"],
+  ["Auto 03", "Wolne od 15:00 · Miejsce B · fikcyjne", "Marek Wójcik", "DEMO 003"],
+  ["Auto 04", "Wolne od 09:00 · Miejsce D", "Tomasz Lis", "DEMO 004"],
+  ["Auto 05", "Wolne od 12:30 · Miejsce E", "Jan Mazur", "DEMO 005"],
+  ["Auto 06", "Wolne od 10:15 · Miejsce F", "Paweł Krawczyk", "DEMO 006"],
+  ["Auto 07", "Wolne od 16:00 · Miejsce A", "Michał Dudek", "DEMO 007"],
+  ["Auto 08", "Wolne od 13:45 · Miejsce G", "Krzysztof Pawlak", "DEMO 008"],
+  ["Auto 09", "Nieznane", "Łukasz Sikora", "DEMO 009"],
+  ["Auto 10", "Wolne od 08:30 · Miejsce H", "Rafał Baran", "DEMO 010"],
+  ["Auto 11", "Wolne od 18:00 · Miejsce C", "Grzegorz Wróbel", "DEMO 011"],
+  ["Auto 12", "Wolne od 14:00 · Miejsce E", "Dariusz Kaczor", "DEMO 012"],
 ];
 export const valueLabels = {
   estimated: "Szacunek", certain: "Pewne", missing: "brak", conflicting: "Sprzeczne dane",

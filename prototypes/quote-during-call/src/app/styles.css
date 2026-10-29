@@ -233,12 +233,12 @@ h1[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
 /* N7f/R21.1: native radio semantics, local prototype-only vehicle tiles. */
 .vehicle-options { border: 0; padding: 0; margin: 0; min-width: 0; }
 .vehicle-options legend { padding: 0; margin-bottom: var(--space-group); }
-.vehicle-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-group); }
-.vehicle-tile { position: relative; display: flex; flex-direction: column; gap: var(--space-tight); padding: var(--space-between); border: 1px solid var(--border-divider); border-radius: 8px; background: var(--surface-panel); cursor: pointer; }
+.vehicle-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-group); }
+.vehicle-tile { position: relative; display: flex; flex-direction: column; gap: var(--space-tight); min-width: 0; padding: var(--space-group) var(--space-panel); border: 1px solid var(--border-divider); border-radius: 8px; background: var(--surface-panel); cursor: pointer; }
 .vehicle-tile:has(input:checked) { border-color: var(--action-primary); box-shadow: inset 0 0 0 1px var(--action-primary); }
 .vehicle-tile:has(input:focus-visible) { outline: 2px solid var(--action-primary); outline-offset: 2px; }
 .vehicle-tile input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.vehicle-driver { font-size: var(--type-16); font-weight: var(--weight-600); }
+.vehicle-driver { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--type-16); font-weight: var(--weight-600); }
 .vehicle-tractor { font-variant-numeric: tabular-nums; }
-.vehicle-availability { margin-top: var(--space-group); font-size: var(--type-14); line-height: var(--type-14-leading); }
-@media (min-width: 48rem) { .vehicle-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.vehicle-availability { font-size: var(--type-12); line-height: var(--type-12-leading); }
+@media (min-width: 48rem) { .vehicle-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
