@@ -366,3 +366,19 @@ Not run: production app build/integration/coverage, Storybook tests, cross-brows
 Next: owner reviews all three s01 states before authorizing further prototype work. Publication and cloud verification are recorded in the Stage 1h run log.
 
 - External preview and screenshots were kept outside the repository; client-side availability was not verified.
+
+## Stage 1i. Vehicle tiles with driver and tractor (N7f) and map edge
+
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
+
+- s09 step 1 now shows the three synthetic driver/tractor pairs as native radio tiles: three columns from 48rem, one below. Driver name uses 16 px/600; registration uses tabular meta; availability uses 14 px. Selected outline adds no layout shift; keyboard focus is visible. The group and proposal disclaimer identify the driver detail as outside the approved E01 specification.
+- Existing Auto 01/02/03 IDs map to the synthetic drivers/tractors. Completed step 1 shows the chosen name and registration. Calculations and the K2 snapshot are unchanged.
+- s01 generator clipping extends to -40..80 longitude and 20..85 latitude; projection, routes and city coordinates are unchanged. Extended geometry also needs SVG overflow visible inside the clipped map panel: otherwise the SVG viewport itself still cuts Scandinavia. Generated source is 116,171 bytes (limit 120 KB).
+- Passed: package typecheck/build; repository typecheck/lint/198 tests; explicit prototype ESLint; tokens 0; mechanical detector 0. Engine byte comparison, routes/cities comparison, protected source diff against main and private-name scan passed. Browser at actual 1440/320 CSS pixels passed pointer selection, arrows/space, visible focus, stable tile dimensions, collapsed answer and happy path to 21.82 EUR. Map captures at 1440/1920 visually verified without artificial land edge.
+- Five requested captures and built preview published outside Git; prior evidence preserved. No PR opened and no merge into main. Production coverage/integration/Storybook/cross-browser checks were not run for this prototype-only change.
+
+### Open question for the owner
+
+Should Auto 01 in the right-hand route panel, s12 quotation heading, s16 confirmation and s07 vehicle trips also become driver + tractor registration? These locations deliberately remain unchanged in Stage 1i. Driver identity still requires a separate specification decision before production implementation.
+
+Next: owner review of Stage 1i and the label question; Stage 2 needs separate authorization.

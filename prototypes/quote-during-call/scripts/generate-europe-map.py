@@ -16,7 +16,8 @@ def project(point):
 
 
 def clip(ring):
-    for axis, bound, lower in [(0, -16, True), (0, 40, False), (1, 32, True), (1, 67, False)]:
+    # Extend land beyond the tilted SVG viewport; keep projection/routes fixed.
+    for axis, bound, lower in [(0, -40, True), (0, 80, False), (1, 20, True), (1, 85, False)]:
         result = []
         for start, end in zip(ring[-1:] + ring[:-1], ring):
             inside = lambda p: p[axis] >= bound if lower else p[axis] <= bound

@@ -25,9 +25,9 @@ export const screenNames = [
 ];
 export const screenId = (index: number) => `s${String(index + 1).padStart(2, "0")}`;
 export const vehicles = [
-  ["Auto 01", "Wolne w Miejscu A od 12.11.2026, 11:00"],
-  ["Auto 02", "Nieznane"],
-  ["Auto 03", "Wolne w Miejscu B od 12.11.2026, 15:00 · fikcyjne"],
+  ["Auto 01", "Wolne w Miejscu A od 12.11.2026, 11:00", "Adam Nowak", "DEMO 001"],
+  ["Auto 02", "Nieznane", "Piotr Zieliński", "DEMO 002"],
+  ["Auto 03", "Wolne w Miejscu B od 12.11.2026, 15:00 · fikcyjne", "Marek Wójcik", "DEMO 003"],
 ];
 export const valueLabels = {
   estimated: "Szacunek", certain: "Pewne", missing: "brak", conflicting: "Sprzeczne dane",
