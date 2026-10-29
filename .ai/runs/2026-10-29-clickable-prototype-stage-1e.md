@@ -26,8 +26,14 @@ Validation: package typecheck/build, repository typecheck/lint and 190 tests pas
 - Review engine SHA-256: 1ce5c7507244ae8e4162541e44eab14b69976430f6896f03018d3f6e2b7e5e95, equal to starting commit. Local typography override remains. Protected source diff from starting commit: empty before baseline sync.
 - Updated progress, existing composition lesson and owner-confirmed step 4 question. No production specification status changed.
 
-## Remaining publication work
+## Final verification and publication
 
-Synchronize current main into this prototype branch, repeat affected checks, confirm protected diff empty, verify built preview, then commit publication evidence and push normally. No pull request or base-branch merge.
+- Implementation: 3638c1a. Baseline synchronization: e4392c2. Only the lessons index conflicted; retained the main lesson description and both prototype links. No protected source was manually edited.
+- After synchronization: repository typecheck/lint and 37 files / 196 unit tests passed. Package typecheck/build passed. Protected diff against main for application/shared UI source/stories is empty.
+- The built preview passed the direct screen-picker and repeated-reset regression at 320 px. Preview index/assets replaced; twenty final screenshots remain external. HTTP and cloud publication results are recorded below.
+- No pull request or base-branch merge. Stage 2 remains unstarted; owner review is next.
 
 Not run: production application build/integration/coverage, Storybook story tests, Stage 2 scenarios, full accessibility or cross-browser audits.
+
+- Final built-version walkthrough repeated the complete 1440/320 checks successfully, including eleven evidence rows and published-scale strings; runtime errors 0. Preview index SHA-256: 2b32e691574a091d0d0c16f0ecf8faaa36167da61ad394be63f6859a83cc031d. The served network index matches it and returns HTTP 200. Index cloud upload is true; cloud status reports caught-up. Download/opening on another device is unverified.
+- Final outcome: Stage 1e complete, ready for owner review. Normal branch push is authorized by the assignment; no pull request or base-branch merge. The existing composition lesson captures the cause and prevention finding without adding standing rules.
