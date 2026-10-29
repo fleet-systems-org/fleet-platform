@@ -73,3 +73,23 @@ jobs:
           path: integration-evidence/
           if-no-files-found: error
           retention-days: 14
+
+  design-tokens:
+    name: Design tokens (packages/ui)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      - run: node packages/ui/scripts/check-tokens.ts packages/ui/src packages/ui/stories packages/ui/.storybook
+
+  storybook:
+    name: Storybook tests (interaction, axe, WCAG 1.4.12)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      - name: Install Chromium for Storybook tests
+        run: pnpm --filter @fleet-platform/ui exec playwright install --with-deps chromium
+      - run: pnpm test:storybook
