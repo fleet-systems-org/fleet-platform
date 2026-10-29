@@ -146,19 +146,19 @@ export function App() {
       <PlacePicker key={entryVersion} onApply={() => { setLoading(value => ({ ...value, place: "Miejsce B" })); setUnloading(value => ({ ...value, place: "Miejsce C" })); invalidate(); setEntryStep(2); go("s09"); }}/>
       <Link to="s09">Wróć do wpisu kursu</Link>
     </Card></>,
-    s11: <><h1 className="text-page-title">Trasa i kraje</h1>
+    s11: <>
       {/* DS GAP G13: token-based segment and country list, no route editor or map service. */}
       <Card><CardTitle>K2 · cały dojazd od K1</CardTitle><p>Start: Miejsce A · 12.11.2026, 11:00 (Warszawa). Koniec: Miejsce C · 13:00.</p>
         <CountryCosts/>
         <p className="text-meta">Przedział 12.11.2026, 11:00–13:00 nie obejmuje weekendu.</p>
         <div className="actions"><Link to="s09">Wróć do wpisu</Link><Button onClick={() => { go("s12"); }}>Wyceń</Button></div>
       </Card></>,
-    s12: <><h1 className="text-page-title">Wycena K2 · Auto 01 <Badge variant="neutral">{accepted ? "Przyjęty" : "Szkic"}</Badge></h1>
+    s12: <>
       {accepted && <Alert title="Kurs przyjęty. Auto 01 wolne w Miejscu C od 13:00." />}
       <Quote/>
     </>,
-    s13: <><h1 className="text-page-title">Szczegóły wartości</h1><ValueDetails/><div className="actions"><Link to="s12">Wróć do wyceny</Link></div></>,
-    s16: <><h1 className="text-page-title">Przyjęcie kursu</h1><Card><CardTitle>Przyjęcie zachowa wycenę K2</CardTitle><p>Auto 01 · Miejsce B → Miejsce C · fracht 60,00 EUR · koszt 38,18 EUR · wynik 21,82 EUR.</p>
+    s13: <><ValueDetails/><div className="actions"><Link to="s12">Wróć do wyceny</Link></div></>,
+    s16: <><Card><CardTitle>Przyjęcie zachowa wycenę K2</CardTitle><p>Auto 01 · Miejsce B → Miejsce C · fracht 60,00 EUR · koszt 38,18 EUR · wynik 21,82 EUR.</p>
       <Link to="s12">Anuluj przyjęcie</Link>
     </Card></>,
     s07: <><h1 className="text-page-title">Kursy auta · Auto 01</h1>
@@ -195,7 +195,7 @@ export function App() {
           <div className="screen-content stack">
           {["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) && <StepBar current={id === "s09" ? entryStep : id === "s10" ? 2 : 4}/>}
 
-          {["s11", "s12", "s13", "s16"].includes(id) ? <QuoteFrame amount="60.00" result="21.82" route={quoteRoute} actions={quoteActions}>{content[id]}</QuoteFrame> : id === "s10" ? <div className="entry-layout"><div className="stack">{content[id]}</div><aside>{entryRoute}</aside></div> : content[id] ?? <><h1 className="text-page-title">{name}</h1><Card><p>Ten ekran dojdzie w etapie 2.</p><Link to="s09">Wróć do nowej wyceny</Link></Card></>}
+          {["s11", "s12", "s13", "s16"].includes(id) ? <QuoteFrame amount="60.00" result="21.82" route={quoteRoute} actions={quoteActions} title={<h1 className="text-page-title">{id === "s12" ? <>Wycena K2 · Auto 01 <Badge variant="neutral">{accepted ? "Przyjęty" : "Szkic"}</Badge></> : id === "s11" ? "Trasa i kraje" : id === "s13" ? "Szczegóły wartości" : "Przyjęcie kursu"}</h1>}>{content[id]}</QuoteFrame> : id === "s10" ? <div className="entry-layout"><div className="stack">{content[id]}</div><aside>{entryRoute}</aside></div> : content[id] ?? <><h1 className="text-page-title">{name}</h1><Card><p>Ten ekran dojdzie w etapie 2.</p><Link to="s09">Wróć do nowej wyceny</Link></Card></>}
         </div></div><div className="notes"><p className="note text-meta">Prototyp · symulacja, dane fikcyjne · etap 1.</p>{["s12", "s13"].includes(id) && <p className="note text-meta">Podział kosztów auta jest fikcyjną ilustracją stawki dziennej; nie jest konfiguracją firmy. Praca: tylko suma i zatwierdzona stawka przykładu, bez danych płacowych. Źródła są symulowane, bez połączeń z usługami.</p>}</div>
       </section>; })}
     </main>

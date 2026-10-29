@@ -47,10 +47,11 @@
 .amount-left input { text-align: left; }
 
 
-/* N6a: summary first in reading order, on the right at desktop widths. */
+/* Title first, then summary on mobile; summary stays on the right on desktop. */
 .quote-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-between); align-items: start; }
-.quote-summary { grid-column: 2; grid-row: 1; min-width: 0; }
-.quote-detail { grid-column: 1; grid-row: 1; min-width: 0; }
+.quote-title { grid-column: 1; grid-row: 1; min-width: 0; }
+.quote-summary { grid-column: 2; grid-row: 1 / span 2; min-width: 0; }
+.quote-detail { grid-column: 1; grid-row: 2; min-width: 0; }
 .quote-value { font-size: var(--type-20); line-height: var(--type-20-leading); font-weight: var(--weight-600); font-variant-numeric: tabular-nums; }
 .loss-result { color: var(--status-loss-text); background: var(--status-loss-bg); border-radius: var(--radius-4); padding: var(--space-tight); }
 .summary-totals { border-top: 1px solid var(--border-divider); padding-top: var(--space-between); }
@@ -72,7 +73,7 @@
 .vehicle-detail th { padding-left: var(--space-panel); }
 @media (max-width: 48rem) {
   .quote-layout { grid-template-columns: minmax(0, 1fr); }
-  .quote-summary, .quote-detail { grid-column: 1; grid-row: auto; }
+  .quote-title, .quote-summary, .quote-detail { grid-column: 1; grid-row: auto; }
   .quote-cost-table .cost-source { display: none; }
   .cost-source-mobile { display: block; margin-top: var(--space-tight); }
   .quote-cost-table th:first-child { width: 40%; }
@@ -120,7 +121,7 @@
 .route-caveat { border-top: 1px solid var(--border-divider); padding-top: var(--space-panel); }
 @media (max-width: 75rem) {
   .entry-layout, .quote-layout { grid-template-columns: minmax(0, 1fr); }
-  .quote-summary, .quote-detail { grid-column: 1; grid-row: auto; }
+  .quote-title, .quote-summary, .quote-detail { grid-column: 1; grid-row: auto; }
 }
 @media (max-width: 48rem) {
   .product-frame { display: block; }
