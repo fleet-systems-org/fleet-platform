@@ -48,7 +48,7 @@ function RouteScreen({ children, notice, endpoint }: { children?: ReactNode; not
       {notice}
       {children ?? <Card className="flex flex-col gap-between">{legs.map(leg => <LegTable key={leg.title} leg={leg} />)}</Card>}
       <Card><CardTitle>Myto z planera trasy</CardTitle>
-        <div className="flex flex-col gap-tight pt-tight">
+        <div className="flex flex-col items-start gap-tight pt-tight">
           <ValueWithSource state="known" label="Myto z planera trasy" labels={valueLabels} value="10.00" unit="EUR" certainty="estimated" source={map} reason="tylko kontrola; do kosztu wchodzi stawka myta z konfiguracji (SRC-4)" />
           <p className="text-meta">Tylko do kontroli. Koszt myta liczy się ze stawek miesięcznych.</p>
         </div>

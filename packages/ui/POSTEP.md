@@ -457,6 +457,31 @@ Plan:
 3. s11 route and countries: legs with kilometres per country as estimates (`ValueWithSource`, whole km), planner toll only as a control, manual split with a reason when the route is missing (BND-4), town-only endpoints marked (L09).
 4. States that depend on open screen-map gaps are listed, not invented: s09.8 currency list (L30), s09.10 two weekends (L21), s09.15 version conflict (L10), s09.16 session expiry (L11), s11.7 detours (L01).
 
+Built: `stories/screens/e01/` with `parts.tsx` (synthetic data, the collapsed entry step of R18.1 and the entry composition; story code, not a design-system component), "Screens/E01/s09 Trip entry" (s09.1–s09.7, s09.9, s09.11–s09.14), "Screens/E01/s10 Place choice" (s10.1–s10.8 and the L09 town-only endpoint) and "Screens/E01/s11 Route and countries" (s11.1–s11.6 and L09). Kilometre sums in the route stories are synthetic text, not JavaScript numbers. Elements of the prototype outside the specification (driver, tractor, customer base) are not used.
+
+Checks: lint, typecheck, 202 unit tests at 100% coverage (statements 580/580, branches 459/459, functions 184/184, lines 491/491), 174 story tests (interaction, axe, WCAG 1.4.12 where present), `lint:tokens` 0, Storybook build; s09.1, s10.6 and s11.1 at 1440 px and s11.3 at 320 px without page errors or horizontal scroll.
+
+| # | Checklist item | Result |
+|---|---|---|
+| 1 | Contrast | Pass: axe colour-contrast in every screen story |
+| 2 | Targets at least 24 px | Pass: controls 36 px; "Zmień" and "Dodaj miejsce" text buttons at least 24 px high |
+| 3 | Visible labels | Pass: every field has a `Field` label; the route panel and the step bar are named |
+| 4 | One icon set | Pass: Tabler only |
+| 5 | Colour not alone | Pass: estimates as "Szacunek", town-only as "Tylko miasto", stale quote in words |
+| 6 | Empty, error, loading states | Pass: searching, calculating, not found, unavailable, field errors, save error, sending |
+| 7 | Visible focus | Pass: 2 px outline; s09.13 moves focus to the first invalid field |
+| 8 | No invented data | Pass: prototype data; open gaps L01, L10, L11, L21, L30 not drawn |
+| 9 | Only token variants | Pass: no new tokens or variants |
+| 10 | Zero values outside tokens | Pass in `packages/ui` (0) |
+| 11 | Lines at most 75 characters | Pass: messages inside `max-w-measure` where they are running text |
+| 12 | Message says what happened and what to do | Pass: for example "Dostawca map nie odpowiada. Wpisz kilometry po krajach i powód…" |
+
+Proposals for the owner:
+
+1. s09.12 shows "Zapisuję kurs…" and a disabled step while sending, as `CrudForm` does; the entry is not a `CrudForm` (it has nested values), so the screen composes the same behaviour.
+2. s11.3–s11.6 edit only the loaded leg in the stories; the approach leg is edited the same way.
+3. The planner toll is shown with `ValueWithSource` as an estimate and the words "Tylko do kontroli" (SRC-4); it never enters the cost.
+
 ## Next step
 
 Conditions before screens are built (owner decision 2026-10-29): L08 is decided (no time limit on the screen; see batch 5); L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next: screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
