@@ -9,11 +9,14 @@ import { RadioGroup, RadioGroupItem } from "@fleet-platform/ui/components/radio-
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@fleet-platform/ui/components/select";
 import { DecimalField } from "@fleet-platform/ui/components/values/decimal-field";
 import { ValueWithSource } from "@fleet-platform/ui/components/values/value-with-source";
-import { Popover, PopoverContent, PopoverTrigger } from "@fleet-platform/ui/components/popover";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@fleet-platform/ui/components/alert-dialog";
 import { parseDecimalInput } from "@fleet-platform/ui/lib/decimal";
-import { cents, decimal, costs, coveredCost, screenNames, screenId, vehicles, valueLabels } from "./model";
+import { cents, decimal, coveredCost, screenNames, screenId, vehicles, valueLabels } from "./model";
 
+import { RouteSchematic } from "./RouteSchematic";
+import { PlacePicker } from "./PlacePicker";
+import { CountryCosts } from "./CountryCosts";
+import { Quote } from "./Quote";
 import { localizeReview } from "./review-labels";
 
 declare global { interface Window { __PROTOTYPE_START__: () => boolean } }
@@ -37,8 +40,9 @@ export function App() {
   const [role, setRole] = useState("dispatcher");
   const [later, setLater] = useState(false);
   const [vehicle, setVehicle] = useState("");
+  const [entryVersion, setEntryVersion] = useState(0);
   const [places, setPlaces] = useState(false);
-  const [query, setQuery] = useState("");
+  const [variant, setVariant] = useState("A");
   const [freight, setFreight] = useState("");
   const [wash, setWash] = useState("");
   const [loadingDate, setLoadingDate] = useState("2026-11-12");
@@ -48,7 +52,6 @@ export function App() {
   const [accepted, setAccepted] = useState(false);
   const [hasAccepted, setHasAccepted] = useState(false);
   const [confirm, setConfirm] = useState(false);
-  const [picker, setPicker] = useState(false);
   const [screenPicker, setScreenPicker] = useState(false);
   const [quoted, setQuoted] = useState(false);
   const [message, setMessage] = useState("");
@@ -59,12 +62,13 @@ export function App() {
     && loadingDate === "2026-11-12" && loadingTime === "12:00" && unloadingDate === "2026-11-12" && unloadingTime === "13:00";
   const invalidate = () => { setQuoted(false); setMessage(""); };
   function reset() {
-    setVehicle(""); setPlaces(false); setQuery(""); setFreight(""); setWash(""); setAccepted(false); setQuoted(false); setMessage("");
+    setEntryVersion(v => v + 1);
+    setVehicle(""); setPlaces(false); setFreight(""); setWash(""); setAccepted(false); setQuoted(false); setMessage("");
     setLoadingDate("2026-11-12"); setLoadingTime("12:00"); setUnloadingDate("2026-11-12"); setUnloadingTime("13:00");
     go("s09");
   }
   useEffect(() => {
-    const changed = (event: Event) => { setActive((event as CustomEvent<string>).detail); setPicker(false); setScreenPicker(false); };
+    const changed = (event: Event) => { setActive((event as CustomEvent<string>).detail); setScreenPicker(false); };
     document.addEventListener("prototype:screen-change", changed);
     window.__PROTOTYPE_START__();
     const stopLocalizing = localizeReview();
@@ -73,7 +77,7 @@ export function App() {
 
   const header = <header className="product-header">
     <nav aria-label="Nawigacja produktu" className="actions">
-      <Button variant="text" onClick={reset}>Nowa wycena</Button><Link to="s07">Kursy aut</Link>
+      <Button variant="text" aria-current={active !== "s07" ? "page" : undefined} onClick={reset}>Nowa wycena</Button><Button variant="text" aria-current={active === "s07" ? "page" : undefined} asChild><a href="#s07">Kursy aut</a></Button>
       {later && <Link to="s06">Flota</Link>}
     </nav>
     <div className="actions"><span className="text-meta">{role === "owner" ? "wlasciciel" : "dyspozytor"}@firma-demo.example</span>
@@ -89,7 +93,7 @@ export function App() {
       </form></Card>,
     s09: <><h1 className="text-page-title">Nowa wycena</h1>
       <p className="text-meta">Etap 1: przykład K2 · Auto 01 · 12.11.2026 · 60,00 EUR · bez mycia. Obliczenia i trasa są symulowane.</p>
-      {accepted ? <Alert title="Ten kurs został przyjęty" action={<Button onClick={reset}>Nowa wycena</Button>}>Przyjęta wycena jest zachowana w symulacji. Zacznij nową wycenę, aby wpisać kolejny kurs.</Alert> : <>
+      {accepted ? <Alert title="Ten kurs został przyjęty" action={<Button onClick={reset}>Nowa wycena</Button>}>Przyjęta wycena jest zachowana w symulacji. Zacznij nową wycenę, aby wpisać kolejny kurs.</Alert> : <div className="entry-layout"><div className="stack">
       <Card><CardTitle>1. Wybierz auto</CardTitle><Field label="Auto" required>
         <RadioGroup value={vehicle} onValueChange={value => { setVehicle(value); invalidate(); }}>
           {vehicles.map(([name, free]) => <RadioGroupItem key={name} value={name} label={name} hint={name === "Auto 01" && hasAccepted ? "Wolne w Miejscu C od 12.11.2026, 13:00" : free} />)}
@@ -108,7 +112,8 @@ export function App() {
         </div>
       </Card>
       <Card><CardTitle>3. Fracht i mycie</CardTitle><div className="form-grid">
-        <Field label="Fracht netto" hint="W przykładzie wpisz 60,00" required><DecimalField kind="eurAmount" unit="EUR" value={freight} onChange={e => { setFreight(e.target.value); invalidate(); }} /></Field>
+        {/* DS PROPOSAL: amount input left-aligned */}
+        <Field label="Fracht netto" hint="W przykładzie wpisz 60,00" required><DecimalField className="amount-left" kind="eurAmount" unit="EUR" value={freight} onChange={e => { setFreight(e.target.value); invalidate(); }} /></Field>
         <Field label="Waluta" required><Select defaultValue="EUR"><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="EUR">EUR</SelectItem></SelectContent></Select></Field>
       </div><Field label="Mycie" required hint="Odpowiedz wprost. Brak wyboru nie oznacza braku mycia.">
         <RadioGroup value={wash} onValueChange={value => { setWash(value); invalidate(); }}>
@@ -118,42 +123,25 @@ export function App() {
         <Field label="Numer zlecenia" optionalText="opcjonalne"><Input autoComplete="off" /></Field>
         {message && <Alert title={message} />}
         <Button onClick={() => { if (hasAccepted) setMessage("W etapie 1 przyjęto już K2. Resetuj symulację, aby powtórzyć przykład."); else if (demoReady) go("s11"); else setMessage("Wybierz Auto 01, miejsca B → C, czasy przykładu, fracht 60,00 i Bez mycia."); }}>Dalej: trasa i kraje</Button>
-      </Card></>}
+      </Card></div><aside className="stack"><Card><CardTitle>Podsumowanie trasy</CardTitle>{places ? <RouteSchematic/> : <p>Wybierz miejsca, aby zobaczyć schemat trasy.</p>}<p>{vehicle || "Wybierz auto"} · fracht {freight || "—"} EUR</p><p className="text-meta">Dojazd od końca K1: Miejsce A, 11:00. Po K2 wolne w Miejscu C od 13:00, czas warszawski.</p></Card></aside></div>}
     </>,
     s10: <><h1 className="text-page-title">Wybór miejsca</h1><Card><CardTitle>Załadunek i rozładunek</CardTitle>
-      <p className="text-meta">Symulacja wyszukiwania, bez geokodowania. Dostępna para przykładu: Miejsce B (DE) → Miejsce C (CZ).</p>
-      {/* DS GAP G03: Input with a Popover of owner-approved synthetic saved places. */}
-      <Popover open={picker} onOpenChange={setPicker}><PopoverTrigger asChild><Button variant="secondary">Szukaj zapisanych miejsc</Button></PopoverTrigger>
-        <PopoverContent aria-label="Zapisane miejsca"><div className="stack"><Field label="Szukaj miejsca"><Input value={query} onChange={e => setQuery(e.target.value)} /></Field>
-          {"Miejsce B Miejsce C".toLocaleLowerCase("pl").includes(query.toLocaleLowerCase("pl"))
-            ? <Button onClick={() => { setPlaces(true); invalidate(); go("s09"); }}>Wybierz B (DE) → C (CZ)</Button>
-            : <p>W etapie 1 szukaj Miejsca B lub C.</p>}
-        </div></PopoverContent></Popover>
-      <Button onClick={() => { setPlaces(true); invalidate(); go("s09"); }}>Użyj Miejsca B (DE) i Miejsca C (CZ)</Button>
+      <PlacePicker key={entryVersion} onApply={() => { setPlaces(true); invalidate(); go("s09"); }}/>
       <Link to="s09">Wróć do wpisu kursu</Link>
     </Card></>,
     s11: <><h1 className="text-page-title">Trasa i kraje</h1>
       {/* DS GAP G13: token-based segment and country list, no route editor or map service. */}
       <Card><CardTitle>K2 · cały dojazd od K1</CardTitle><p>Start: Miejsce A · 12.11.2026, 11:00 (Warszawa). Koniec: Miejsce C · 13:00.</p>
-        <div className="result-row"><Figure label="Dojazd A → B" value="20.000" unit="km" scale={0} /><Figure label="Z ładunkiem B → C" value="80.000" unit="km" scale={0} /><Figure label="Razem" value="100.000" unit="km" scale={0} /></div>
-        <Alert title="Podział na kraje nie jest symulowany">100 km z przykładu specyfikacji. Miejsca mają kraje PL → DE → CZ; przykład nie podaje kilometrów dla każdego kraju. Wynik poniżej dotyczy wyłącznie danych przykładu, nie rzeczywistej trasy międzynarodowej.</Alert>
-        <p>Myto z przykładu: 10,00 EUR. Myto planera jest tylko kontrolą — brak połączenia z planerem.</p>
+        <CountryCosts/>
         <p className="text-meta">Przedział 12.11.2026, 11:00–13:00 nie obejmuje weekendu.</p>
         <div className="actions"><Link to="s09">Wróć do wpisu</Link><Button onClick={() => { if (demoReady && !accepted) { setQuoted(true); go("s12"); } else go("s09"); }}>Wyceń</Button></div>
       </Card></>,
     s12: <><h1 className="text-page-title">Wycena K2 · Auto 01 <Badge variant="neutral">{accepted ? "Przyjęty" : "Szkic"}</Badge></h1>
       {accepted && <Alert title="Kurs przyjęty. Auto 01 wolne w Miejscu C od 13:00." />}
       {!quoted && !accepted ? <Alert title="Najpierw wpisz i wyceń kurs" action={<Link to="s09">Przejdź do wpisu</Link>}>Ścieżka etapu 1 korzysta z przykładu K2.</Alert> : <>
-      {/* DS GAP G13: result and next availability share one token-based row. */}
-      <Card><div className="result-row"><Figure label="Fracht netto" value={amount} certain source="Wpisane w symulacji" /><Figure label="Koszt uwzględniony" value={coveredCost} />
-        <Figure label="Wynik jednego kursu" value={result} /><div className="figure"><span className="text-label">Dostępność planowana</span><strong className="text-body-strong">Wolne w Miejscu C od 13:00</strong><span className="text-meta">12.11.2026 (Warszawa) · koniec rozładunku</span></div></div>
-      </Card>
-      <Card><CardTitle>Rozbicie kosztów netto</CardTitle><dl className="stack">{costs.map(cost => <div className="cost-row" key={cost.label}><dt>{cost.label}</dt><dd><Figure showLabel={false} label={cost.label} value={cost.value} certain={cost.certain} source={cost.source} /></dd></div>)}</dl>
-        <p className="text-meta">Wszystkie kategorie konfiguracji przykładu uwzględnione. Koszty auta: 6,00 EUR; fikcyjny podział w szczegółach. Praca: tylko suma, bez danych płacowych.</p>
-        <Link to="s13">Szczegóły wartości i źródeł</Link>
-      </Card>
+      <Quote variant={variant} amount={amount} result={result}/><Link to="s13">Szczegóły wartości i źródeł</Link>
       <p className="text-meta">Dojazd po rozładunku: otwarty, czeka na następny kurs. Nie obciąża K2. Brak werdyktu dla łańcucha.</p>
-      <div className="actions">{accepted ? <><Button onClick={reset}>Nowa wycena</Button><Link to="s07">Kursy auta</Link></> : <><Link to="s09">Zmień dane</Link><Link to="s16">Przyjmij kurs</Link></>}</div>
+      <div className="actions">{accepted ? <><Button onClick={reset}>Nowa wycena</Button><Link to="s07">Kursy auta</Link></> : <><Link to="s09">Zmień dane</Link><Button asChild><a href="#s16">Przyjmij kurs</a></Button></>}</div>
       </>}
     </>,
     s13: <><h1 className="text-page-title">Szczegóły wartości</h1><Card><CardTitle>K2 · źródła danych</CardTitle>
@@ -170,12 +158,12 @@ export function App() {
     </Card></>,
     s07: <><h1 className="text-page-title">Kursy auta · Auto 01</h1>
       {/* DS GAP G11 and G13: neutral status badges and a chronological list. */}
-      <Card><CardTitle>Kolejność kursów</CardTitle><ol className="stack">
+      <div className="two-columns"><Card><CardTitle>Kolejność kursów</CardTitle><ol className="stack">
         <li className="sequence"><Badge variant="neutral">Przyjęty</Badge><strong>K1</strong><p>Koniec rozładunku: Miejsce A · 12.11.2026, 11:00 (Warszawa).</p></li>
         <li className="sequence"><Badge variant="neutral">{hasAccepted ? "Przyjęty" : "Szkic"}</Badge><strong>K2 · Miejsce B → Miejsce C</strong><p>Cały dojazd od K1: A → B, 20 km. Z ładunkiem: B → C, 80 km. Koniec rozładunku: 12.11.2026, 13:00 (Warszawa).</p><Button variant="secondary" onClick={() => { if (hasAccepted) { setAccepted(true); setQuoted(true); setFreight("60.00"); } go("s12"); }}>Otwórz wycenę K2</Button></li>
         <li className="sequence"><Badge variant="neutral">{hasAccepted ? "Nieaktualna" : "Szkic"}</Badge><strong>K3</strong><p>Ten sam poprzednik K1 · fracht 30,00 EUR. {hasAccepted ? "Wymaga ponownej wyceny po przyjęciu K2." : "Porównanie szkiców dojdzie w etapie 2."}</p></li>
-      </ol><p>{hasAccepted ? "Wolne w Miejscu C od 13:00. Dojazd po K2: otwarty, jeszcze nieprzypisany — czeka na kurs." : "Wolne w Miejscu A od 11:00. Szkic nie zmienia dostępności."}</p>
-      <Button onClick={reset}>Nowa wycena</Button></Card>
+      </ol></Card><Card><CardTitle>Wolne gdzie i kiedy</CardTitle><p className="text-page-title">{hasAccepted ? "Wolne w Miejscu C od 13:00. Dojazd po K2: otwarty, jeszcze nieprzypisany — czeka na kurs." : "Wolne w Miejscu A od 11:00. Szkic nie zmienia dostępności."}</p>
+      <Button onClick={reset}>Nowa wycena</Button></Card></div>
     </>,
   };
   return <>
@@ -190,6 +178,7 @@ export function App() {
         <Button variant="secondary" onClick={() => { setHasAccepted(false); reset(); go("s01"); }}>Resetuj symulację</Button>
       </div>
       <details><summary>Scenariusze</summary><div className="form-grid">
+        <Field label="Wariant wyceny"><Select value={variant} onValueChange={setVariant}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{["A","B","C"].map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select></Field>
         <Field label="p02 · Konto"><Select value={role} onValueChange={setRole}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="dispatcher">Dyspozytor</SelectItem><SelectItem value="owner">Właściciel</SelectItem></SelectContent></Select></Field>
         <Field label="p19 · Zakres"><Select value={later ? "later" : "phase1"} onValueChange={v => setLater(v === "later")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="phase1">Faza 1</SelectItem><SelectItem value="later">Pokaż, co dojdzie później</SelectItem></SelectContent></Select></Field>
       </div></details>
