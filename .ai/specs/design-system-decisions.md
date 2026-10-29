@@ -34,7 +34,7 @@ Code families:
 - **R01** — A measurement is not an accusation: loss marks a trip result, never a person, so no badge or colour judges a driver or dispatcher.
 - **R02** — Every number shows whether it is certain or estimated, with its source; the design system marks estimates with a badge and keeps the source next to the value.
 - **R09** — Every quote needs an explicit wash answer ("Bez mycia" or "Nasze mycie" with amount and date), so the radio group has no default and a missing answer stays missing.
-- **R11** — Kilometres are calculated to three decimals; on screen they are whole numbers and the exact value appears only in the value details (owner decision 2026-10-29).
+- **R11** — Kilometres are published and stored to three decimals; on screen they are whole numbers rounded half-up from the published value, with the exact value only in the value details (D65). FIN-2 arithmetic is unchanged.
 - **R12** — A loss-making quote is accepted only with a short reason, so the loss reason field and its error exist.
 - **R13** — A quote containing a weekend needs the dispatcher's choice of three cases, so the weekend question is a required radio group without a default.
 
@@ -101,7 +101,7 @@ Code families:
 - **FIN-3** — Published scales: money 2, unit prices and rates 6, kilometres and litres 3; ties half-up, negative ties away from zero.
 - **FIN-4** — Inputs are bounded in magnitude and scale before writes; out-of-range values are rejected, never truncated. `DecimalField` takes its scale from the kind of value as in FIN-3: EUR amounts 2; unit prices, FX rates and consumption 6; kilometres and litres 3; amounts in another source currency keep their scale (owner decision 2026-10-29).
 - **EV-1** — A value has phase, state (known, missing, conflicting) and certainty; the badges show certainty and missing state as words.
-- **EV-4** — Every figure is shown with `ValueWithSource`; the change for whole kilometres on screen is pending in the specification.
+- **EV-4** — Every figure is shown with `ValueWithSource`; whole kilometres on screen and the exact published scale-3 value only in accessible details are specified in the approved foundations (D65). EUR amounts retain 2 decimals; FIN-2 and FIN-3 are unchanged.
 - **SRC-1** — Fuel price per country: own cards first, then the weekly public bulletin as an estimate, then older own-card prices as estimates, then a manual price; otherwise missing ("no fuel price for <country>").
 - **ROUTE-1** — Routes and the country split come from one map provider without fallback; when it fails, the route is missing and the dispatcher may enter the country split by hand. Kilometres from the map provider's route are estimated (`certainty: estimated`), because the route is planned, not driven (owner decision 2026-10-29).
 - **WKD-1** — The weekend rule: one required case for every weekend in the quote, no default, "Zapytaj o weekend" when missing.
