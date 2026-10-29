@@ -20,12 +20,14 @@ describe("CrudForm", () => {
     const { onSubmit } = setup();
     fireEvent.change(screen.getByLabelText("Amount"), { target: { value: "invalid" } });
     fireEvent.click(screen.getByText("Save"));
-    // Validation and submit run asynchronously; under coverage on a CI runner this test took 1.3 s, past the 1 s default.
-    await screen.findByText("validation.invalid", undefined, { timeout: 5_000 }); expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByLabelText("Amount").getAttribute("aria-invalid")).toBe("true");
-    fireEvent.change(screen.getByLabelText("Amount"), { target: { value: "12345678901234567890.12" } });
+    await screen.findByText("validation.invalid"); expect(onSubmit).not.toHaveBeenCalled();
+    const amount = screen.getByLabelText("Amount");
+    expect(amount.getAttribute("aria-invalid")).toBe("true");
+    // Focus moves to the invalid field in a passive effect. Editing before that effect runs lets it discard the edit.
+    await waitFor(() => expect(document.activeElement).toBe(amount));
+    fireEvent.change(amount, { target: { value: "12345678901234567890.12" } });
     fireEvent.click(screen.getByText("Save"));
-    await screen.findByText("Saved", undefined, { timeout: 5_000 });
+    await screen.findByText("Saved");
     expect(onSubmit).toHaveBeenCalledWith({ amount: "12345678901234567890.12" });
   });
   it("shows server field errors and retains unsaved input", async () => {
@@ -64,8 +66,11 @@ describe("CrudForm", () => {
     const dirtyUnload = new Event("beforeunload", { cancelable: true });
     window.dispatchEvent(dirtyUnload); expect(dirtyUnload.defaultPrevented).toBe(true);
     fireEvent.click(screen.getByText("Save")); await screen.findByText("Saved");
-    const savedUnload = new Event("beforeunload", { cancelable: true });
-    window.dispatchEvent(savedUnload); expect(savedUnload.defaultPrevented).toBe(false);
+    // The guard is removed in a passive effect cleanup, which can still be pending when "Saved" is already on screen.
+    await waitFor(() => {
+      const savedUnload = new Event("beforeunload", { cancelable: true });
+      window.dispatchEvent(savedUnload); expect(savedUnload.defaultPrevented).toBe(false);
+    });
   });
   it("reports form-level schema issues without calling the server", async () => {
     const onSubmit = vi.fn(async (): Promise<ApiResult<unknown>> => ({ ok: true, data: null }));

@@ -326,9 +326,32 @@ Owner answers (2026-10-29), applied on the same branch: to 1, (c) own text boxes
 
 6. A one-digit day, month or hour is accepted ("2.11.2026", "9:30") and the typed text is never reformatted; a two-digit year is not ("12.11.26"). Owner answer (2026-10-29): approved; recorded under TIME-1.
 
+## Stage 3, batch 3 (2026-10-29)
+
+Built in `src/components/places/`: `PlacePicker` (P04, PLACE-2, PLACE-3), a WAI-ARIA combobox on the input styles, Badge and the text Button. The page passes `options` and `status` (`idle`, `searching`, `results`, `notFound`, `unavailable`); each result shows its kind, address or region and country ("kraj niepotwierdzony" when not confirmed), "Do potwierdzenia" for same-named towns and "wpisano: …" for another spelling. Down/Up wrap, Enter chooses, Escape closes; typing again clears the choice. The chosen result's kind and address are under the box and in its description. Docs page with 13 sections; stories under "Product/Places" with a simulated search on synthetic places. No new dependencies (no `cmdk`) and no new tokens.
+
+Checks: typecheck, lint, unit tests at 100% coverage, story tests (interaction, axe, WCAG 1.4.12), `lint:tokens` 0 in `packages/ui`, Storybook build; the docs page has 13 sections, no page errors, no horizontal scroll at 320 px.
+
+| # | Checklist item | Result |
+|---|---|---|
+| 1 | Contrast | Pass: axe colour-contrast in all stories |
+| 2 | Targets at least 24 px | Pass: box 36 px, result rows at least 36 px |
+| 3 | Visible labels | Pass: box named by the Field label; list named by it too |
+| 4 | One icon set | Pass: no icons |
+| 5 | Colour not alone | Pass: kinds, confirmation and spelling in words |
+| 6 | Empty, error, loading states | Pass: saved places, searching, results, not found, unavailable, chosen, error, disabled |
+| 7 | Visible focus | Pass: 2 px outline on the box; the active result has background and underline as in Select |
+| 8 | No invented data | Pass: places A–E and Miasto D as in the screen map's synthetic data |
+| 9 | Only token variants | Pass: no new token or variant |
+| 10 | Zero values outside tokens | Pass in `packages/ui` (0); 12 remain in app pages, unchanged |
+| 11 | Lines at most 75 characters | Pass: messages inside `max-w-measure` |
+| 12 | Message says what happened and what to do | Pass: "Nie znaleziono miejsca. Sprawdź pisownię albo wpisz samo miasto." |
+
+Proposals 1–7 (in pull request #51) approved by the owner on 2026-10-29 and recorded under PLACE-2, PLACE-3 in the decisions record: the page searches; kind words "Zapisane miejsce", "Adres", "Tylko miasto"; same-named towns marked "Do potwierdzenia" without confirming; another spelling shown, no alias saved; saved places selectable when the provider fails; "Dodaj miejsce…" under the box with `places.write`; L08 open.
+
 ## Next step
 
-Owner reviews #48 (amount scale by currency) and the batch 2 pull request with its proposals. Next batches: `PlacePicker`, small badges (EV-1, in `values/` after the owner confirms), then screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
+Conditions before screens are built (owner decision 2026-10-29): L08, the search time limit and what the dispatcher sees after it, is decided; L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next batch: evidence badge (EV-1, #53), then screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
 
 ## N2b: ordinary text weight (2026-10-29)
 
