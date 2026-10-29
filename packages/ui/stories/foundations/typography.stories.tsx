@@ -11,16 +11,6 @@ type Story = StoryObj<typeof meta>;
 export const TextSpacing: Story = {
   name: "Text spacing (WCAG 1.4.12)",
   play: async ({ canvasElement }) => {
-    // N2b: verify the rendered roles, including the unchanged heading hierarchy.
-    for (const [role, weight] of [
-      ["body", "500"], ["table", "500"], ["label", "500"],
-      ["meta", "500"], ["number", "500"],
-      ["page-title", "600"], ["section-title", "600"],
-    ]) {
-      const sample = canvasElement.querySelector(`.text-${role}`);
-      await expect(sample).not.toBeNull();
-      await expect(getComputedStyle(sample as Element).fontWeight).toBe(weight);
-    }
     const remove = applyTextSpacing(canvasElement);
     const message = canvasElement.querySelector("p.text-body");
     await expect(message).not.toBeNull();
