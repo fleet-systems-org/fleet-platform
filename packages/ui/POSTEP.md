@@ -372,9 +372,79 @@ Checks: typecheck, lint, 158 unit tests at 100% coverage, 113 story tests (inter
 
 Owner answers (2026-10-29) to the proposals in pull request #53: 1–4 approved (one component; missing and conflicting neutral with word and icon; no estimate on missing or conflicting; "Plan" only where passed). 5 rejected: `ValueWithSource` uses `EvidenceBadge` now, so "Szacunek" has one source. Recorded under EV-1 in the decisions record. The kilometre check badge is not built (Phase 2); its open question is recorded at #24 in the E01 specification.
 
+## Stage 3, batch 5 (2026-10-29): screen requirements and frame components
+
+Before the E01 screens are built, the decisions record and the clickable prototype (`prototype/e01-clickable` at 7231c29) were turned into requirements. A component goes to `packages/ui` only when more than one E01 screen consumes it; otherwise the screen story composes existing components.
+
+Requirements for the E01 screens:
+
+| Decision | Screen | Realised by |
+|---|---|---|
+| N6a, R17.1 | Quote | Cost table with share bar beside one summary panel (composition) |
+| N7a, R18.1 | Entry | One open step, completed steps collapsed with "Zmień" (composition) |
+| R18.2 | Entry, route, quote | `StepBar` |
+| N7b, R19.1 | Entry, route, quote | `RouteStops` |
+| N7c | Entry, route, quote | `AppFrame`: centred content, 360 px panel, the same step bar |
+| N7d | Every screen | `AppFrame` navigation panel |
+
+Design-system gaps marked `DS GAP` in the prototype:
+
+| Gap | Decision | Where | Reason |
+|---|---|---|---|
+| G03 place search | Closed | `PlacePicker` (#51) | Screens use it, not the prototype's picker |
+| G10 warning, success | No new tokens | Composition: Alert `neutral`, `SuccessMessage` | Batch 2: Alert only `neutral` and `error`, no green badge |
+| G11 trip status words | Badge `neutral`, word from the page | Composition | Badge suffices; the status-to-word mapping is domain |
+| G12 frame and navigation | `AppFrame` | Component | Every screen |
+| G12 step bar | `StepBar` | Component | Entry, route, quote |
+| G13 trip sequence | List | Composition | One screen |
+| G13 country split | Table with fixed synthetic data | Composition | One screen; see W2 |
+| G13 cost breakdown | Table with share bar | Composition | Quote only |
+| G13 summary panel | Card, `ValueWithSource`, `EvidenceBadge` | Composition | Quote only |
+| G15 route schematic | Superseded by N7b | `RouteStops` | Entry, route, quote |
+
+Owner decisions (2026-10-29):
+
+- The tables above are approved. `AppFrame`, `StepBar` and `RouteStops` extend Q4, which limited `packages/ui` to the four fields and small badges, because each has more than one consuming screen.
+- W1 (a): no warning or success tokens. Following the batch 2 answer (Alert only `neutral` and `error`, no green badge), a warning is Alert `neutral` with its icon and the word "Uwaga"; icon and word meet R15.1.
+- W2 (a): the prototype's `allocate` splits a segment total by kilometre share and gives the remainder to the last country. That contradicts the specification and is not ported: a country's cost is its kilometres times its rate (SRC-4), totals are rounded once from exact values, and a rounding reconciliation line is shown when displayed components differ from the total (FIN-3). Screen stories use fixed synthetic data consistent with FIN-3.
+- `AppFrame`: (1) N7d supersedes L22 in the screen map: the account and "Wyloguj" sit in the left panel, not in a top bar; (2) the page passes the navigation entries according to the user's permissions (L12); the component holds no fixed list.
+- Screens use `PlacePicker` from #51, not the prototype's version.
+- L08 (later on 2026-10-29): no time limit on the screen. Place search (s10.2), route (s11.2) and quote (s12.20) show "Szukam…", "Liczę trasę…" or "Liczę wycenę…" until the server returns a result or an error; time limits and retries are server-side only, and a server error is the existing "service unavailable" state. `PlacePicker` is unchanged. Recorded under L08 in the decisions record.
+
+Built: `src/components/layout/app-frame.tsx` (`AppFrame`: N7c, N7d, L12), `src/components/layout/step-bar.tsx` (`StepBar`: R18.2, N7a) and `src/components/places/route-stops.tsx` (`RouteStops`: N7b, R19.1). Three layout tokens in `src/styles.css`: `frame-navigation` 224 px, `frame-panel` 360 px (N7c), `frame-content` 1120 px. Docs pages with 13 sections; stories under "Product/Layout" and "Product/Places" with the prototype's synthetic trip (Auto 01, places A–C, 12.11.2026). No new dependencies.
+
+Checks: typecheck, lint, 202 unit tests at 100% coverage (statements 579/579, branches 459/459, functions 183/183, lines 490/490), 141 story tests (interaction, axe, WCAG 1.4.12), `lint:tokens` 0, Storybook build; in the built Storybook no page errors and no horizontal scroll at 320, 600, 800, 1024 and 1440 px.
+
+| # | Checklist item | Result |
+|---|---|---|
+| 1 | Contrast | Pass: axe colour-contrast in all stories |
+| 2 | Targets at least 24 px | Pass: navigation entries 36 px; the step bar and route stops have no targets |
+| 3 | Visible labels | Pass: navigation, panel, step list and route list are named; details are label–value pairs |
+| 4 | One icon set | Pass: Tabler `IconCheck` |
+| 5 | Colour not alone | Pass: current entry by weight and `aria-current`; steps by check, number and "gotowe" |
+| 6 | Empty, error, loading states | Pass: stops not entered yet use the page's words; other states belong to the content |
+| 7 | Visible focus | Pass: navigation links use the 2 px outline (T4) |
+| 8 | No invented data | Pass: entries "Nowa wycena", "Kursy aut", "Flota" and the trip from the prototype |
+| 9 | Only token variants | Pass: two `width` values of the frame; three new layout tokens |
+| 10 | Zero values outside tokens | Pass in `packages/ui` (0) |
+| 11 | Lines at most 75 characters | Pass: short labels and values |
+| 12 | Message says what happened and what to do | Not applicable: no messages |
+
+Proposals of stage 3 batch 5 (for the owner):
+
+1. Navigation width 224 px (the prototype's 220 px on the 4 px grid) and centred content at most 1120 px (the prototype's value); N7c fixes only the 360 px panel.
+2. `width="centred"` only on entry, route and quote; other work screens keep the whole width, as "Spacing and layout" says.
+3. Breakpoints: the navigation becomes a left panel from 768 px (`md`), the panel goes beside the content from 1280 px (`xl`), because at 1024 px only about 376 px would remain for loading and unloading side by side. This adds `xl` to the one breakpoint the system relied on.
+4. Under 768 px the navigation sits above the content as a plain list, with no menu button (no new component).
+5. Step names at 14 px (`text-table`) instead of the prototype's 12 px, because the 12 px roles carry the muted colour and the names of done and current steps must read in the default colour.
+6. The company name the prototype showed above the navigation is not in the frame; no decision asks for it.
+7. Folders: `layout/` for the frame and the step bar, `trips/` for route stops, because each has several consuming screens (the stage 3 rule creates a domain folder at the second consumer).
+
+Owner answers (2026-10-29): 1–6 approved. 7 changed: `layout/` stays, but `RouteStops` moves to `places/`, following the stage 3 decision (folders by the foundation primitive they serve; a domain folder only when a component gets a second consumer). No `trips/` folder.
+
 ## Next step
 
-Conditions before screens are built (owner decision 2026-10-29): L08, the search time limit and what the dispatcher sees after it, is decided; L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next: screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
+Conditions before screens are built (owner decision 2026-10-29): L08 is decided (no time limit on the screen; see batch 5); L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next: screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
 
 ## N2b: ordinary text weight (2026-10-29)
 

@@ -1,0 +1,88 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./app-frame.stories";
+
+<Meta of={Stories} />
+
+# App frame
+
+`import { AppFrame } from "@fleet-platform/ui/components/layout/app-frame"`
+
+## 1. Purpose
+
+The frame every screen shares: navigation in a left panel with the account and "Wyloguj" at its foot (N7d), and the content. Entry, route and quote add the same step bar and a 360 px panel on the right, so moving between them changes the content, not the layout (N7c).
+
+## 2. When to use
+
+- Every product screen after sign-in, once in the application's layout.
+- Entry, route and quote with `width="centred"`, `steps` and `panel`.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Sign-in and password pages | A centred form without navigation | There is nothing to navigate to before sign-in |
+| A dialog or a confirmation | Dialog, Alert dialog | The frame is the page, not a layer |
+| Links between steps | "Zmień" on the collapsed step (R18.1) | The step bar is informational |
+
+## 4. Anatomy
+
+Navigation panel (entries, "Później" with muted entries, account), main region (step bar, content, panel on the right).
+
+## 5. Variants
+
+| `width` | Content | Source |
+|---|---|---|
+| `full` (default) | The whole width; work screens such as the fleet show everything without scrolling | Q3-1, R06.4 |
+| `centred` | At most 1120 px, centred, with the 360 px panel | N7c |
+
+<Canvas of={Stories.QuoteEntry} />
+
+## 6. States
+
+The entry of the current screen has a background and stronger weight and `aria-current="page"`. Entries of later phases are muted text under "Później", not links (N7d). Empty, error and loading states belong to the content.
+
+## 7. Behaviour and accessibility
+
+- Landmarks: `nav` named by `navigationLabel`, `main`, and the panel as a named `aside` inside `main`. There is no top bar (`banner`).
+- Entries are links with visible focus (T4); the current one is marked in words for screen readers by `aria-current`, not by colour alone.
+
+## 8. Content
+
+- The page passes only the entries the user may open (L12): a dispatcher sees no owner entries. The frame holds no fixed list.
+- Entry names are short nouns or actions: "Nowa wycena", "Kursy aut".
+
+## 9. Responsive
+
+Under 768 px the navigation sits above the content; from 768 px it is a 224 px left panel. Under 1280 px the panel moves below the content, so the form keeps its width (Spacing and layout, 768 px row).
+
+<Canvas of={Stories.WorkScreen} />
+
+## 10. API
+
+`AppFrame`: `navigationLabel`, `items` (`href`, `label`, `current`), `later` (`label`, `items`), `account`, `steps`, `panel`, `panelLabel` (required with `panel`), `width` (`full`, `centred`), `className`, `children`.
+
+<ArgTypes of={Stories} />
+
+## 11. Code
+
+```tsx
+<AppFrame navigationLabel={t.navigation} items={entriesFor(user)} later={{ label: t.later, items: [t.fleet] }}
+  account={<AccountBlock user={user} />} width="centred" steps={<StepBar … />}
+  panel={<QuoteSummary … />} panelLabel={t.quoteSummary}>
+  <QuoteEntryForm … />
+</AppFrame>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Pass the entries the user may open. | Hide owner entries with CSS. |
+| Keep the account and "Wyloguj" at the foot of the navigation. | Add a top bar with the account (L22, superseded by N7d). |
+| Show later phases muted under "Później". | Link to a screen that does not exist. |
+
+## 13. Related
+
+Built on: tokens `frame-navigation`, `frame-panel`, `frame-content`. Used with: Step bar, Route stops, Card.
+
+<Canvas of={Stories.Landmarks} />
