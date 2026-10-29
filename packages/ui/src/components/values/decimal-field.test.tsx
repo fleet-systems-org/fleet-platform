@@ -8,10 +8,10 @@ afterEach(cleanup);
 
 const describedBy = (element: HTMLElement) => element.getAttribute("aria-describedby")!.split(" ").map(id => document.getElementById(id)!.textContent);
 
-it("is a decimal text box named by the Field and described by its hint, error and unit", () => {
+it("is a decimal text box named by the Field and described by its hint, error and the amount's currency", () => {
   const onChange = vi.fn();
   render(<Field label="Fracht" hint="Kwota netto uzgodniona z klientem" error="Nie rozpoznano kwoty. Wpisz ją cyframi, np. 1850,00." required>
-    <DecimalField kind="eurAmount" unit="EUR" value="18x" onChange={onChange} />
+    <DecimalField kind="amount" currency="EUR" value="18x" onChange={onChange} />
   </Field>);
   const input = screen.getByRole("textbox", { name: "Fracht" });
   expect(input.getAttribute("inputmode")).toBe("decimal");
@@ -42,15 +42,16 @@ it("checks the typed text against its kind when the dispatcher leaves the field"
   const onDecimalChange = vi.fn();
   const onBlur = vi.fn();
   render(<>
-    <DecimalField kind="eurAmount" aria-label="Fracht" defaultValue="1 850,005" onDecimalChange={onDecimalChange} onBlur={onBlur} />
-    <DecimalField kind="amount" signed aria-label="Korekta" defaultValue="-12,5" onDecimalChange={onDecimalChange} />
+    <DecimalField kind="amount" currency="EUR" aria-label="Fracht" defaultValue="1 850,005" onDecimalChange={onDecimalChange} onBlur={onBlur} />
+    <DecimalField kind="amount" currency="HUF" unit="Ft" signed aria-label="Korekta" defaultValue="-12" onDecimalChange={onDecimalChange} />
     <DecimalField kind="kilometres" aria-label="Dystans" defaultValue="412,300" />
   </>);
   fireEvent.blur(screen.getByRole("textbox", { name: "Fracht" }));
-  expect(onDecimalChange).toHaveBeenLastCalledWith({ ok: false, reason: "scale" });
+  expect(onDecimalChange).toHaveBeenLastCalledWith({ ok: false, reason: "scale", scale: 2 });
   expect(onBlur).toHaveBeenCalledOnce();
   fireEvent.blur(screen.getByRole("textbox", { name: "Korekta" }));
-  expect(onDecimalChange).toHaveBeenLastCalledWith({ ok: true, value: "-12.5" });
+  expect(onDecimalChange).toHaveBeenLastCalledWith({ ok: true, value: "-12" });
+  expect(screen.getByText("Ft")).toBeTruthy();
   fireEvent.blur(screen.getByRole("textbox", { name: "Dystans" }));
   expect(onDecimalChange).toHaveBeenCalledTimes(2);
 });
