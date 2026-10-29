@@ -8,10 +8,9 @@ import { Alert } from "@fleet-platform/ui/components/alert";
 import { RadioGroup, RadioGroupItem } from "@fleet-platform/ui/components/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@fleet-platform/ui/components/select";
 import { DecimalField } from "@fleet-platform/ui/components/values/decimal-field";
-import { ValueWithSource } from "@fleet-platform/ui/components/values/value-with-source";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@fleet-platform/ui/components/alert-dialog";
 import { parseDecimalInput } from "@fleet-platform/ui/lib/decimal";
-import { cents, decimal, coveredCost, screenNames, screenId, vehicles, valueLabels } from "./model";
+import { cents, decimal, screenNames, screenId, vehicles } from "./model";
 
 import { RouteStops } from "./RouteStops";
 import { StepBar } from "./StepBar";
@@ -19,7 +18,8 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, D
 import { ZonedDateTimeField } from "@fleet-platform/ui/components/time/zoned-date-time-field";
 import { PlacePicker } from "./PlacePicker";
 import { CountryCosts } from "./CountryCosts";
-import { Quote } from "./Quote";
+import { Quote, QuoteFrame } from "./Quote";
+import { ValueDetails } from "./ValueDetails";
 import { CustomerStop, CustomerRoute, emptyStop } from "./CustomerStop";
 import { localizeReview } from "./review-labels";
 
@@ -28,15 +28,6 @@ const go = (id: string) => document.dispatchEvent(new CustomEvent("prototype:nav
 
 function Link({ to, children }: { to: string; children: ReactNode }) {
   return <Button variant="secondary" asChild><a href={`#${to}`}>{children}</a></Button>;
-}
-function Figure({ label, value, unit = "EUR", certain = false, source = "Przykład specyfikacji · dane fikcyjne", scale, showLabel = true }: {
-  label: string; value: string; unit?: string; certain?: boolean; source?: string; scale?: number; showLabel?: boolean;
-}) {
-  return <div className="figure">{showLabel && <span className="text-label">{label}</span>}
-    <ValueWithSource state="known" label={label} labels={valueLabels} value={value} unit={unit}
-      displayScale={scale} certainty={certain ? "certain" : "estimated"}
-      source={{ name: source, date: "12.11.2026" }} reason={certain ? undefined : "Symulacja. Dane demonstracyjne, bez połączenia ze źródłem. Ceny dla przyszłego kursu są szacunkiem."} />
-    <span className="text-meta">{source}</span></div>;
 }
 
 export function App() {
@@ -61,18 +52,18 @@ export function App() {
   const [hasAccepted, setHasAccepted] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [screenPicker, setScreenPicker] = useState(false);
-  const [quoted, setQuoted] = useState(false);
+  const [quoteStops, setQuoteStops] = useState({ loading: { customer: "", place: "Miejsce B" }, unloading: { customer: "", place: "Miejsce C" } });
   const [message, setMessage] = useState("");
   const parsed = parseDecimalInput(freight, { kind: "amount", currency: "EUR" });
   const amount = parsed.ok ? decimal(cents(parsed.value)) : "60.00";
-  const result = decimal(cents(amount) - cents(coveredCost));
   const demoReady = vehicle === "Auto 01" && places && wash === "none" && parsed.ok && amount === "60.00"
     && loadingDate === "2026-11-12" && loadingTime === "12:00" && unloadingDate === "2026-11-12" && unloadingTime === "13:00";
-  const invalidate = () => { setQuoted(false); setMessage(""); };
+  const invalidate = () => { setMessage(""); };
   function reset() {
     setEntryStep(1); setCompletedStep(0);
     setEntryVersion(v => v + 1);
-    setVehicle(""); setLoading(emptyStop()); setUnloading(emptyStop()); setFreight(""); setWash(""); setAccepted(false); setQuoted(false); setMessage("");
+    setVehicle(""); setLoading(emptyStop()); setUnloading(emptyStop()); setFreight(""); setWash(""); setAccepted(false); setMessage("");
+    setQuoteStops({ loading: { customer: "", place: "Miejsce B" }, unloading: { customer: "", place: "Miejsce C" } });
     setLoadingDate("2026-11-12"); setLoadingTime("12:00"); setUnloadingDate("2026-11-12"); setUnloadingTime("13:00");
     go("s09");
   }
@@ -100,8 +91,13 @@ export function App() {
     (kind === "loading" ? setLoadingDate : setUnloadingDate)(value.ok ? value.date : "");
     (kind === "loading" ? setLoadingTime : setUnloadingTime)(value.ok ? value.time || "" : ""); invalidate();
   }} /></Field>;
-  const route = <RouteStops vehicle={accepted ? "Auto 01" : vehicle} loading={accepted ? acceptedStops.loading : loading} unloading={accepted ? acceptedStops.unloading : unloading}
+  const entryRoute = <RouteStops vehicle={vehicle} loading={loading} unloading={unloading}
     loadingDate={loadingDate.split("-").reverse().join(".")} loadingTime={loadingTime} unloadingDate={unloadingDate.split("-").reverse().join(".")} unloadingTime={unloadingTime}/>;
+  // The viewed K2 fixture is a snapshot, independent of a new or edited entry.
+  const quoteRoute = <RouteStops vehicle="Auto 01" loading={accepted ? acceptedStops.loading : quoteStops.loading} unloading={accepted ? acceptedStops.unloading : quoteStops.unloading}
+    loadingDate="12.11.2026" loadingTime="12:00" unloadingDate="12.11.2026" unloadingTime="13:00"/>;
+  const quoteActions = accepted ? <><Button onClick={reset}>Nowa wycena</Button><Link to="s07">Kursy auta</Link></> : <>
+    <Button onClick={() => { if (active === "s16") setConfirm(true); else go("s16"); }}>Przyjmij kurs</Button><Link to="s09">Zmień dane</Link></>;
   function advance(step: number) { setCompletedStep(value => Math.max(value, step)); setEntryStep(step + 1); }
   const content: Record<string, ReactNode> = {
     s01: <Card><CardTitle><h1 className="text-page-title">Logowanie</h1></CardTitle><CardDescription>Firma Demo · dane fikcyjne</CardDescription>
@@ -128,7 +124,7 @@ export function App() {
           <section className="stack"><h2 className="text-section-title">Rozładunek</h2><CustomerStop key={`unloading-${entryVersion}`} kind="unloading" value={unloading} onChange={value => { setUnloading(value); invalidate(); }}>{dateField("unloading")}</CustomerStop></section>
         </div>
         <p className="text-meta">Baza klientów — propozycja spoza specyfikacji; dane fikcyjne. Zarządzanie bazą — poza prototypem.</p>
-        <p className="text-meta">Czas warszawski. Godzina załadunku 12:00 jest fikcyjna.</p>
+
         <Button disabled={!loading.place || !unloading.place || !loadingDate || !loadingTime || !unloadingDate || !unloadingTime} onClick={() => advance(2)}>Dalej: fracht i mycie</Button>
       </EntryStep>
       <EntryStep number={3} title="Fracht i mycie" current={entryStep} completed={completedStep} onEdit={setEntryStep} summary={`${freight} EUR · ${wash === "none" ? "bez mycia" : "nasze mycie"}`}><div className="form-grid">
@@ -142,8 +138,8 @@ export function App() {
         {wash === "ours" && <Alert title="Nasze mycie dojdzie w etapie 2">Ten etap pokazuje przykład bez mycia.</Alert>}
         <Field label="Numer zlecenia" optionalText="opcjonalne"><Input autoComplete="off" /></Field>
         {message && <Alert title={message} />}
-        <Button onClick={() => { if (hasAccepted) setMessage("W etapie 1 przyjęto już K2. Resetuj symulację, aby powtórzyć przykład."); else if (demoReady) { setCompletedStep(3); go("s11"); } else setMessage("Wybierz Auto 01, miejsca B → C, czasy przykładu, fracht 60,00 i Bez mycia."); }}>Dalej: trasa i kraje</Button>
-      </EntryStep></div><aside className="stack">{route}</aside></div>}
+        <Button onClick={() => { if (hasAccepted) setMessage("W etapie 1 przyjęto już K2. Resetuj symulację, aby powtórzyć przykład."); else if (demoReady) { setCompletedStep(3); setQuoteStops({ loading: { ...loading }, unloading: { ...unloading } }); go("s11"); } else setMessage("Wybierz Auto 01, miejsca B → C, czasy przykładu, fracht 60,00 i Bez mycia."); }}>Dalej: trasa i kraje</Button>
+      </EntryStep></div><aside className="stack">{entryRoute}</aside></div>}
 
     </>,
     s10: <><h1 className="text-page-title">Wybór miejsca</h1><Card><CardTitle>Załadunek i rozładunek</CardTitle>
@@ -155,31 +151,21 @@ export function App() {
       <Card><CardTitle>K2 · cały dojazd od K1</CardTitle><p>Start: Miejsce A · 12.11.2026, 11:00 (Warszawa). Koniec: Miejsce C · 13:00.</p>
         <CountryCosts/>
         <p className="text-meta">Przedział 12.11.2026, 11:00–13:00 nie obejmuje weekendu.</p>
-        <div className="actions"><Link to="s09">Wróć do wpisu</Link><Button onClick={() => { if (demoReady && !accepted) { setQuoted(true); go("s12"); } else go("s09"); }}>Wyceń</Button></div>
+        <div className="actions"><Link to="s09">Wróć do wpisu</Link><Button onClick={() => { go("s12"); }}>Wyceń</Button></div>
       </Card></>,
     s12: <><h1 className="text-page-title">Wycena K2 · Auto 01 <Badge variant="neutral">{accepted ? "Przyjęty" : "Szkic"}</Badge></h1>
       {accepted && <Alert title="Kurs przyjęty. Auto 01 wolne w Miejscu C od 13:00." />}
-      {!quoted && !accepted ? <Alert title="Najpierw wpisz i wyceń kurs" action={<Link to="s09">Przejdź do wpisu</Link>}>Ścieżka etapu 1 korzysta z przykładu K2.</Alert> : <>
-      <Quote amount={amount} result={result} route={route} actions={accepted ? <><Button onClick={reset}>Nowa wycena</Button><Link to="s07">Kursy auta</Link></> : <><Button asChild><a href="#s16">Przyjmij kurs</a></Button><Link to="s09">Zmień dane</Link></>}/>
-      </>}
+      <Quote/>
     </>,
-    s13: <><h1 className="text-page-title">Szczegóły wartości</h1><Card><CardTitle>K2 · źródła danych</CardTitle>
-      <p>Każda podkreślona liczba otwiera szczegóły: dokładna wartość, pewność, źródło, data i powód szacunku.</p>
-      <div className="result-row"><Figure label="Dokładny dojazd" value="20.000" unit="km" scale={0} /><Figure label="Dokładny odcinek z ładunkiem" value="80.000" unit="km" scale={0} /><Figure label="Fracht" value={amount} certain source="Wpisane w symulacji" /></div>
-      <p className="text-meta">Dokładnie: 20,000 km + 80,000 km. Cena paliwa 1,000000 EUR/l, spalanie 10,000000 i 20,000000 l/100 km, paliwo 18,000 l; myto 0,100000 EUR/km; AdBlue 0,010000 EUR/l. Dane z przykładu specyfikacji, nie z usługi.</p>
-      <p>Koszty auta: 72,000000 EUR/dzień × 2/24 dnia = 6,00 EUR. Fikcyjny podział stawki dziennej: leasing 24, ubezpieczenie 8, telematyka 2, pakiet serwisowy 6, wynajem cysterny 10, części i naprawy 8, parkingi i assistance 3, opłaty kartowe 1, koszty stałe działu 10 EUR. Podział pochodzi z szarego prototypu; nie jest konfiguracją firmy.</p>
-      <p>Praca: 4,00 EUR. Źródło: zatwierdzona stawka z przykładu specyfikacji. Dane płacowe i wyprowadzenie stawki nie są częścią tego prototypu.</p>
-      <div className="actions"><Link to="s12">Wróć do wyceny</Link><Link to="s16">Przyjmij kurs</Link></div>
-    </Card></>,
+    s13: <><h1 className="text-page-title">Szczegóły wartości</h1><ValueDetails/><div className="actions"><Link to="s12">Wróć do wyceny</Link></div></>,
     s16: <><h1 className="text-page-title">Przyjęcie kursu</h1><Card><CardTitle>Przyjęcie zachowa wycenę K2</CardTitle><p>Auto 01 · Miejsce B → Miejsce C · fracht 60,00 EUR · koszt 38,18 EUR · wynik 21,82 EUR.</p>
-      {quoted && !accepted ? <Button onClick={() => setConfirm(true)}>Przejdź do przyjęcia</Button> : <Link to="s12">Wróć do wyceny</Link>}
       <Link to="s12">Anuluj przyjęcie</Link>
     </Card></>,
     s07: <><h1 className="text-page-title">Kursy auta · Auto 01</h1>
       {/* DS GAP G11 and G13: neutral status badges and a chronological list. */}
       <div className="two-columns"><Card><CardTitle>Kolejność kursów</CardTitle><ol className="stack">
         <li className="sequence"><Badge variant="neutral">Przyjęty</Badge><strong>K1</strong><p>Koniec rozładunku: Miejsce A · 12.11.2026, 11:00 (Warszawa).</p></li>
-        <li className="sequence"><Badge variant="neutral">{hasAccepted ? "Przyjęty" : "Szkic"}</Badge><strong>K2 · Miejsce B → Miejsce C</strong><CustomerRoute loading={hasAccepted ? acceptedStops.loading : loading} unloading={hasAccepted ? acceptedStops.unloading : unloading}/><p>Cały dojazd od K1: A → B, 20 km. Z ładunkiem: B → C, 80 km. Koniec rozładunku: 12.11.2026, 13:00 (Warszawa).</p><Button variant="secondary" onClick={() => { if (hasAccepted) { setAccepted(true); setQuoted(true); setFreight("60.00"); } go("s12"); }}>Otwórz wycenę K2</Button></li>
+        <li className="sequence"><Badge variant="neutral">{hasAccepted ? "Przyjęty" : "Szkic"}</Badge><strong>K2 · Miejsce B → Miejsce C</strong><CustomerRoute loading={hasAccepted ? acceptedStops.loading : loading} unloading={hasAccepted ? acceptedStops.unloading : unloading}/><p>Cały dojazd od K1: A → B, 20 km. Z ładunkiem: B → C, 80 km. Koniec rozładunku: 12.11.2026, 13:00 (Warszawa).</p><Button variant="secondary" onClick={() => { if (hasAccepted) { setAccepted(true); setFreight("60.00"); } go("s12"); }}>Otwórz wycenę K2</Button></li>
         <li className="sequence"><Badge variant="neutral">{hasAccepted ? "Nieaktualna" : "Szkic"}</Badge><strong>K3</strong><p>Ten sam poprzednik K1 · fracht 30,00 EUR. {hasAccepted ? "Wymaga ponownej wyceny po przyjęciu K2." : "Porównanie szkiców dojdzie w etapie 2."}</p></li>
       </ol></Card><Card><CardTitle>Wolne gdzie i kiedy</CardTitle><p className="text-page-title">{hasAccepted ? "Wolne w Miejscu C od 13:00. Dojazd po K2: otwarty, jeszcze nieprzypisany — czeka na kurs." : "Wolne w Miejscu A od 11:00. Szkic nie zmienia dostępności."}</p>
       <Button onClick={reset}>Nowa wycena</Button></Card></div>
@@ -209,13 +195,13 @@ export function App() {
           <div className="screen-content stack">
           {["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) && <StepBar current={id === "s09" ? entryStep : id === "s10" ? 2 : 4}/>}
 
-          {["s10", "s11", "s13", "s16"].includes(id) ? <div className="entry-layout"><div className="stack">{content[id]}</div><aside>{route}</aside></div> : content[id] ?? <><h1 className="text-page-title">{name}</h1><Card><p>Ten ekran dojdzie w etapie 2.</p><Link to="s09">Wróć do nowej wyceny</Link></Card></>}
-        </div></div><div className="notes"><p className="note text-meta">Prototyp · symulacja, dane fikcyjne · etap 1.</p></div>
+          {["s11", "s12", "s13", "s16"].includes(id) ? <QuoteFrame amount="60.00" result="21.82" route={quoteRoute} actions={quoteActions}>{content[id]}</QuoteFrame> : id === "s10" ? <div className="entry-layout"><div className="stack">{content[id]}</div><aside>{entryRoute}</aside></div> : content[id] ?? <><h1 className="text-page-title">{name}</h1><Card><p>Ten ekran dojdzie w etapie 2.</p><Link to="s09">Wróć do nowej wyceny</Link></Card></>}
+        </div></div><div className="notes"><p className="note text-meta">Prototyp · symulacja, dane fikcyjne · etap 1.</p>{["s12", "s13"].includes(id) && <p className="note text-meta">Podział kosztów auta jest fikcyjną ilustracją stawki dziennej; nie jest konfiguracją firmy. Praca: tylko suma i zatwierdzona stawka przykładu, bez danych płacowych. Źródła są symulowane, bez połączeń z usługami.</p>}</div>
       </section>; })}
     </main>
     <AlertDialog open={confirm && active === "s16"} onOpenChange={setConfirm}><AlertDialogContent>
       <AlertDialogHeader><AlertDialogTitle>Przyjąć kurs K2?</AlertDialogTitle><AlertDialogDescription>Symulacja: zapisze wycenę 21,82 EUR z kursem. Auto 01 będzie wolne w Miejscu C od 13:00. Pozostałe szkice staną się nieaktualne.</AlertDialogDescription></AlertDialogHeader>
-      <AlertDialogFooter><AlertDialogCancel>Anuluj</AlertDialogCancel><AlertDialogAction onClick={() => { setAcceptedStops({ loading: { ...loading }, unloading: { ...unloading } }); setAccepted(true); setHasAccepted(true); go("s12"); }}>Przyjmij kurs K2</AlertDialogAction></AlertDialogFooter>
+      <AlertDialogFooter><AlertDialogCancel>Anuluj</AlertDialogCancel><AlertDialogAction onClick={() => { setAcceptedStops({ loading: { ...quoteStops.loading }, unloading: { ...quoteStops.unloading } }); setAccepted(true); setHasAccepted(true); go("s12"); }}>Przyjmij kurs K2</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent></AlertDialog>
   </>;
 }
@@ -225,7 +211,7 @@ function EntryStep({ number, title, current, completed, onEdit, summary, childre
 }) {
   const done = number <= completed && number !== current;
   return <Card className={number > current && !done ? "entry-waiting" : undefined}>
-    <div className="step-heading"><CardTitle>{number}. {title}</CardTitle>{done && <><Badge variant="neutral">Gotowe</Badge><span className="step-answer">{summary}</span><Button variant="text" onClick={() => onEdit(number)} aria-label={`Zmień: ${title}`}>Zmień</Button></>}</div>
+    <div className={`step-heading${done ? " step-collapsed" : ""}`}><CardTitle>{number}. {title}</CardTitle>{done && <><Badge variant="neutral">Gotowe</Badge><span className="step-answer" title={summary}>{summary}</span><Button variant="text" onClick={() => onEdit(number)} aria-label={`Zmień: ${title}`}>Zmień</Button></>}</div>
     <div className="stack" hidden={number !== current}>{children}</div>
   </Card>;
 }

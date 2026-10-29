@@ -14,3 +14,11 @@
 - Resolution: anchor the existing customer/place suggestion lists over the following content, outside normal flow, without changing keyboard selection or the review engine.
 - Verification: the two-width browser walkthrough clicks the action directly after focusing the place input, with its suggestions still open; it also exercises the full-place picker by keyboard.
 - Prevention finding: retain the visible-suggestion-to-next-action regression when checking responsive forms; stable geometry is part of click correctness.
+
+## Stage 1e: reviewed quote state and common frame
+
+- Context: direct screen selection and reset exposed blank route fields on s13 beside the fixed K2 quotation; the summary appeared only on s12.
+- Cause: a single route element read the editable entry, while each quotation screen composed its own surrounding layout.
+- Resolution: keep the viewed quotation's stop snapshot separate from the editable entry, share the quotation frame across every step-4 screen, and reuse category rows in the exact-value evidence table.
+- Verification: repeatable browser regression checks direct screen-picker entry and repeated reset; the two-width walkthrough also checks customer snapshots after entry edits, identical summary content, mobile ordering, category expansion and acceptance.
+- Supporting finding only: name each panel's content for every affected screen in future work orders, and verify direct arrival as well as the sequential path. This does not add a standing process rule.

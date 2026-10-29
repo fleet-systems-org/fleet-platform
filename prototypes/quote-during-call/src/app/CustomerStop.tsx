@@ -41,7 +41,7 @@ export function CustomerStop({ kind, value, onChange, children }: { children?: R
       onChange={text => { setQuery(text); onChange({ ...value, customer: '' }); }} onSelect={name => { const selected = customers.find(c => c.name === name)!; setQuery(name); onChange({ customer: name, place: selected.places.length === 1 ? selected.places[0]! : '' }); }}/>
     {customer && customer.places.length > 1 && <div className="stack"><p className="text-label">Zapisane miejsca klienta · wybierz jedno</p><div className="actions">{customer.places.map(place => <Button key={place} variant="secondary" aria-pressed={value.place === place} onClick={() => onChange({ ...value, place })}>{place}</Button>)}</div></div>}
     <Search id={`${kind}-place`} label={`Miejsce ${word}`} value={value.place} options={demoPlaces.map(place => ({ value: place, label: `${place} · dane fikcyjne` }))} onChange={place => onChange({ ...value, place })} onSelect={place => onChange({ ...value, place })}/>
-    <Button variant="text" asChild><a href="#s10">Więcej miejsc</a></Button>{children}
+    <Button className="more-places" variant="text" asChild><a href="#s10">Więcej miejsc</a></Button>{children}
   </section>;
 }
 export function CustomerRoute({ loading, unloading }: { loading: CustomerStopValue; unloading: CustomerStopValue }) {
