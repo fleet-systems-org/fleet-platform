@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import { AppFrame } from "@fleet-platform/ui/components/layout/app-frame";
 import { StepBar } from "@fleet-platform/ui/components/layout/step-bar";
-import { RouteStops } from "@fleet-platform/ui/components/trips/route-stops";
+import { RouteStops } from "@fleet-platform/ui/components/places/route-stops";
 import { Button } from "@fleet-platform/ui/components/button";
 import { Card, CardTitle } from "@fleet-platform/ui/components/card";
 import { dispatcherNavigation, quoteSteps } from "../product/labels";
-import { tripStops } from "../trips/route-stops.stories";
+import { tripStops } from "../places/route-stops.stories";
 
 const account = <><p className="text-meta wrap-anywhere">dyspozytor@firma-demo.example</p><Button variant="secondary">Wyloguj</Button></>;
 

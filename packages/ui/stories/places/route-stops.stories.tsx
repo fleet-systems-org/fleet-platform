@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import { Card, CardTitle } from "@fleet-platform/ui/components/card";
-import { RouteStops, type RouteStop } from "@fleet-platform/ui/components/trips/route-stops";
+import { RouteStops, type RouteStop } from "@fleet-platform/ui/components/places/route-stops";
 import { applyTextSpacing, findTextSpacingFailures } from "../../.storybook/text-spacing";
 
 /** The prototype's synthetic trip: places A–C, whole kilometres, Warsaw times. */
@@ -12,7 +12,7 @@ export const tripStops: RouteStop[] = [
 ];
 
 const meta = {
-  title: "Product/Trips/Route stops",
+  title: "Product/Places/Route stops",
   component: RouteStops,
   args: { label: "Trasa kursu", timeZone: "Warszawa", stops: tripStops },
 } satisfies Meta<typeof RouteStops>;

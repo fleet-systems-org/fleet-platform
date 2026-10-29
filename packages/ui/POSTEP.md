@@ -411,7 +411,7 @@ Owner decisions (2026-10-29):
 - Screens use `PlacePicker` from #51, not the prototype's version.
 - L08 (later on 2026-10-29): no time limit on the screen. Place search (s10.2), route (s11.2) and quote (s12.20) show "Szukam…", "Liczę trasę…" or "Liczę wycenę…" until the server returns a result or an error; time limits and retries are server-side only, and a server error is the existing "service unavailable" state. `PlacePicker` is unchanged. Recorded under L08 in the decisions record.
 
-Built: `src/components/layout/app-frame.tsx` (`AppFrame`: N7c, N7d, L12), `src/components/layout/step-bar.tsx` (`StepBar`: R18.2, N7a) and `src/components/trips/route-stops.tsx` (`RouteStops`: N7b, R19.1). Three layout tokens in `src/styles.css`: `frame-navigation` 224 px, `frame-panel` 360 px (N7c), `frame-content` 1120 px. Docs pages with 13 sections; stories under "Product/Layout" and "Product/Trips" with the prototype's synthetic trip (Auto 01, places A–C, 12.11.2026). No new dependencies.
+Built: `src/components/layout/app-frame.tsx` (`AppFrame`: N7c, N7d, L12), `src/components/layout/step-bar.tsx` (`StepBar`: R18.2, N7a) and `src/components/places/route-stops.tsx` (`RouteStops`: N7b, R19.1). Three layout tokens in `src/styles.css`: `frame-navigation` 224 px, `frame-panel` 360 px (N7c), `frame-content` 1120 px. Docs pages with 13 sections; stories under "Product/Layout" and "Product/Places" with the prototype's synthetic trip (Auto 01, places A–C, 12.11.2026). No new dependencies.
 
 Checks: typecheck, lint, 202 unit tests at 100% coverage (statements 579/579, branches 459/459, functions 183/183, lines 490/490), 141 story tests (interaction, axe, WCAG 1.4.12), `lint:tokens` 0, Storybook build; in the built Storybook no page errors and no horizontal scroll at 320, 600, 800, 1024 and 1440 px.
 
@@ -439,6 +439,8 @@ Proposals of stage 3 batch 5 (for the owner):
 5. Step names at 14 px (`text-table`) instead of the prototype's 12 px, because the 12 px roles carry the muted colour and the names of done and current steps must read in the default colour.
 6. The company name the prototype showed above the navigation is not in the frame; no decision asks for it.
 7. Folders: `layout/` for the frame and the step bar, `trips/` for route stops, because each has several consuming screens (the stage 3 rule creates a domain folder at the second consumer).
+
+Owner answers (2026-10-29): 1–6 approved. 7 changed: `layout/` stays, but `RouteStops` moves to `places/`, following the stage 3 decision (folders by the foundation primitive they serve; a domain folder only when a component gets a second consumer). No `trips/` folder.
 
 ## Next step
 
