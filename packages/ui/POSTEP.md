@@ -11,7 +11,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 | 0. Inventory and plan | done 2026-10-29, approved |
 | 1. Foundations | done 2026-10-29, approved (#38) |
 | 2. Primitives | done 2026-10-29: batches 1–2 approved and merged (#38), batch 3 approved and merged (#39; the owner's refinements and the stable Select story follow in #42); CI for tokens and Storybook tests merged (#41) |
-| 3. Product components, patterns, screens | domain split approved 2026-10-29; batch 1 merged (#43), owner decisions on its proposals applied in a follow-up pull request |
+| 3. Product components, patterns, screens | done 2026-10-29: batches 1–5 merged (#43 to #58); E01 screens live in the clickable prototype (D1); L09 `PlacePicker` change in this pull request |
 | 4. Teaching pages | not started |
 | 5. Checks and report | not started |
 
@@ -29,7 +29,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 - Q2: fleet availability follows the approved specification (paginated table); the timeline view goes to "What is missing". Timeline tokens are therefore not written.
 - Q2a: the place of the actions next to a truck stays open on "What is missing".
 - Q3: a separate error token, always with an icon and words. Value `#da1e28` (IBM Carbon error red) is a proposal: 5,00 : 1 on panel, 4,77 : 1 on page.
-- Q4: only `DecimalField`, `ZonedDateTimeField`, `PlacePicker`, `ValueWithSource` and small badges go to `packages/ui`; screens are stories composed from real components.
+- Q4: only `DecimalField`, `ZonedDateTimeField`, `PlacePicker`, `ValueWithSource` and small badges go to `packages/ui`; screens are stories composed from real components (screen part superseded by D1 on 2026-10-29: screens live in the clickable prototype).
 - Q5a lucide icons (superseded on 2026-10-29, see below); Q5b motion 0 ms and 110 ms, nothing under reduced motion; Q5c no toast, avatar, tabs, switch or checkbox; Q5d character words and Q5e P1–P9 shown as proposals.
 
 2026-10-29, owner changes after stage 1:
@@ -80,7 +80,7 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 2026-10-29, owner decision at the start of stage 3 (supersedes "grouped by domain (trips, quotes, fleet, access)" above):
 
 - Shared product components are grouped by the foundation primitive they serve: `src/components/values/` (P01 exact values, P02 value evidence: `DecimalField`, `ValueWithSource`), `src/components/time/` (P07: `ZonedDateTimeField`), `src/components/places/` (P04: `PlacePicker`). Reason: the E01 foundations list these four as shared widgets used by several modules, and the feature specification keeps quote and schedule composition in the app until a second consumer exists.
-- Domain folders (trips, quotes, fleet, access) are created only when a component gets a second consumer. E01 screens are stories composed from real components on the E01 epic page (Q4).
+- Domain folders (trips, quotes, fleet, access) are created only when a component gets a second consumer. E01 screens live in the clickable prototype; the E01 epic page links to it (D1, superseding the screen part of Q4).
 - Small certainty and state badges (EV-1) in `values/`: to be confirmed by the owner with their batch.
 
 2026-10-29, owner answers after stage 2 batch 2: proposals 1–5 of batch 2 approved (weekend option names, no green badge, Alert only `neutral` and `error`, highlighted Select option with background and underline and vertical radio groups only, "Plan" badge on entered-trip history rows). The branch is pushed and opened as a pull request with batches 1 and 2; CI jobs for tokens and accessibility follow in a separate pull request.
@@ -444,47 +444,15 @@ Owner answers (2026-10-29): 1–6 approved. 7 changed: `layout/` stays, but `Rou
 
 ## Stage 3, E01 screens, group 1 (2026-10-29)
 
-Screens s09 (trip entry), s10 (place choice) and s11 (route and countries) as stories composed from real components, in their screen-map states. Started from main after #58 and #60.
-
 Owner decision L09 (2026-10-29), recorded under L09 in the decisions record: (1) when the map provider finds no address or is unavailable, the dispatcher chooses a saved place or a town only from the company's list of towns; the quote is still calculated, and the point and the distance are marked "Tylko miasto" and as an estimate; without a route the kilometres per country are entered by hand (ROUTE-1, BND-4). (2) A new place is added only from a map result, in one action (`places.write`); without the map no place is added, with no manual address form and no manual coordinates.
 
-`PlacePicker` changes for L09 (same pull request as s10): when nothing is found it lists the options the page passes (saved places and the company's towns), as it already did when the provider is unavailable; "Dodaj miejsce" appears only while a map address (`address`) is chosen and passes that result to `onAddPlace(option)`, instead of an always-visible "Dodaj miejsce…" that opened an undefined flow.
+`PlacePicker` changes for L09: when nothing is found it lists the options the page passes (saved places and the company's towns), as it already did when the provider is unavailable; "Dodaj miejsce" appears only while a map address (`address`) is chosen and passes that result to `onAddPlace(option)`, instead of an always-visible "Dodaj miejsce…" that opened an undefined flow.
 
-Plan:
-
-1. s10 inside the entry step "Miejsca i czasy": states s10.1–s10.8 with `PlacePicker`.
-2. s09 trip entry in `AppFrame` with `StepBar`: one open step, completed steps collapsed with "Zmień" (R18.1), `RouteStops` in the 360 px panel.
-3. s11 route and countries: legs with kilometres per country as estimates (`ValueWithSource`, whole km), planner toll only as a control, manual split with a reason when the route is missing (BND-4), town-only endpoints marked (L09).
-4. States that depend on open screen-map gaps are listed, not invented: s09.8 currency list (L30), s09.10 two weekends (L21), s09.15 version conflict (L10), s09.16 session expiry (L11), s11.7 detours (L01).
-
-Built: `stories/screens/e01/` with `parts.tsx` (synthetic data, the collapsed entry step of R18.1 and the entry composition; story code, not a design-system component), "Screens/E01/s09 Trip entry" (s09.1–s09.7, s09.9, s09.11–s09.14), "Screens/E01/s10 Place choice" (s10.1–s10.8 and the L09 town-only endpoint) and "Screens/E01/s11 Route and countries" (s11.1–s11.6 and L09). Kilometre sums in the route stories are synthetic text, not JavaScript numbers. Elements of the prototype outside the specification (driver, tractor, customer base) are not used.
-
-Checks: lint, typecheck, 202 unit tests at 100% coverage (statements 580/580, branches 459/459, functions 184/184, lines 491/491), 174 story tests (interaction, axe, WCAG 1.4.12 where present), `lint:tokens` 0, Storybook build; s09.1, s10.6 and s11.1 at 1440 px and s11.3 at 320 px without page errors or horizontal scroll.
-
-| # | Checklist item | Result |
-|---|---|---|
-| 1 | Contrast | Pass: axe colour-contrast in every screen story |
-| 2 | Targets at least 24 px | Pass: controls 36 px; "Zmień" and "Dodaj miejsce" text buttons at least 24 px high |
-| 3 | Visible labels | Pass: every field has a `Field` label; the route panel and the step bar are named |
-| 4 | One icon set | Pass: Tabler only |
-| 5 | Colour not alone | Pass: estimates as "Szacunek", town-only as "Tylko miasto", stale quote in words |
-| 6 | Empty, error, loading states | Pass: searching, calculating, not found, unavailable, field errors, save error, sending |
-| 7 | Visible focus | Pass: 2 px outline; s09.13 moves focus to the first invalid field |
-| 8 | No invented data | Pass: prototype data; open gaps L01, L10, L11, L21, L30 not drawn |
-| 9 | Only token variants | Pass: no new tokens or variants |
-| 10 | Zero values outside tokens | Pass in `packages/ui` (0) |
-| 11 | Lines at most 75 characters | Pass: messages inside `max-w-measure` where they are running text |
-| 12 | Message says what happened and what to do | Pass: for example "Dostawca map nie odpowiada. Wpisz kilometry po krajach i powód…" |
-
-Proposals for the owner:
-
-1. s09.12 shows "Zapisuję kurs…" and a disabled step while sending, as `CrudForm` does; the entry is not a `CrudForm` (it has nested values), so the screen composes the same behaviour.
-2. s11.3–s11.6 edit only the loaded leg in the stories; the approach leg is edited the same way.
-3. The planner toll is shown with `ValueWithSource` as an estimate and the words "Tylko do kontroli" (SRC-4); it never enters the cost.
+Owner decision D1 (2026-10-29, supersedes the screen part of Q4 "screens are stories composed from real components"): screens live in the clickable prototype (`prototype/e01-clickable`), not as Storybook stories. Storybook holds the components and one E01 epic page that maps the journey, links to the prototype's screen states and lists the shared components used. Screen stories for s09–s11 were built on this branch and removed again before merge; the prototype is rebuilt on the current components (`AppFrame`, `StepBar`, `RouteStops`, `PlacePicker` after L09) in a separate pull request.
 
 ## Next step
 
-Conditions before screens are built (owner decision 2026-10-29): L08 is decided (no time limit on the screen; see batch 5); L09 (what the dispatcher does without the map provider and how a place is added) remains open in the screen map. Next: screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
+L08 and L09 are decided. Next: the clickable prototype (`prototypes/quote-during-call`, rebuilt on the current components) comes to `main` in its own pull request and Storybook serves its build at `/prototypes/quote-during-call/`. Then stage 4, built to the structure recorded under "owner instruction for stages 3 and 4", with the E01 epic page linking to the prototype's screen states. Stage 5 follows.
 
 ## N2b: ordinary text weight (2026-10-29)
 
