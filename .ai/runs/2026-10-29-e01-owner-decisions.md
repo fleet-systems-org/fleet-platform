@@ -21,3 +21,5 @@
 - Passed: local structural checks of decision IDs, Markdown table column counts, relative Markdown links in changed documents, and scope against origin/main.
 - Not run: typecheck, unit/coverage, build, integration and browser QA; documentation-only changes, no executable code or UI changed. CI remains a separate check, not claimed passed.
 - Outcome: documentation ready for review, with wash segment/FX questions explicitly deferred to owner review in the PR. Issues #22/#25 remain unedited; proposed AC text is in the PR body. No merge, approval or auto-merge.
+
+- PR: https://github.com/fleet-systems-org/fleet-platform/pull/40 — opened ready for review against main; owner-only merge.
