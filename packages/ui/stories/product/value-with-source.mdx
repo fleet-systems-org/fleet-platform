@@ -1,0 +1,103 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./value-with-source.stories";
+
+<Meta of={Stories} />
+
+# Value with source
+
+`import { ValueWithSource } from "@fleet-platform/ui/components/values/value-with-source"`
+
+## 1. Purpose
+
+Shows a figure together with how certain it is and where it comes from, so the dispatcher never takes an estimate or a gap for a fact (R02, EV-4).
+
+## 2. When to use
+
+- Every figure of a quote, a trip or the fleet: kilometres, prices, costs, results (feature specification: "All figures: use `ValueWithSource`").
+- In result columns, the result bar and table rows (`size="compact"`).
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Entering a number | Decimal field | This component only shows values |
+| A label, date or name without a source | Plain text | Only figures carry certainty |
+| A loss on a trip result | This component plus the "Strata" badge next to it | Loss is shown by its own badge (N5a) |
+
+## 4. Anatomy
+
+On screen: the value rounded for display with its unit, and the "Szacunek" badge when estimated. In the details (Popover): exact published value, certainty, source, source date and, when given, the reason. A missing value is a dash with "brak: …" and has no details.
+
+## 5. Variants
+
+| State | On screen | Details | Source |
+|---|---|---|---|
+| `known`, certain | Value and unit, no badge | Exact value, "Pewne", source, date | EV-1, P4 (proposal) |
+| `known`, estimated | Value, unit, "Szacunek" | as above plus the reason | EV-1, R11.1 |
+| `missing` | "—" and "brak: …" | none | EV-1, R11.2, P3 (proposals) |
+| `conflicting` | "—" and "Sprzeczne dane" | every candidate with its source | EV-1 |
+
+Kilometres are whole numbers on screen (`displayScale={0}`) and exact to three decimals only in the details (R11, FIN-3). Money keeps its published two decimals.
+
+<Canvas of={Stories.States} />
+
+## 6. States
+
+| State | Look | Source |
+|---|---|---|
+| Default | Value in default text colour with a dotted underline that shows it opens details | proposal 6 |
+| Hover | Solid underline | proposal 6 |
+| Focus | 2 px `focus-ring` outline | T4 |
+| Open | Details panel below the value, fades in over 110 ms | T7 |
+| Empty | `missing`: a dash and the reason, never zero | EV-4 |
+| Error | `missing` with the failure in the reason, for example "brak: trasy od dostawcy map" | ROUTE-1 |
+| Loading | Not a state of the component: a `Skeleton` and a `LoadingMessage` stand in its place | T9 |
+| Disabled | Not applicable: a value is never disabled | |
+
+## 7. Behaviour and accessibility
+
+- The value is a button (`aria-expanded`) that opens a named, non-modal details panel ("Szczegóły: Dystans kursu"); `Enter`, `Space` or a click open it, `Escape` or a click outside close it, focus returns to the value.
+- The accessible name holds the value, the unit and "Szacunek" when estimated; certainty is never colour alone (EV-4, WCAG 1.4.1).
+- A missing value has no button; the dash is hidden from screen readers and the reason is read as text.
+- Numbers use tabular figures; separators are no-break spaces, so a value and its unit never wrap apart.
+
+## 8. Content
+
+- The application passes the words in `labels` (from its translation module) and the source name and date already formatted.
+- A reason is one sentence the dispatcher understands: "Brak tankowań w Niemczech z ostatnich 14 dni; cena publiczna przeliczona na netto."
+- A missing reason completes "brak: …": "brak: ceny paliwa dla Czech" (SRC-1).
+
+## 9. Responsive
+
+The value and its unit never wrap apart (no-break spaces); in a narrow column the "Szacunek" badge moves under the value. The details panel stays within the screen at 320 px and long sources wrap there.
+
+## 10. API
+
+`state` (`known`, `missing`, `conflicting`), `label` (names the details), `labels`, `size` (`default`, `compact`). Known: `value` (published decimal string), `unit`, `displayScale`, `certainty`, `source` (`name`, `date`), `reason`. Missing: `reason`. Conflicting: `unit`, `candidates`, `reason`.
+
+<ArgTypes of={Stories} />
+
+## 11. Code
+
+```tsx
+<ValueWithSource
+  state="known" label="Dystans kursu" labels={valueLabels}
+  value={quote.distanceKm} unit="km" displayScale={0}
+  certainty="certain" source={{ name: "Trasa od dostawcy map", date: formatDate(route.receivedAt) }}
+/>
+<ValueWithSource state="missing" label="Cena paliwa w Czechach" labels={valueLabels} reason="ceny paliwa dla Czech" />
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| "1 235 km" on screen, "1 234,567 km" in the details. | Three decimals in every table cell. |
+| "— brak: ceny paliwa dla Czech". | "0,00 EUR" for a missing price. |
+| "Szacunek" as a word next to the value. | A grey value that means "estimate" by colour only. |
+
+## 13. Related
+
+Built on: Popover, Button, Badge. Confused with: Decimal field (entry). Used in: the quote result bar, distances and the country split, the fleet table (stage 3 screens).
+
+<Canvas of={Stories.Keyboard} />

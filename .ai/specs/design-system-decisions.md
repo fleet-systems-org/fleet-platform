@@ -96,8 +96,14 @@ Code families:
 
 ## Specification rules
 
+- **FIN-1** — Money and fuel travel as decimal strings, never as JavaScript numbers; the Polish comma is normalized as text; negative zero shows as zero.
+- **FIN-2** — Components of a calculation are never rounded; only published values are, so a decimal field never rounds what was typed.
+- **FIN-3** — Published scales: money 2, unit prices and rates 6, kilometres and litres 3; ties half-up, negative ties away from zero.
+- **FIN-4** — Inputs are bounded in magnitude and scale before writes; out-of-range values are rejected, never truncated.
 - **EV-1** — A value has phase, state (known, missing, conflicting) and certainty; the badges show certainty and missing state as words.
 - **EV-4** — Every figure is shown with `ValueWithSource`; the change for whole kilometres on screen is pending in the specification.
+- **SRC-1** — Fuel price per country: own cards first, then the weekly public bulletin as an estimate, then older own-card prices as estimates, then a manual price; otherwise missing ("no fuel price for <country>").
+- **ROUTE-1** — Routes and the country split come from one map provider without fallback; when it fails, the route is missing and the dispatcher may enter the country split by hand.
 - **WKD-1** — The weekend rule: one required case for every weekend in the quote, no default, "Zapytaj o weekend" when missing.
 - **DRF-1** — Several drafts for one truck are compared in a table beside them, which is a separate pattern, not `DataTable`.
 

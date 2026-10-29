@@ -1,0 +1,99 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./decimal-field.stories";
+
+<Meta of={Stories} />
+
+# Decimal field
+
+`import { DecimalField } from "@fleet-platform/ui/components/values/decimal-field"` · `import { parseDecimalInput } from "@fleet-platform/ui/lib/decimal"`
+
+## 1. Purpose
+
+Lets the dispatcher type an amount or quantity the Polish way ("1 850,00") while the value stays exact text from the keystroke to the request, never a JavaScript number (FIN-1).
+
+## 2. When to use
+
+- Amounts of a trip: the agreed freight with its currency, the wash amount for "Nasze mycie" (E01 trip entry).
+- Any decimal input of a page composed from the shared widgets.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Showing a figure | Value with source | Entry and display are separate (EV-4) |
+| A flat reference form (vehicle, place, policy revision) | `CrudForm` text field with `inputMode: "decimal"` | The foundations keep `CrudForm`'s field API unchanged |
+| Whole counts chosen from a list | Select | Known values are chosen, not typed |
+
+## 4. Anatomy
+
+Label, hint and error from `Field`; the text box (right-aligned, tabular figures); the unit or currency after it, also read as part of the description.
+
+## 5. Variants
+
+One. The unit is optional; with a currency chosen in a Select next to it, the unit follows the choice (E01 `MoneyInput`).
+
+<Canvas of={Stories.WithCurrency} />
+
+## 6. States
+
+<Canvas of={Stories.States} />
+
+| State | Look | Source |
+|---|---|---|
+| Empty | Empty box; a required field says what to enter when the dispatcher leaves it | audit finding 10 |
+| Filled | Typed text kept as typed, never reformatted | proposal 4 |
+| Error | `border-error`, error text with icon from `Field` | Q3 |
+| Disabled | Page background, muted text; the hint says when it becomes available | audit finding 14 |
+| Loading | Not applicable: the field is local input; a saving form disables it | |
+
+## 7. Behaviour and accessibility
+
+- A text input with `inputMode="decimal"`, so phones show a keypad with a comma; no spinner, no wheel changes, no `type="number"` (which would parse to a number).
+- `parseDecimalInput(text, { scale, signed })` accepts the comma and spaces between digit groups and returns a decimal string or a reason: `empty`, `format` (also "1.850,00" with both separators and leading zeros), `negative` (unless `signed`), `scale`. It never rounds or truncates (FIN-2, FIN-4); negative zero becomes zero (FIN-1).
+- The application validates when the dispatcher leaves the field and on submit, and maps each reason to a message (proposal 5).
+- Named by the `Field` label; hint, error and unit are in `aria-describedby`; `aria-invalid` and `required` come from `Field`.
+
+## 8. Content
+
+- The hint gives the form of the value: "Kwota netto uzgodniona z klientem, np. 1850,00".
+- Every message says what to do: "Nie rozpoznano kwoty. Wpisz ją cyframi, np. 1850,00."
+- A value with too many decimals is not rounded for the dispatcher: "Kwota może mieć najwyżej 2 miejsca po przecinku. Popraw ją; wpisana wartość nie jest zaokrąglana." (the 2-decimal limit is proposal 3).
+
+## 9. Responsive
+
+The box takes its column; the unit stays next to it at 320 px.
+
+<Canvas of={Stories.Validation} />
+
+## 10. API
+
+`DecimalField`: `unit` and the input's own props (`value`, `onChange`, `onBlur`, `disabled`, `name`); `type` and `inputMode` are fixed. `parseDecimalInput(text, { scale?, signed? })` → `{ ok: true, value }` or `{ ok: false, reason }`.
+
+<ArgTypes of={Stories} />
+
+## 11. Code
+
+```tsx
+const [text, setText] = useState("");
+const [result, setResult] = useState<DecimalInputResult | null>(null);
+
+<Field label="Fracht" hint="Kwota netto uzgodniona z klientem, np. 1850,00" error={result && !result.ok ? t(`decimal.${result.reason}`) : undefined} required>
+  <DecimalField unit={currency} value={text} onChange={event => setText(event.target.value)}
+    onBlur={() => setResult(parseDecimalInput(text, { scale: 2 }))} />
+</Field>
+// send { amount: result.value, currency } only when result.ok
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Send "1850.5" as a string. | `Number("1850,5")` or `parseFloat`: money passes through `number`. |
+| Reject "1850,005" with a message. | Round it to 1850,01 silently. |
+| Keep "1 850,5" in the box as typed. | Reformat the box while the dispatcher types. |
+
+## 13. Related
+
+Displayed with: Value with source. Built on: `Field`, the input styles of Input. Used in: trip entry (freight, wash amount).
+
+<Canvas of={Stories.Typing} />

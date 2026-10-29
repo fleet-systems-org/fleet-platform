@@ -1,6 +1,6 @@
 # Design system progress
 
-Working log for the design system and its Storybook in `packages/ui`. Stage 1 and stage 2 batches 1–2 are in `main` (pull request #38, merge 196a2bb); batch 3 is on the branch `design-system-overlays`. Read this file first when resuming.
+Working log for the design system and its Storybook in `packages/ui`. Stages 1 and 2 are in `main`: pull request #38 (stage 1, stage 2 batches 1–2, merge 196a2bb) and #39 (stage 2 batch 3, merge 657a308); the design system CI jobs came with #41 (merge bdc3be6). Stage 3 batch 1 is on the branch `design-system-product-1`. Read this file first when resuming.
 
 Sources the system is built from (every source code such as R06.4, A01, N4b or Q3 is explained in [design-system-decisions.md](../../.ai/specs/design-system-decisions.md)): `.ai/specs/product-brief.md`, `.ai/specs/backlog.md`, `.ai/specs/2026-10-26-e01-foundations.md`, `.ai/specs/2026-10-26-e01-trip-entry-and-quotation.md`, a screen audit and the existing `packages/ui`.
 
@@ -9,9 +9,9 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 | Stage | Status |
 |---|---|
 | 0. Inventory and plan | done 2026-10-29, approved |
-| 1. Foundations | done 2026-10-29, waiting for owner "next" |
-| 2. Primitives | batches 1, 2 and 3 done and approved 2026-10-29 |
-| 3. Product components, patterns, screens | not started |
+| 1. Foundations | done 2026-10-29, approved (#38) |
+| 2. Primitives | done 2026-10-29: batches 1–2 approved and merged (#38), batch 3 approved and merged (#39; the owner's refinements and the stable Select story follow in #42); CI for tokens and Storybook tests merged (#41) |
+| 3. Product components, patterns, screens | domain split approved 2026-10-29; batch 1 done 2026-10-29, waiting for owner decisions on its proposals |
 | 4. Teaching pages | not started |
 | 5. Checks and report | not started |
 
@@ -76,6 +76,12 @@ Sources the system is built from (every source code such as R06.4, A01, N4b or Q
 - One page per epic: which steps of the user journey are covered, the connected screens in their states, the shared components used and the production work still required.
 - "Contributing" says how to add or change a component, what its documentation must contain, how tokens change, who owns and releases the system, and the local commands.
 - Product components are grouped by domain in `src/components/<domain>/` (proposed: trips, quotes, fleet, access; confirmed against the backlog epics at the start of stage 3).
+
+2026-10-29, owner decision at the start of stage 3 (supersedes "grouped by domain (trips, quotes, fleet, access)" above):
+
+- Shared product components are grouped by the foundation primitive they serve: `src/components/values/` (P01 exact values, P02 value evidence: `DecimalField`, `ValueWithSource`), `src/components/time/` (P07: `ZonedDateTimeField`), `src/components/places/` (P04: `PlacePicker`). Reason: the E01 foundations list these four as shared widgets used by several modules, and the feature specification keeps quote and schedule composition in the app until a second consumer exists.
+- Domain folders (trips, quotes, fleet, access) are created only when a component gets a second consumer. E01 screens are stories composed from real components on the E01 epic page (Q4).
+- Small certainty and state badges (EV-1) in `values/`: to be confirmed by the owner with their batch.
 
 2026-10-29, owner answers after stage 2 batch 2: proposals 1–5 of batch 2 approved (weekend option names, no green badge, Alert only `neutral` and `error`, highlighted Select option with background and underline and vertical radio groups only, "Plan" badge on entered-trip history rows). The branch is pushed and opened as a pull request with batches 1 and 2; CI jobs for tokens and accessibility follow in a separate pull request.
 
@@ -231,6 +237,40 @@ Owner refinements (2026-10-29), applied in the same pull request:
 - To 6: the confirming button of any dialog is the action's concrete verb ("Anuluj kurs", "Usuń szkic"), never "OK" or "Potwierdź".
 - To 8: a dialog with typed input (such as a reason) does not close on a scrim click, like an alert dialog. Because a Dialog exists to collect input, `DialogContent` never closes on a click or focus outside; `Escape`, the corner button and the footer's way back close it (unit and story tests).
 
+## Stage 3, batch 1 (2026-10-29)
+
+Built in `src/components/values/`: `ValueWithSource` (P02, EV-4) on Popover, Button and Badge, and `DecimalField` (P01) on Field and the input styles; in `src/lib/decimal.ts`: `parseDecimalInput` (Polish comma and digit-group spaces normalized as text, rejects instead of rounding: FIN-1, FIN-2, FIN-4) and `formatDecimal` (Polish separators, display rounding with ties away from zero: FIN-3; exact through `Intl.NumberFormat` on the string, never a JavaScript number; `ES2023.Intl` added to the TypeScript libraries). Translated words reach `ValueWithSource` as a `labels` prop, like Field's `optionalText`, because the foundations say the interface receives translated labels. Docs pages with 13 sections; stories under "Product/Values". No new dependencies and no new tokens. This branch starts from #42 (batch 3 refinements and the stable Select story), so #42 merges first.
+
+Checks: typecheck, lint, 153 unit tests at 100% coverage (statements 423/423, branches 280/280, functions 137/137, lines 360/360), 107 story tests in three consecutive runs (interaction, axe, WCAG 1.4.12, overlap at 320 px), `lint:tokens` 0 in `packages/ui`, app build, Storybook build; in the built Storybook both pages have 13 sections, no page errors, no horizontal scroll at 320 px.
+
+| # | Checklist item | Result |
+|---|---|---|
+| 1 | Contrast | Pass: axe colour-contrast in all 107 stories; estimate badge 11.12:1, meta text 6.0:1 |
+| 2 | Targets at least 24 px | Pass: value button 36 px high (compact 32), decimal field 36 px |
+| 3 | Visible labels | Pass: decimal field named by its Field label, unit in its description; details named "Szczegóły: <label>" |
+| 4 | One icon set | Pass: no new icons; the Field error icon is Tabler |
+| 5 | Colour not alone | Pass: "Szacunek" as a word, missing as a dash with "brak: …", conflict as "Sprzeczne dane" |
+| 6 | Empty, error, loading states | Pass: decimal field empty, filled, error, disabled; value missing, provider failure, conflict, loading with Skeleton |
+| 7 | Visible focus | Pass: 2 px outline; details return focus to the value (tested) |
+| 8 | No invented data | Pass with two open points: sources and reasons from SRC-1, ROUTE-1, FIN and EV rules, numbers synthetic; conflict candidates are placeholders (proposal 7) and the certainty of routed kilometres is not in the specification (proposal 8) |
+| 9 | Only token variants | Pass: no new token or variant |
+| 10 | Zero values outside tokens | Pass in `packages/ui` (0); 12 remain in app pages, outside the design system |
+| 11 | Lines at most 75 characters | Pass: details panel and hints limited to `max-w-measure` |
+| 12 | Message says what happened and what to do | Pass: "Nie rozpoznano kwoty. Wpisz ją cyframi, np. 1850,00." |
+
+Defect found by the 320 px screenshot and fixed: an estimated value with its badge overlapped the row label; the value button now lets the badge wrap under the value, and the text spacing story checks rows for overlap, which the clipping check did not catch.
+
+Proposals of stage 3 batch 1 (waiting for the owner):
+
+1. Digit groups always separated, also in four-digit numbers ("1 850,00"), as in the existing examples; the Polish locale default would print "1850,00".
+2. Input accepts spaces between digit groups; text with both a comma and a dot ("1.850,00") and leading zeros are rejected as unrecognized.
+3. Amounts accept at most 2 decimals; the specification bounds inputs (FIN-4) without numbers. Magnitude limits stay with the feature schemas on the server.
+4. The decimal field is right-aligned with tabular figures, the unit after it; typed text is never reformatted.
+5. Validation when the dispatcher leaves the field and on submit, not while typing.
+6. The value opening details is in the default text colour with a dotted underline (solid on hover), not in the action green.
+7. Missing value as "— brak: …" (R11.2, P3) and conflict as "Sprzeczne dane" with every candidate in the details; which sources can conflict is not yet specified, so the story uses "Źródło A" and "Źródło B".
+8. Are routed kilometres from the map provider certain or estimated? The specification does not say; the story shows them as certain only to show whole kilometres on screen.
+
 ## Plan
 
 - Storybook 10.6.5 with `@storybook/react-vite` in `packages/ui/.storybook`; addons: docs (MDX with `remark-gfm`), a11y (`test: 'error'`), vitest (stories as browser tests, Playwright Chromium); `msw` + `msw-storybook-addon` for `apiCall` responses. Separate `packages/ui/vitest.storybook.config.ts`; the root unit/coverage run stays unchanged.
@@ -248,4 +288,4 @@ Owner refinements (2026-10-29), applied in the same pull request:
 
 ## Next step
 
-Owner reviews and merges pull request #39 (`design-system-overlays`); the CI jobs for tokens and Storybook tests come in a separate pull request. Then stage 3 (product components by domain, patterns, screens) and stage 4 follow the structure model recorded under "owner instruction for stages 3 and 4".
+Owner decides proposals 1–8 of stage 3 batch 1 and merges #42, then the batch 1 pull request. Next batches: `ZonedDateTimeField`, `PlacePicker`, small badges (EV-1, in `values/` after the owner confirms), then screens as stories from real components. Stage 4 follows the structure model recorded under "owner instruction for stages 3 and 4".
