@@ -4,12 +4,11 @@ import { Badge } from '@fleet-platform/ui/components/badge';
 import { Button } from '@fleet-platform/ui/components/button';
 import { costs, coveredCost } from './model';
 import { shareTenths, shareText, shareWidth, vehicleCosts } from './cost-shares';
-import { RouteSchematic } from './RouteSchematic';
 const money = (s: string) => s.replace('.', ',');
 const orderedCosts = [costs[0]!, costs[1]!, costs[4]!, costs[5]!, costs[2]!, costs[3]!];
 
 // N6a / R17.1: one cost table beside one summary; no metric tiles or category colours.
-export function Quote({ amount, result, actions, customers }: { amount: string; result: string; actions: ReactNode; customers: ReactNode }) {
+export function Quote({ amount, result, actions, route }: { amount: string; result: string; actions: ReactNode; route: ReactNode }) {
   const [expanded, setExpanded] = useState(false);
   const loss = result.startsWith('-');
   const roundedSum = orderedCosts.reduce((sum, row) => sum + shareTenths(row.value, coveredCost), 0n);
@@ -28,7 +27,7 @@ export function Quote({ amount, result, actions, customers }: { amount: string; 
       <dl className="summary-totals"><div><dt>Fracht netto</dt><dd>{money(amount)} EUR</dd></div><div><dt>Koszt uwzględniony</dt><dd>{money(coveredCost)} EUR <Badge variant="estimate">Szacunek</Badge></dd></div></dl>
       <div className="stack quote-actions">{actions}</div></div>
     </Card></aside>
-    <div className="quote-detail stack"><Card><CardTitle>Trasa kursu</CardTitle><RouteSchematic/>{customers}</Card>
+    <div className="quote-detail stack">{route}
       <Card><CardTitle>Rozbicie kosztów netto</CardTitle><table className="compact-table quote-cost-table"><caption>Kwoty netto · EUR</caption><thead><tr><th scope="col">Koszt</th><th scope="col" className="cost-source">Źródło</th><th scope="col">Kwota</th><th scope="col">% kosztu</th></tr></thead>
       {orderedCosts.map(cost => <Fragment key={cost.label}><tbody>{row(cost)}</tbody>{cost.label === 'Koszty auta' && <tbody id="vehicle-cost-rows" hidden={!expanded}>{vehicleCosts.map(c => <Fragment key={c.label}>{row(c, true)}</Fragment>)}</tbody>}</Fragment>)}
       <tfoot><tr><th scope="row">Razem</th><td className="cost-source"/><td>38,18 EUR</td><td>100,0 %</td></tr></tfoot></table>

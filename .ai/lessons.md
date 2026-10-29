@@ -19,6 +19,6 @@ Index of reusable findings, bug fixes and improvements. Read relevant entries be
 
 - [Passive effects can still be pending when `findBy…` resolves](lessons/2026-10-29-async-find-timeout-under-coverage.md): wait with `waitFor` for effect-driven behaviour (focus, listeners) before acting on it; after an overlay closes, wait for focus return and lifted `aria-hidden` (`waitForFocusReturn`) before asserting, acting or ending a story; a test failing at exactly its timeout needs a cause, not a higher limit.
 
-- [Verify prototype composition at the rendered control](lessons/2026-10-29-prototype-composition-verification.md): wrapper styling, child-state reset and actual browser viewport/evidence checks.
+- [Verify prototype composition at the rendered control](lessons/2026-10-29-prototype-composition-verification.md): wrapper styling, child-state reset, stable suggestion geometry and actual browser viewport/evidence checks.
 
 - [Prototype Back clearance and route text scale](lessons/2026-10-29-prototype-back-and-route-scale.md): match the review selector specificity and keep route labels outside scaling geometry; record both-width overlap measurements.

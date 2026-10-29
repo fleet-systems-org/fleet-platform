@@ -242,3 +242,38 @@ Not run: production application build/integration/coverage, Stage 2 scenario mat
 3. Should customer identity affect similar-trip matching and result-per-customer reporting (E8)?
 
 Next: owner review of Stage 1c, then authorization of Stage 2; the customer proposal requires specification decisions before production implementation.
+
+## Stage 1d. Entry steps, route stops, shared frame, side navigation
+
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
+
+### Delivered
+
+- N7d: a 220 px left navigation panel on s05–s19, with demo company, quotation/trip entries, `aria-current="page"`, the existing active background, later-phase fleet entry, account and sign-out. Fleet is disabled in Phase 1 and linked in the later preview (p19). No navigation icons. At narrow widths, a Menu button opens the same entries in the shared Dialog with a text close action and focus return. s01–s04 have no product navigation; the review toolbar and engine remain unchanged.
+- N7c: centred content up to 1120 px on entry/place/route/quote/details/acceptance screens. Desktop uses a main column and 360 px right panel; narrow layouts stack. s09/s11 show the route on the right; s12 keeps the quote summary on the right and route above the cost table. s10/s13/s16 use the same frame with route context.
+- N7a, R18.1/R18.2: three entry cards with exactly one open step, completed answer/neutral Gotowe badge/Zmień action, muted waiting steps and the specified next actions. Collapsed controls stay mounted and hidden, preserving customer queries, dates, freight and wash while editing an earlier step. The four-part progress bar is informational: completed checks and following lines use the action token, the current numbered circle has a pale outline, future circles are outlined/muted; labels use the 12 px role. Route/quote/details/acceptance currently show step 4 pending the confirmation below.
+- Loading/unloading occupy separate columns, stacking at 320 px. Optional customers retain first-character/name/city keyboard search, single-place fill and multiple-place buttons. Independent place search and More places → s10 remain available. The customer-directory scope note appears once below both columns.
+- Z1 c / TIME-1: reused the delivered ZonedDateTimeField, with text DD.MM.RRRR and GG:MM inputs and a Warsaw-time label, inside Field for accessible naming/errors. Invalid or empty dates/times block progression and explain the required format. The fixed example still uses 12.11.2026, 12:00/13:00; loading time is visibly fictional. DecimalField, EUR, mandatory wash with no default and optional order reference retain their behaviour.
+- N7b, R19.1: start/loading/unloading stop blocks replace the obsolete route schematic and its styles. Each shows a left label, 16 px time, date (Warsaw), place/country and label–value details; unselected customers produce no customer row. Whole kilometres (D65), empty approach/loaded wording, fictional loading-time warning, next free place and map-simulation caveat remain visible. s11 country tables and N6a/R17.1 quote table/summary are preserved.
+- Responsive click correction: customer/place suggestions now overlay the following content. Closing suggestions on blur no longer moves the next action between pointer-down and pointer-up. Keyboard selection remains unchanged; the existing composition-verification lesson records the finding.
+- Money and the K2 example are unchanged: Auto 01, 60.00 EUR freight, 38.18 EUR covered cost, 21.82 EUR result. No application, shared-component or story source edited. No production specification marked implemented.
+
+### Validation
+
+- Package typecheck and build passed; final build completed in 1.21 s.
+- Repository `pnpm typecheck`, `pnpm lint`, `pnpm test` passed: 36 files, 190 tests.
+- Explicit prototype source/script ESLint passed. Token scan of all app sources except `variant-proposals.css` plus `src/main.tsx`: 0 findings. Style detector: 0 findings. Diff whitespace passed.
+- `check-cost-shares.ts` passed: fixture shares, vehicle sum, zero denominator, rounding and large BigInt cases.
+- Isolated browser at actual 1440 and 320 CSS pixels passed: s09 steps 1→2→3, edit step 1 and return with preserved values; keyboard customer selection with one/multiple places; independent full-place search from the first character through s10; text date formats and invalid-date rejection; s11; s12 draft and accepted; s13/s16; s07; active navigation; disabled/linked fleet for p19; narrow Menu open/close/navigation. Direct next-action click with suggestions open is covered at both widths.
+- All 19 screens scrolled to the end at both widths: no horizontal overflow, Back computed `static` and below the frame. Runtime errors: 0. Nineteen external screenshots cover the changed flow and narrow menu; none are committed.
+- `prototype.js` is byte-identical to Stage 1c. Protected source diff against current main is empty. Main was merged without rewriting history, including the approved entry/route/navigation decision record when it landed via #54. The record was not copied from its feature branch.
+- Preview index/assets replaced, preserving prior evidence directories.
+
+Not run: production application build, production integration/coverage or Storybook story tests; Stage 2 scenarios, exhaustive accessibility audit and cross-browser matrix. Only prototype composition changed. No pull request opened and no base-branch merge.
+
+### Questions for owner review
+
+1. Confirm step 4 “Wycena” as current on s11, s13 and s16 (also used on s12), or specify a different current step for those screens.
+2. Navigation currently has no icons, as requested. Should it remain text-only in the final product?
+
+Next: review Stage 1d and answer these two presentation questions before authorizing Stage 2. The separate customer-directory specification questions from Stage 1c remain open.
