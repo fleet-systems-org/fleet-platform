@@ -1,0 +1,30 @@
+/* Review engine aliases mapped to the existing light design system. */
+:root {
+  --font-geist-sans: var(--font-family-base);
+  --font-geist-mono: var(--font-mono-system);
+  --font-size-overline: var(--type-12);
+  --radius-sm: var(--radius-4);
+  --radius-md: var(--radius-4);
+  --radius-lg: var(--radius-8);
+  --radius-xl: var(--radius-8);
+  --primary-hover: var(--action-primary-hover);
+  --accent-indigo: var(--action-primary);
+  --accent-indigo-foreground: var(--text-on-action);
+  --shadow-xs: var(--elevation-overlay);
+  --shadow-sm: var(--elevation-overlay);
+  --shadow-md: var(--elevation-overlay);
+  --shadow-xl: var(--elevation-overlay);
+  --shadow-focus: var(--elevation-overlay); /* DS GAP G12: no focus shadow; product controls use the existing outline. */
+  --status-success-icon: var(--text-muted); /* DS GAP G10: no success token; words carry the status. */
+  --status-warning-icon: var(--text-muted); /* DS GAP G10: no warning palette. */
+  --status-warning-border: var(--border-input); /* DS GAP G10 */
+  --status-warning-bg: var(--surface-page); /* DS GAP G10 */
+  --status-warning-text: var(--text-default); /* DS GAP G10 */
+  --muted: var(--surface-page);
+  --ring: var(--focus-ring);
+  /* DS GAP G12: the review engine owns its stacking order; no product stacking tokens exist. */
+  --z-index-sticky: 100; --z-index-dropdown: 200; --z-index-overlay: 300;
+  --z-index-modal: 400; --z-index-toast: 500; --z-index-top: 600;
+  --z-index-product-overlay: calc(var(--z-index-top) + 100);
+  --z-index-product-modal: calc(var(--z-index-product-overlay) + 1);
+}
