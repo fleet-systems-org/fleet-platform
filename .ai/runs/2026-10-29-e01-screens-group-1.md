@@ -18,3 +18,7 @@ Starting branch: design-system-e01-screens-1, from main d53b126. Execution: codi
 - Not run locally: integration tests (no application page changed); CI runs them.
 
 Implementation complete; pull request ready for review. Remaining: owner answers to the three proposals in POSTEP.md; open gaps L01, L10, L11, L21, L30.
+
+## Owner decision D1
+
+Screens follow the course model: they live in the clickable prototype, and Storybook keeps components and an epic page linking to it. The s09–s11 screen stories were removed from this branch; the pull request keeps L09 and the PlacePicker change. Rebuilding the prototype on the current components is the next pull request.
