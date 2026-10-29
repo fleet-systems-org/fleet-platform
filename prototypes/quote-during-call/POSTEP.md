@@ -282,7 +282,7 @@ Publication: implementation `721d2d3`; baseline merges `2bd966c` and `82d9245`. 
 
 ## Stage 1e. Owner review fixes
 
-Status: **verified; baseline synchronization and publication pending** (2026-10-29). Stage 2 remains not started.
+Status: **done, waiting for owner review** (2026-10-29). Stage 2 remains not started.
 
 ### Defect and cause
 
@@ -300,7 +300,7 @@ Direct screen-picker entry to s13, and entry after a simulation reset, showed em
 
 ### Validation
 
-- Package typecheck/build, repository typecheck/lint and 190 unit tests passed. Explicit prototype ESLint passed; token scan and design detector returned 0 findings. Exact cost-share assertions passed; review engine SHA-256 remains byte-identical to the starting commit.
+- Package typecheck/build and repository typecheck/lint passed. Unit tests passed: 190 before baseline sync, 196 after syncing current main. Explicit prototype ESLint passed; token scan and design detector returned 0 findings. Exact cost-share assertions passed; review engine SHA-256 remains byte-identical to the starting commit.
 - Isolated browser at actual 1440/320 CSS pixels passed direct screen-picker entry, repeated reset, all four identical summaries, summary-first narrow layout, 96 px route labels, all eleven evidence rows, nine expanded vehicle categories, s09 step 2/collapsed step 1/More places alignment, full entry-to-acceptance path and K2 customer snapshots after editing the entry.
 - Every checked screen was scrolled to the end: no horizontal overflow and Back static below the frame. Runtime errors: 0. Twenty final screenshots remain outside Git. Preview index/assets replaced; prior evidence preserved.
 - Not run: production application build, production integration/coverage, Storybook story tests, Stage 2 scenario matrix, exhaustive accessibility and cross-browser audits. Production source is unchanged by this stage.
@@ -310,3 +310,7 @@ The repeatable `scripts/check-quote-route.js` browser-evaluator expression check
 ### Simulation limits
 
 All data, country allocation, source dates and vehicle categories are fictional. No live lookup, persisted quote, customer directory or financial-policy change is introduced. The exact table exposes the fixture's evidence inline; this is not implementation of the production evidence API. Production E01 specifications remain approved and unimplemented. Stage 2 and the navigation-icon/customer-directory questions remain open.
+
+Publication: implementation `3638c1a`; baseline synchronization `e4392c2`. Protected application/shared UI/story diff against main is empty; no protected source was edited by this stage. Built-preview direct-entry/reset regression passed. Preview index and assets were replaced; final served-index hash and cloud synchronization are checked in the run log. Normal push to the existing prototype branch; no pull request and no base-branch merge.
+
+Next: owner review of Stage 1e before authorizing Stage 2. No Stage 2 work has started.
