@@ -22,3 +22,7 @@ Owner order: N7f/R21.1 tiles on s09 only, map edge on s01 only. Read N7a, R18.1,
 ## Outcome
 
 Only Stage 1i prototype changes and its records. Auto 01 labels elsewhere deliberately unchanged; owner question in prototype progress. No independent task dispatched because the authorized scope is small and locally verifiable. Next: owner review; Stage 2 remains unauthorized.
+
+## Publication
+
+Implementation 0aa98e0, main synchronization 1e3dbcf; normal push confirmed by matching remote tip. Final preview index HTTP 200 through Mac mini ZeroTier, SHA-256 d5f345604172a37baabd582e3bdafca3725f7e4448c6d1f6352f2483a3338cba matches VPS build. Cloud check initially confirmed index and two screenshots uploaded; three screenshot uploads were still pending. CloudDocs reported caught-up; this does not prove individual uploads or MacBook download. Final cloud recheck is reported to the owner separately. T3 context reader returns no measurement for this Cezar-run session; no percentage inferred.
