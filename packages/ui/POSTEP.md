@@ -10,7 +10,7 @@ Sources the system is built from (reference IDs such as R06.4, antireferences su
 |---|---|
 | 0. Inventory and plan | done 2026-10-29, approved |
 | 1. Foundations | done 2026-10-29, waiting for owner "next" |
-| 2. Primitives | batch 1 done and approved 2026-10-29; batch 2 next |
+| 2. Primitives | batches 1 and 2 done 2026-10-29 (batch 1 approved); batch 2 waits for owner "next"; batch 3 next |
 | 3. Product components, patterns, screens | not started |
 | 4. Teaching pages | not started |
 | 5. Checks and report | not started |
@@ -66,7 +66,7 @@ Sources the system is built from (reference IDs such as R06.4, antireferences su
 - Hover and pressed colour of the primary action `#1d4d3f` (`action-primary-hover`): approved.
 - "(opcjonalne)" marks optional fields (required is the default): approved.
 - Grey field labels (`text-label`, text-muted, 6.0:1): approved.
-- Next: stage 2 batch 2 — Select, RadioGroup (wash question without a default choice, weekend case), status Badge (certain/estimate, loss, verification), Alert, and the documentation pages and stories of `DataTable` and the feedback messages (closes checklist item 6).
+- Next: stage 2 batch 2 — Select, RadioGroup (wash question without a default choice, weekend case), status Badge (certain/estimate, loss, verification), Alert, and the documentation pages and stories of `DataTable` and the feedback messages (closes checklist item 6). Done 2026-10-29, see "Stage 2, batch 2".
 
 ## Stage 1 result
 
@@ -119,6 +119,54 @@ Checks: typecheck, lint, 112 unit tests at 100% coverage, 29 story tests (intera
 
 For "What is missing": `CardTitle` is a `div`, so a heading goes inside it; timeline view (Q2); place of truck actions (Q2a).
 
+## Stage 2, batch 2 (2026-10-29)
+
+Built: `Select` (sizes default and compact), `RadioGroup` with `RadioGroupItem` (label and hint per option, no default choice), `Badge` (`neutral`, `estimate`, `loss`), `Alert` (`neutral`, `error`). Docs pages with 13 sections: Select, Radio group, Badge, Alert, Data table, Feedback messages (closes checklist item 6). No new dependencies: all four come from `radix-ui` 1.8.1, already installed; sources fetched from the shadcn new-york-v4 registry JSON, not the CLI.
+
+Changes to existing components:
+
+- `Field` also gives its control `aria-labelledby` (the label's id), so the same Field names a radio group, which a `<label for>` cannot name (WAI-ARIA APG Radio Group). Additive; inputs keep the same accessible name.
+- Defect found by the new `DataTable` stories and fixed: the section and the scroll region had the same name, two identical landmarks (axe `landmark-unique`); only the scroll region is named now. Second defect: the pagination row overflowed at 320 px with WCAG 1.4.12 spacing; it wraps now.
+- `.storybook/text-spacing.ts` skips visually hidden text (`sr-only`, such as the table caption), which has no visual box to lose.
+
+Differences from shadcn in this batch:
+
+| Property | shadcn new-york | Fleet Platform | Decision |
+|---|---|---|---|
+| Select trigger | `h-9`, `whitespace-nowrap`, value cut to one line, `shadow-xs` | at least 36 / 32 px, long values wrap, no shadow, Field wiring with `aria-required` | owner 2026-10-29, WCAG 1.4.10, 1.4.12 |
+| Select list | `item-aligned`, fade and zoom animation (`tw-animate-css`, not installed), `shadow-md` | `popper` below the trigger, no animation and no shadow until the overlay batch adds the shadow token and the 110 ms appearance | owner 2026-10-29 (shadow on overlays), Q5b |
+| Select option | accent background on focus, check on the right | page background and underline on highlight, `IconCheck` on the chosen option | WCAG 1.4.1, proposal |
+| Radio | bare 16 px circle with a separate `Label` | whole option row (at least 36 px) is the label, optional hint per option, vertical only | WCAG 2.5.8, proposal |
+| Badge | pill (`rounded-full`), six variants incl. `destructive` | 4 px radius, three variants from existing tokens, word required, no green | N4b, N5a, R11.1, spec Fleet |
+| Alert | `AlertTitle` and `AlertDescription` parts, `default` and `destructive` | `title` and `action` props, `neutral` (`role="status"`) and `error` (`role="alert"`) | Q3, proposal |
+
+Checks: typecheck, lint, 118 unit tests at 100% coverage (statements 352/352, branches 226/226, functions 98/98, lines 296/296), 70 story tests (interaction, axe, WCAG 1.4.12), app build, Storybook build; each new page opened in the built Storybook (13 sections, tables rendered, no page errors).
+
+| # | Checklist item | Result |
+|---|---|---|
+| 1 | Contrast | Pass: axe colour-contrast in all 70 stories; measured: loss badge 5.93:1, estimate badge 11.12:1, neutral badge 14.71:1, input border 3.16:1, error 5.00:1 |
+| 2 | Targets at least 24 px | Pass: Select trigger 36 px (compact 32), options 32 px, radio rows at least 36 px with the label clickable, pagination 36 px |
+| 3 | Visible labels | Pass: Select and RadioGroup named by the Field label; radio options by their own label |
+| 4 | One icon set | Pass: only Tabler (`IconChevronDown`, `IconCheck`, `IconInfoCircle`, `IconCircleCheck`, `IconCircleDashed`, `IconCircleOff`) |
+| 5 | Colour not alone | Pass: kilometre statuses differ by word and icon with one background (tested); selected option has a check; selected radio a dot |
+| 6 | Empty, error, loading states | Pass: `DataTable` stories for loading, error, empty; Feedback messages page with all four messages |
+| 7 | Visible focus | Pass: 2 px outline on Select trigger and radio, frozen previews in the state matrices |
+| 8 | No invented data | Pass: messages and cases from the E01 specification ("Zapytaj o weekend", "Brak ceny frachtu", wash, three weekend cases); synthetic trucks and places |
+| 9 | Only token variants | Pass: Badge three, Alert two, Select two sizes; no new colour token |
+| 10 | Zero values outside tokens | Pass in `packages/ui` (0 in src, stories, .storybook); 12 remain in app pages, outside the design system |
+| 11 | Lines at most 75 characters | Pass: hints, alert descriptions and messages use `max-w-measure` (65ch) |
+| 12 | Message says what happened and what to do | Pass: e.g. "Wybierz „Bez mycia” albo „Nasze mycie”. Bez odpowiedzi wycena nie zostanie policzona." |
+
+Exception: the story "Select / Open list with groups" disables the axe rule `aria-hidden-focus`; while the list is open Radix hides the page with `aria-hidden` and traps focus in the list, which axe cannot see in a static open state.
+
+Proposals for the owner's decision (batch 2):
+
+1. Weekend option names translated from R13: "Wraca do domu w Polsce", "Odpoczywa za granicą", "Jedzie dalej", each with a one-line cost hint.
+2. No green badge at all; "Zgodne", "Niezweryfikowane", "Brak danych" share the neutral look and differ by word and icon.
+3. Alert has only `neutral` and `error`; no warning or success variant (no such tokens; success uses `SuccessMessage`).
+4. Highlighted Select option: page background plus underline; radio groups are vertical only.
+5. "Plan" as a neutral badge on entered-trip history rows (the spec says they are labelled as plan results).
+
 ## Plan
 
 - Storybook 10.6.5 with `@storybook/react-vite` in `packages/ui/.storybook`; addons: docs (MDX with `remark-gfm`), a11y (`test: 'error'`), vitest (stories as browser tests, Playwright Chromium); `msw` + `msw-storybook-addon` for `apiCall` responses. Separate `packages/ui/vitest.storybook.config.ts`; the root unit/coverage run stays unchanged.
@@ -133,7 +181,9 @@ For "What is missing": `CardTitle` is a `div`, so a heading goes inside it; time
 - Icon sizes 16/20 px, outline-only Tabler icons, `text-body-strong` role, 768 px breakpoint, monospace for documentation code (proposals).
 - App pages use 12 size/weight utilities outside the roles; changing them is app work outside this branch's scope.
 - Token script lives outside coverage (`packages/ui/scripts/`).
+- "Pewne" (certain) has no badge: only estimates are marked (R11.1, P4); `ValueWithSource` decides in stage 3.
+- Checkbox and switch are not in the system (Q5c); a need for independent options goes to "What is missing".
 
 ## Next step
 
-Owner says "next"; then stage 2: list the differences of shape, density and states from the shadcn defaults with their decisions, then primitives in batches of about six.
+Owner reviews batch 2 and the five proposals above and says "next"; then batch 3: Dialog, AlertDialog, DropdownMenu, Popover, Tooltip, Skeleton, plus the overlay shadow token, the 110 ms overlay appearance (Q5b) and applying both to the Select list.

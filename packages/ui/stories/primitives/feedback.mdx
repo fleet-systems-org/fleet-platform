@@ -1,0 +1,106 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as FeedbackStories from "./feedback.stories";
+
+<Meta of={FeedbackStories} />
+
+# Feedback messages
+
+`import { LoadingMessage } from "@fleet-platform/ui/backend/feedback/LoadingMessage"` · `SuccessMessage` · `ErrorMessage` · `EmptyState` (same folder)
+
+## 1. Purpose
+
+Tells the dispatcher, in one sentence where the content would be, whether something is loading, worked, failed or is empty, and what to do next.
+
+## 2. When to use
+
+- `LoadingMessage`: while a list or a quote loads ("Liczenie wyceny…").
+- `SuccessMessage`: after a saved action, with what changed ("Kurs przyjęty. Zestaw 01 będzie wolny…").
+- `ErrorMessage`: a form-level or list-level failure (`CrudForm`, `DataTable`).
+- `EmptyState`: a list with no rows, with the reason and one action when there is one (P9, R16.1).
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| A field is wrong | The `error` of its `Field` | Next to the control (WCAG 3.3.1) |
+| A whole result cannot be used yet and needs a title and an action | Alert | More than one sentence |
+| A notification that disappears | Not in the system (Q5c: no toast) | Messages stay where they happened |
+| A history source is unavailable | `EmptyState` with a distinct sentence | "No history", "source unavailable" and "unmatched places" are shown differently and never block the quote (spec: History) |
+
+## 4. Anatomy
+
+`LoadingMessage`, `SuccessMessage`: one paragraph. `ErrorMessage`: `IconAlertCircle` (required) and text. `EmptyState`: text (required) and one action (optional, a Button).
+
+## 5. Variants
+
+None; the four messages are the variants.
+
+<Canvas of={FeedbackStories.AllMessages} />
+
+| Message | Look | Role | Source |
+|---|---|---|---|
+| Loading | `text-body`, `text-muted`; no spinner | `status`, polite | Q5b |
+| Success | `text-body`, default text; no green | `status`, polite | proposal |
+| Error | `status-error` with icon | `alert` | Q3, WCAG 1.4.1 |
+| Empty | `text-body`, `text-muted`; optional action | `status` | P9, R16.1 |
+
+## 6. States
+
+Not applicable: messages are static text. The action of `EmptyState` has the Button states.
+
+<Canvas of={FeedbackStories.EmptyWithAction} />
+
+## 7. Behaviour and accessibility
+
+- Live regions announce a message that replaces content after an action: `status` politely, `alert` at once.
+- Messages are not focusable; after a failed submit focus goes to the first invalid field (`CrudForm`).
+- The error icon is `aria-hidden`; the words carry the meaning (WCAG 1.4.1). The `EmptyState` action is at least 36 × 36 px (WCAG 2.5.8).
+
+<Canvas of={FeedbackStories.Roles} />
+
+## 8. Content
+
+- Every message says what happened and what to do (checklist item 12): "Nie udało się zapisać kursu. Wpisane dane są w formularzu; sprawdź połączenie i zapisz ponownie."
+- Loading names the work, with an ellipsis: "Wczytywanie floty…".
+- Empty says why it is empty, not only that it is: "Ten zestaw nie ma jeszcze kursów."
+- At most 65 characters per line (`max-w-measure`, audit finding 15).
+
+## 9. Responsive
+
+- 1440 and 768 px: in place of the content they replace.
+- 320 px: text wraps; the action goes under the text.
+
+<Canvas of={FeedbackStories.LongTextNarrow} />
+
+## 10. API
+
+| Component | Props |
+|---|---|
+| `LoadingMessage`, `SuccessMessage` | `children`: the sentence |
+| `ErrorMessage` | `children`: the sentence; `id`: to point at it with `aria-describedby` |
+| `EmptyState` | `children`: the sentence; `action`: one optional element, usually a Button |
+
+## 11. Code
+
+```tsx
+<EmptyState>Brak historii cen na tej trasie. To nie blokuje wyceny.</EmptyState>
+```
+
+```tsx
+{loading ? <LoadingMessage>Liczenie wyceny…</LoadingMessage>
+  : error ? <ErrorMessage>{error}</ErrorMessage>
+  : trips.length === 0 ? <EmptyState action={<Button variant="secondary" onClick={newTrip}>Wpisz kurs</Button>}>Ten zestaw nie ma jeszcze kursów. Wpisz pierwszy kurs, żeby policzyć wycenę.</EmptyState>
+  : <TripList trips={trips} />}
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| "Nie udało się zapisać kursu. Wpisane dane są w formularzu…" | "Błąd 500". |
+| "Ten zestaw nie ma jeszcze kursów. Wpisz pierwszy kurs…" | "Brak danych" on an empty list: it hides why. |
+| Plain "Kurs przyjęty…" in default text. | A green toast that disappears before it is read (Q5c). |
+
+## 13. Related
+
+Confused with: Alert (title and action) and the Field error. Used in: `DataTable`, `CrudForm`, the quote result, history beside the quote.

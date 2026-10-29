@@ -49,6 +49,8 @@ export function findTextSpacingFailures(root: HTMLElement): TextSpacingFailure[]
     if (element.closest("svg")) continue;
     // A single-line input scrolls its own value; the text stays reachable with the caret, so it is not lost content.
     if (element instanceof HTMLInputElement) continue;
+    // Visually hidden text (sr-only, such as a table caption) is for screen readers; it has no visual box to lose.
+    if (element.closest(".sr-only")) continue;
     const style = getComputedStyle(element);
     const clipsX = ["hidden", "clip"].includes(style.overflowX);
     const clipsY = ["hidden", "clip"].includes(style.overflowY);

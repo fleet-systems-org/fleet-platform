@@ -14,6 +14,7 @@ it("wires the label, hint and error to the control", () => {
   expect(describedBy.map(id => document.getElementById(id)!.textContent)).toEqual(["Kwota netto, np. 1850,00", "Wpisz kwotę, np. 1850,00."]);
   expect(input.getAttribute("aria-invalid")).toBe("true");
   expect(input.hasAttribute("required")).toBe(true);
+  expect(document.getElementById(input.getAttribute("aria-labelledby")!)!.textContent).toBe("Fracht");
   expect(screen.queryByText("(opcjonalne)")).toBeNull();
 });
 

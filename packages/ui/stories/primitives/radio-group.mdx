@@ -1,0 +1,111 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as RadioStories from "./radio-group.stories";
+
+<Meta of={RadioStories} />
+
+# Radio group
+
+`import { RadioGroup, RadioGroupItem } from "@fleet-platform/ui/components/radio-group"`
+
+## 1. Purpose
+
+Makes the dispatcher give one explicit answer to a question that changes the quote, with every possible answer in sight.
+
+## 2. When to use
+
+- The mandatory wash question: "Bez mycia" or "Nasze mycie" with amount and date (R06, R09, trip entry step 4).
+- The weekend case when the trip touches a weekend: three answers (R13, WKD-1, step 6).
+- Any required choice of two to five options where a missing answer must stay missing.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| More than about five options, or a known list such as currencies | Select | The list would push the form down |
+| An on/off setting that takes effect at once | Switch is not in the system (Q5c); a two-option radio group (proposal) | One component for choices |
+| Several independent options | Checkbox is not in the system (Q5c); add it through "What is missing" | A radio group allows only one |
+
+## 4. Anatomy
+
+Group label (from `Field`, required), group hint and error (from `Field`, optional), options: a 16 px circle, a label (required) and a one-line hint (optional) that says what the answer means for the quote. The whole option row is the click target.
+
+## 5. Variants
+
+None. The group is always vertical, so each answer and its hint are read in full (proposal: horizontal groups break at 320 px).
+
+<Canvas of={RadioStories.Weekend} />
+
+The option names of the weekend case translate R13 into the dispatcher's words; the exact wording is a proposal for the owner.
+
+## 6. States
+
+<Canvas of={RadioStories.States} />
+
+| State | Look | Source |
+|---|---|---|
+| Default, nothing chosen | All circles empty; there is no default | R06, R09, WKD-1 |
+| Hover | Circle border in `action-primary` | proposal |
+| Focus | 2 px `focus-ring` outline around the circle | T4, WCAG 2.4.7 |
+| Selected | `action-primary` border and dot | N3a; the dot is the shape that says "chosen", not the colour alone (WCAG 1.4.1) |
+| Error | Circles with `border-error`, error text with icon under the group | Q3 |
+| Disabled | Muted labels, divider borders; the Field hint says why ("Kurs jest przyjęty; zmiana wymaga korekty z powodem") | audit finding 14 |
+| Pressed, loading | Not applicable | |
+
+## 7. Behaviour and accessibility
+
+- WAI-ARIA APG Radio Group through Radix: `Tab` enters the group on the chosen option (or the first one when none is chosen); arrow keys move and choose; `Tab` leaves the group.
+- `role="radiogroup"` named by the `Field` label through `aria-labelledby` (a `<label for>` cannot name a group), described by the hint and error, `aria-required` and `aria-invalid` from `Field`.
+- Each `role="radio"` is named by its label and described by its hint, so a screen reader reads "Nasze mycie, radio, 2 of 2, Koszt przewoźnika…".
+- Option rows are at least 36 px high and the label is clickable (WCAG 2.5.8).
+
+## 8. Content
+
+- The group label is the question the dispatcher asks: "Co kierowca robi w weekend?".
+- Option labels are short answers (2–5 words); the hint says the effect on the quote in one line.
+- The error names the answers: "Wybierz „Bez mycia” albo „Nasze mycie”. Bez odpowiedzi wycena nie zostanie policzona."
+
+## 9. Responsive
+
+- 1440 and 768 px: one column inside the form column.
+- 320 px: hints wrap under their labels.
+
+<Canvas of={RadioStories.LongTextNarrow} />
+
+## 10. API
+
+`RadioGroup` (Radix Root): `value`, `defaultValue` (avoid for required questions), `onValueChange`, `disabled`, `name`. `RadioGroupItem`: `value`, `label`, `hint`, `disabled`.
+
+<ArgTypes of={RadioStories} />
+
+## 11. Code
+
+```tsx
+<RadioGroup aria-label="Mycie cysterny" onValueChange={setWash}>
+  <RadioGroupItem value="none" label="Bez mycia" />
+  <RadioGroupItem value="ours" label="Nasze mycie" />
+</RadioGroup>
+```
+
+```tsx
+<Field label="Mycie cysterny" error={errors.wash} required>
+  <RadioGroup value={wash} onValueChange={setWash}>
+    <RadioGroupItem value="none" label="Bez mycia" />
+    <RadioGroupItem value="ours" label="Nasze mycie" hint="Koszt przewoźnika; wpisz kwotę i datę mycia" />
+  </RadioGroup>
+</Field>
+{wash === "ours" ? <Field label="Kwota mycia (EUR)" required><Input inputMode="decimal" /></Field> : null}
+```
+
+<Canvas of={RadioStories.WashKeyboardAndValidation} />
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| No preselected answer for the wash question. | "Bez mycia" checked by default: a forgotten question becomes "no wash" (R09). |
+| A hint under each weekend answer saying what it costs. | Codes such as `restAbroad` on screen. |
+| Show the amount and date fields only after "Nasze mycie". | Disabled amount fields always visible: they look like they need filling. |
+
+## 13. Related
+
+Confused with: Select (long lists) and Button (actions). Used in: trip entry (wash, weekend case), confirmation of a correction reason (later).

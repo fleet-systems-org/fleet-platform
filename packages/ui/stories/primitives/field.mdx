@@ -20,7 +20,7 @@ Tells the dispatcher what to type, in which format, and what is wrong, next to t
 
 | Situation | Use instead | Why |
 |---|---|---|
-| A group of radio buttons | Fieldset with a legend (radio group, later batch) | One label names one control |
+| A group of radio buttons | `Field` around a `RadioGroup`: the label names the group through `aria-labelledby` | `<label for>` cannot name a radio group (WAI-ARIA APG Radio Group) |
 | A read-only value in a result | A label above a value (`text-label` + `text-number`) | Nothing to type |
 | A form-wide error, such as no connection | `ErrorMessage` above the buttons | The field did nothing wrong |
 

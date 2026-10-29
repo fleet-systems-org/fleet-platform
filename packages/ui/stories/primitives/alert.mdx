@@ -1,0 +1,102 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as AlertStories from "./alert.stories";
+
+<Meta of={AlertStories} />
+
+# Alert
+
+`import { Alert } from "@fleet-platform/ui/components/alert"`
+
+## 1. Purpose
+
+Tells the dispatcher why a whole result or screen cannot be used yet and the one thing to do about it.
+
+## 2. When to use
+
+- An incomplete quote: "Zapytaj o weekend" (WKD-1), "Brak ceny frachtu" (costs shown, result not).
+- A stale quote after a field changed: acceptance waits until it is recalculated (spec: trip entry).
+- A failure that affects the whole panel: saving failed, the route provider did not answer.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| One field is wrong | The `error` of its `Field` | The message belongs next to the control (WCAG 3.3.1) |
+| A short form-level error above the buttons | `ErrorMessage` | One sentence, no panel |
+| One value is estimated | Badge "Szacunek" | Not a problem to solve |
+| A list is empty | `EmptyState` | Nothing failed |
+| A question that needs an answer before continuing | Confirmation dialog (later batch) | An alert does not block |
+
+## 4. Anatomy
+
+Panel (8 px radius, 1 px border, no shadow; owner decision 2026-10-29), icon (required, Tabler), title (required, `text-body-strong`), description (optional, `text-body`, at most 65 characters per line), action (optional, one Button).
+
+## 5. Variants
+
+| Variant | Look | Role | When | Source |
+|---|---|---|---|---|
+| `neutral` | `border-input`, `IconInfoCircle` | `status` (announced politely) | Incomplete or stale result: nothing failed, the dispatcher has one thing to do | proposal |
+| `error` | `border-error`, `IconAlertCircle`, title in `status-error` (5.00 : 1) | `alert` (announced at once) | Something failed | Q3 |
+
+There is no warning (yellow) or success (green) variant: there are no such tokens, and a successful action is reported with `SuccessMessage` (proposal).
+
+<Canvas of={AlertStories.Variants} />
+
+## 6. States
+
+Not applicable to the panel itself: it has no hover, focus, pressed, disabled, selected or loading state. The optional action button has its own states (see Button).
+
+<Canvas of={AlertStories.WithAction} />
+
+## 7. Behaviour and accessibility
+
+- `neutral` has `role="status"` and `error` has `role="alert"`, so a screen reader announces a message that appears after an action; pass `role` to override.
+- The panel is not focusable. After a failed submit, move focus to the first invalid field (as `CrudForm` does), not to the alert.
+- The colour repeats the icon and the words (WCAG 1.4.1). The action button is at least 36 × 36 px (WCAG 2.5.8).
+
+## 8. Content
+
+- Title: what happened, in a few words ("Wycena jest nieaktualna"). Exact phrases from the specification stay unchanged ("Zapytaj o weekend", "Brak ceny frachtu").
+- Description: what it means and what to do, one or two sentences; say what was kept ("Wpisane dane są w formularzu").
+- Action: verb plus object ("Policz ponownie").
+
+## 9. Responsive
+
+- 1440 and 768 px: full width of the panel it explains, above the result.
+- 320 px: the text wraps; the action stays under the text.
+
+<Canvas of={AlertStories.LongTextNarrow} />
+
+## 10. API
+
+<ArgTypes of={AlertStories} />
+
+Difference from shadcn: `title` and `action` are props instead of `AlertTitle` and `AlertDescription` parts, so every alert has a title and the same order.
+
+## 11. Code
+
+```tsx
+<Alert title="Brak ceny frachtu">Koszty są policzone, wynik nie. Wpisz fracht uzgodniony z klientem.</Alert>
+```
+
+```tsx
+{quote.stale ? (
+  <Alert title="Wycena jest nieaktualna" action={<Button variant="secondary" onClick={recalculate}>Policz ponownie</Button>}>
+    Zmieniłeś dane kursu po policzeniu. Policz wycenę ponownie, zanim przyjmiesz ładunek.
+  </Alert>
+) : null}
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| `neutral` for "Zapytaj o weekend": the dispatcher did nothing wrong. | `error` for an unanswered question: red reads as a failure. |
+| "Wpisane dane są w formularzu. Sprawdź połączenie i zapisz ponownie." | "Wystąpił błąd." with no next step. |
+| One alert per panel, the most important one. | A stack of alerts above the form. |
+
+## 13. Related
+
+Confused with: `ErrorMessage` (one sentence), Badge (status of one value), confirmation dialog (blocks until answered). Used in: the quote result panel, trip entry, policy configuration.
+
+<Canvas of={AlertStories.ActionAndRole} />

@@ -15,7 +15,8 @@ export function DataTable<T>({ columns, rows, rowKey, caption, page, pageSize, t
   loading?: boolean; error?: string; actions?: (row: T) => ReactNode; messages: DataTableMessages;
 }) {
   const pages = Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
-  return <section aria-label={caption} aria-busy={loading} className="flex flex-col gap-group">
+  // The scroll region carries the table's name; naming the section too would create two identical landmarks (axe landmark-unique).
+  return <section aria-busy={loading} className="flex flex-col gap-group">
     {loading ? <LoadingMessage>{messages.loading}</LoadingMessage>
       : error ? <ErrorMessage>{error}</ErrorMessage>
       : rows.length === 0 ? <EmptyState>{messages.empty}</EmptyState>
@@ -24,7 +25,7 @@ export function DataTable<T>({ columns, rows, rowKey, caption, page, pageSize, t
         <thead><tr>{columns.map(column => <th key={column.key} scope="col" className="h-row border-b border-input px-group text-body-strong">{column.header}</th>)}{actions && <th scope="col" className="h-row border-b border-input px-group text-body-strong">{messages.actions}</th>}</tr></thead>
         <tbody>{rows.map(row => <tr key={rowKey(row)}>{columns.map(column => <td key={column.key} className="h-row border-b border-divider px-group">{column.cell(row)}</td>)}{actions && <td className="h-row border-b border-divider px-group">{actions(row)}</td>}</tr>)}</tbody>
       </table></div>}
-    <div className="flex items-center gap-group">
+    <div className="flex flex-wrap items-center gap-group">
       <Button variant="secondary" disabled={loading || page <= 1} onClick={() => onPageChange(page - 1)}>{messages.previous}</Button>
       <span className="text-body">{messages.page(page, pages)}</span>
       <Button variant="secondary" disabled={loading || page >= pages} onClick={() => onPageChange(page + 1)}>{messages.next}</Button>

@@ -1,0 +1,99 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as BadgeStories from "./badge.stories";
+
+<Meta of={BadgeStories} />
+
+# Badge
+
+`import { Badge } from "@fleet-platform/ui/components/badge"`
+
+## 1. Purpose
+
+Tells the dispatcher in one word how far to trust a value or a row: estimated, a loss, verified or not.
+
+## 2. When to use
+
+- "Szacunek" next to an estimated input or result: fuel from the public price, a future exchange rate, invoice history rows (R11.1, B3, P4, EV-1).
+- "Strata" next to a negative trip result (N5a, K1).
+- Kilometre check in the fleet table: "Zgodne", "Niezweryfikowane", "Brak danych", always distinct (spec: Fleet, Phase 2).
+- "Plan" on entered-trip history rows until actual costs exist (spec: History, Phase 3).
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| A message with a next step ("Zapytaj o weekend") | Alert | A badge has no room for what to do |
+| A person, such as a driver | Nothing | Loss marks a trip result, never a person (R01) |
+| A value with its source and date | `ValueWithSource` (stage 3), which uses Badge inside | The source belongs in the details (EV-4) |
+| An action or a filter to remove | Button `icon-compact` | A badge is not interactive |
+
+## 4. Anatomy
+
+Box with a 1 px border and 4 px radius (`radius-control`, N4b), icon (optional, Tabler, 16 px, before the word), word (required, `text-label` 12/16).
+
+## 5. Variants
+
+| Variant | Colours (measured contrast) | When | Source |
+|---|---|---|---|
+| `neutral` | `text-default` on panel, `border-input` (14.71 : 1) | Statuses without a judgement: Plan, kilometre check | proposal |
+| `estimate` | `badge-estimate-text` on `badge-estimate-bg` (11.12 : 1) | "Szacunek" | R11.1, B3, P4 |
+| `loss` | `status-loss-text` on `status-loss-bg` (5.93 : 1) | "Strata" | N5a, K1 |
+
+There is no green badge. Missing telematics evidence must never look verified (spec: Fleet), so the three kilometre statuses share the neutral look and differ by word and icon: `IconCircleCheck`, `IconCircleDashed`, `IconCircleOff` (proposal).
+
+<Canvas of={BadgeStories.Variants} />
+<Canvas of={BadgeStories.KilometreCheck} />
+
+## 6. States
+
+Not applicable: a badge is static text. It has no hover, focus, pressed, disabled, loading, selected or error state; the error colour is never used on a badge (Q3: errors are for forms and the system).
+
+## 7. Behaviour and accessibility
+
+- A `span` read inline with the value next to it: "18,00 EUR Szacunek". It is not focusable and has no role.
+- The word carries the meaning; colour and icon only repeat it (WCAG 1.4.1). Icons are `aria-hidden`.
+- Not a click target, so WCAG 2.5.8 does not apply.
+
+<Canvas of={BadgeStories.NextToValue} />
+
+## 8. Content
+
+- One or two words, sentence case, no full stop: "Szacunek", "Brak danych".
+- Longer explanations (which source, how old) go to `ValueWithSource` details, not the badge. If a long text is unavoidable, the badge wraps.
+
+## 9. Responsive
+
+- 1440 and 768 px: in the row next to its value.
+- 320 px: wraps under the value when the row is too narrow; the word itself wraps if needed.
+
+<Canvas of={BadgeStories.LongTextNarrow} />
+
+## 10. API
+
+<ArgTypes of={BadgeStories} />
+
+## 11. Code
+
+```tsx
+<Badge variant="estimate">Szacunek</Badge>
+```
+
+```tsx
+<span className="flex items-center gap-group">
+  <span className="text-number text-loss">−12,40 EUR</span>
+  <Badge variant="loss">Strata</Badge>
+</span>
+<Badge><IconCircleDashed aria-hidden />Niezweryfikowane</Badge>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| "Niezweryfikowane" with a dashed circle when telematics evidence is missing. | A green "OK" when nothing was checked (spec: Fleet). |
+| "Szacunek" right after the estimated amount. | A grey amount without a word: grey reads as disabled. |
+| "Strata" on the trip result. | "Strata" next to the driver's name (R01). |
+
+## 13. Related
+
+Confused with: Alert (message with a next step), Button (action). Used in: `DataTable` cells, the quote result, history rows, `ValueWithSource` (stage 3).
