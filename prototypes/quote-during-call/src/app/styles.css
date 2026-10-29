@@ -47,8 +47,6 @@
 
 
 /* Title first, then summary on mobile; summary stays on the right on desktop. */
-.quote-value { font-size: var(--type-20); line-height: var(--type-20-leading); font-weight: var(--weight-600); font-variant-numeric: tabular-nums; }
-.loss-result { color: var(--status-loss-text); background: var(--status-loss-bg); border-radius: var(--radius-4); padding: var(--space-tight); }
 .summary-totals { border-top: 1px solid var(--border-divider); padding-top: var(--space-between); }
 .summary-totals > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-group); padding-block: var(--space-tight); }
 .summary-totals dd { font-variant-numeric: tabular-nums; }
@@ -56,9 +54,8 @@
 .quote-cost-table th:first-child { width: 24%; }
 .quote-cost-table .cost-source { width: 32%; }
 .quote-cost-table .cost-amount { width: 24%; }
-.quote-cost-table td, .quote-cost-table th { overflow-wrap: anywhere; vertical-align: top; }
-.quote-cost-table th button { white-space: normal; height: auto; padding: 0; text-align: left; }
-.cost-amount > span { display: block; width: fit-content; margin-left: auto; margin-top: var(--space-tight); }
+.quote-cost-table td, .quote-cost-table th { vertical-align: top; }
+.quote-cost-table .cost-source, .cost-source-mobile { overflow-wrap: anywhere; }
 .cost-source-mobile { display: none; }
 .share-cell { display: flex; gap: var(--space-tight); align-items: center; }
 .share-cell > span:first-child { white-space: nowrap; }
@@ -69,8 +66,8 @@
 @media (max-width: 48rem) {
   .quote-cost-table .cost-source { display: none; }
   .cost-source-mobile { display: block; margin-top: var(--space-tight); }
-  .quote-cost-table th:first-child { width: 40%; }
-  .quote-cost-table .cost-amount { width: 32%; }
+  .quote-cost-table th:first-child { width: 34%; }
+  .quote-cost-table .cost-amount { width: 40%; }
 }
 
 .stop-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-between); }
@@ -94,17 +91,15 @@
 
 /* EV-4: the details table exposes evidence inline; narrow rows retain column labels. */
 .value-details-table { table-layout: fixed; }
-.value-details-table th, .value-details-table td { text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.value-details-table th, .value-details-table td { text-align: left; vertical-align: top; }
 @media (min-width: 48.001rem) {
-.value-details-table > thead > tr > th:nth-child(1) { width: 18%; }
-.value-details-table > thead > tr > th:nth-child(2) { width: 22%; }
-.value-details-table > thead > tr > th:nth-child(3) { width: 15%; }
-.value-details-table > thead > tr > th:nth-child(4) { width: 15%; }
-.value-details-table > thead > tr > th:nth-child(5) { width: 12%; }
-.value-details-table > thead > tr > th:nth-child(6) { width: 18%; }
+.value-details-table > thead > tr > th:nth-child(1) { width: 16%; }
+.value-details-table > thead > tr > th:nth-child(2) { width: 32%; }
+.value-details-table > thead > tr > th:nth-child(3) { width: 20%; }
+.value-details-table > thead > tr > th:nth-child(4) { width: 14%; }
+.value-details-table > thead > tr > th:nth-child(5) { width: 18%; }
 }
 .value-details-table .exact-value { text-align: right; }
-.value-details-table button { padding: 0; white-space: normal; height: auto; text-align: left; }
 .value-details-table .vehicle-source-detail { padding: var(--space-group); }
 @media (max-width: 48rem) {
   .value-details-table, .value-details-table tbody, .value-details-table tr, .value-details-table th, .value-details-table td { display: block; width: 100%; }

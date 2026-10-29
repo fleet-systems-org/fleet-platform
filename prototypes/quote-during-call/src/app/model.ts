@@ -40,7 +40,7 @@ export const vehicles = [
   ["Auto 12", "Wolne od 14:00 · Miejsce E", "Kierowca L", "DEMO 012"],
 ];
 export const valueLabels = {
-  estimated: "Szacunek", certain: "Pewne", missing: "brak", conflicting: "Sprzeczne dane",
+  evidence: { plan: "Plan", estimated: "Szacunek", missing: "Brak danych", conflicting: "Sprzeczne dane" }, certain: "Pewne", missing: "brak", conflicting: "Sprzeczne dane",
   details: "Szczegóły", exactValue: "Dokładna wartość", certainty: "Pewność", source: "Źródło",
   sourceDate: "Data źródła", reason: "Powód",
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@fleet-platform/ui/components/button";
 import { Badge } from "@fleet-platform/ui/components/badge";
 import { Card, CardTitle } from "@fleet-platform/ui/components/card";
@@ -20,6 +20,10 @@ import { ZonedDateTimeField } from "@fleet-platform/ui/components/time/zoned-dat
 import { PlaceSelection } from "./PlaceSelection";
 import { CountryCosts } from "./CountryCosts";
 import { Quote, QuoteSummary } from "./Quote";
+import { Textarea } from "@fleet-platform/ui/components/textarea";
+import { LoadingMessage } from "@fleet-platform/ui/backend/feedback/LoadingMessage";
+import { ErrorMessage } from "@fleet-platform/ui/backend/feedback/ErrorMessage";
+import { CompleteValue, CompareDrafts } from "./QuoteTools";
 import { ValueDetails } from "./ValueDetails";
 import { CustomerStop, CustomerRoute, emptyStop } from "./CustomerStop";
 import { SignIn } from "./SignIn";
@@ -57,6 +61,14 @@ export function App() {
   const [accepted, setAccepted] = useState(false);
   const [hasAccepted, setHasAccepted] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  const [quoteState, setQuoteState] = useState('results');
+  const [lossReason, setLossReason] = useState('');
+  const [acceptanceError, setAcceptanceError] = useState('');
+  const acceptTrigger = useRef<HTMLButtonElement>(null);
+  const loss = quoteState === 'loss';
+  const quoteAmount = loss ? '30.00' : '60.00';
+  const quoteResult = loss ? '-8.18' : '21.82';
+  const quoteReady = quoteState === 'results' || loss;
   const [screenPicker, setScreenPicker] = useState(false);
   const [quoteStops, setQuoteStops] = useState<{ loading: ReturnType<typeof emptyStop>; unloading: ReturnType<typeof emptyStop> }> ({ loading: { customer: "", place: "Miejsce B" }, unloading: { customer: "", place: "Miejsce C" } });
   const [message, setMessage] = useState("");
@@ -66,6 +78,7 @@ export function App() {
     && loadingDate === "2026-11-12" && loadingTime === "12:00" && unloadingDate === "2026-11-12" && unloadingTime === "13:00";
   const invalidate = () => { setMessage(""); };
   function reset() {
+    setQuoteState('results'); setLossReason(''); setAcceptanceError(''); setConfirm(false);
     setEntryStep(1); setCompletedStep(0); setRouteState("results"); setRouteReady(true);
     setEntryVersion(v => v + 1);
     setVehicle(""); setLoading(emptyStop()); setUnloading(emptyStop()); setFreight(""); setWash(""); setAccepted(false); setMessage("");
@@ -100,7 +113,7 @@ export function App() {
   const quoteRoute = <Card><CardTitle>Trasa kursu</CardTitle><RouteStops label="Trasa kursu" timeZone="Warszawa" stops={tripStops(viewedStops.loading, viewedStops.unloading,
     "12.11.2026", "12:00", "12.11.2026", "13:00", "Kierowca A · DEMO 001")} /><p className="text-meta">Kilometry z symulacji mapy · Szacunek</p></Card>;
   const quoteActions = accepted ? <><Button onClick={reset}>Nowa wycena</Button>{later && <Link to="s07">Kursy auta</Link>}</> : <>
-    <Button onClick={() => { if (active === "s16") setConfirm(true); else go("s16"); }}>Przyjmij kurs</Button><Link to="s09">Zmień dane</Link></>;
+    <Button ref={active === "s16" ? acceptTrigger : undefined} disabled={!quoteReady} onClick={() => { if (active === "s16") { setAcceptanceError(""); setConfirm(true); } else go("s16"); }}>Przyjmij kurs</Button><Link to="s09">Zmień dane</Link></>;
   function advance(step: number) { setCompletedStep(value => Math.max(value, step)); setEntryStep(step + 1); }
   const content: Record<string, ReactNode> = {
     s01: <SignIn key={signInVersion} newComputer={newComputer} onSignedIn={() => go("s09")} />,
@@ -157,10 +170,14 @@ export function App() {
       <div className="actions"><Link to="s09">Wróć do wpisu</Link><Button disabled={routeState === "searching" || !routeReady} onClick={() => { go("s12"); }}>Wyceń</Button></div></>,
     s12: <>
       {accepted && <SuccessMessage>Kurs przyjęty. Kierowca A · DEMO 001 wolne w Miejscu C od 13:00.</SuccessMessage>}
-      <Quote/>
+      <Field label="s12 · Odpowiedź serwera"><select aria-label="s12 · Odpowiedź serwera" className="scenario-select" disabled={accepted} value={quoteState} onChange={event => { setQuoteState(event.target.value); setLossReason(''); }}><option value="results">Wycena K2 · 60,00 EUR</option><option value="loss">Strata · fikcyjny fracht 30,00 EUR</option><option value="pending">Liczę wycenę…</option><option value="unavailable">Usługa niedostępna</option></select></Field>
+      {quoteState === 'pending' ? <LoadingMessage>Liczę wycenę…</LoadingMessage> : quoteState === 'unavailable' ? <ErrorMessage>Usługa wyceny niedostępna. Spróbuj ponownie po przywróceniu usługi.</ErrorMessage> : <Quote/>}
+      <div className="actions"><Link to="s14">Uzupełnij daną</Link><Link to="s15">Porównaj szkice</Link></div>
     </>,
-    s13: <><ValueDetails/><div className="actions"><Link to="s12">Wróć do wyceny</Link></div></>,
-    s16: <><Card><CardTitle>Przyjęcie zachowa wycenę K2</CardTitle><p>Kierowca A · DEMO 001 · Miejsce B → Miejsce C · fracht 60,00 EUR · koszt 38,18 EUR · wynik 21,82 EUR.</p>
+    s13: <><ValueDetails amount={quoteAmount}/><div className="actions"><Link to="s12">Wróć do wyceny</Link></div></>,
+    s14: <CompleteValue/>,
+    s15: <CompareDrafts accepted={hasAccepted} acceptedLoss={loss}/>,
+    s16: !quoteReady ? <Alert variant="neutral" title="Uwaga · Brak gotowej wyceny">Wróć do wyceny i poczekaj na odpowiedź usługi.<Link to="s12">Wróć do wyceny</Link></Alert> : <><Card><CardTitle>Przyjęcie zachowa wycenę K2</CardTitle><p>Kierowca A · DEMO 001 · Miejsce B → Miejsce C · fracht {quoteAmount.replace(".", ",")} EUR · koszt 38,18 EUR · wynik {quoteResult.replace(".", ",")} EUR.</p>
       <Link to="s12">Anuluj przyjęcie</Link>
     </Card></>,
     s07: <><h1 className="text-page-title">Kursy auta · Kierowca A · DEMO 001</h1>
@@ -201,12 +218,12 @@ export function App() {
               if (link?.getAttribute("href") === "#s09") { event.preventDefault(); reset(); }
             }}>
             <AppFrame navigationLabel="Nawigacja produktu"
-              items={[{ href: "#s09", label: "Nowa wycena", current: ["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) }, ...(later ? [{ href: "#s07", label: "Kursy aut", current: id === "s07" }, { href: "#s06", label: "Flota", current: id === "s06" }] : [])]}
+              items={[{ href: "#s09", label: "Nowa wycena", current: ["s09", "s10", "s11", "s12", "s13", "s14", "s15", "s16"].includes(id) }, ...(later ? [{ href: "#s07", label: "Kursy aut", current: id === "s07" }, { href: "#s06", label: "Flota", current: id === "s06" }] : [])]}
               later={later ? undefined : { label: "Później", items: ["Kursy aut", "Flota"] }}
               account={<><span className="text-meta">{role === "owner" ? "właściciel" : "dyspozytor"}</span><Button variant="text" onClick={() => { reset(); go("s01"); }}>Wyloguj</Button></>}
-              width={["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) ? "centred" : "full"}
-              steps={["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) ? <StepBar label="Postęp wyceny" steps={["Auto", "Miejsca i czasy", "Fracht i mycie", "Wycena"]} current={id === "s09" ? entryStep - 1 : id === "s10" ? 1 : 3} doneText="gotowe"/> : undefined}
-              panel={["s09", "s10"].includes(id) ? entryRoute : ["s11", "s12", "s13", "s16"].includes(id) ? <QuoteSummary amount="60.00" result="21.82" actions={quoteActions}/> : undefined}
+              width={["s09", "s10", "s11", "s12", "s13", "s14", "s15", "s16"].includes(id) ? "centred" : "full"}
+              steps={["s09", "s10", "s11", "s12", "s13", "s14", "s15", "s16"].includes(id) ? <StepBar label="Postęp wyceny" steps={["Auto", "Miejsca i czasy", "Fracht i mycie", "Wycena"]} current={id === "s09" ? entryStep - 1 : id === "s10" ? 1 : 3} doneText="gotowe"/> : undefined}
+              panel={["s09", "s10"].includes(id) ? entryRoute : ["s11", "s12", "s13", "s14", "s15", "s16"].includes(id) ? (quoteReady ? <QuoteSummary amount={quoteAmount} result={quoteResult} actions={quoteActions}/> : <Card><CardTitle>Podsumowanie wyceny</CardTitle><p>Wynik niedostępny. Poczekaj na odpowiedź usługi.</p></Card>) : undefined}
               panelLabel={["s09", "s10"].includes(id) ? "Trasa kursu" : "Podsumowanie wyceny"}>
               <div className="stack">
               {["s11", "s12", "s13", "s16"].includes(id) && <><h1 className="text-page-title">{id === "s12" ? <>Wycena K2 · Kierowca A · DEMO 001 <Badge variant="neutral">{accepted ? "Przyjęty" : "Szkic"}</Badge></> : id === "s11" ? "Trasa i kraje" : id === "s13" ? "Szczegóły wartości" : "Przyjęcie kursu"}</h1>{quoteRoute}</>}
@@ -217,9 +234,10 @@ export function App() {
         </div><div className="notes"><p className="note text-meta">Prototyp · symulacja, dane fikcyjne · etap 1.</p>{["s12", "s13"].includes(id) && <p className="note text-meta">Podział kosztów auta jest fikcyjną ilustracją stawki dziennej; nie jest konfiguracją firmy. Praca: tylko suma i zatwierdzona stawka przykładu, bez danych płacowych. Źródła są symulowane, bez połączeń z usługami.</p>}</div>
       </section>; })}
     </div>
-    <AlertDialog open={confirm && active === "s16"} onOpenChange={setConfirm}><AlertDialogContent>
-      <AlertDialogHeader><AlertDialogTitle>Przyjąć kurs K2?</AlertDialogTitle><AlertDialogDescription>Symulacja: zapisze wycenę 21,82 EUR z kursem. Kierowca A · DEMO 001 będzie wolne w Miejscu C od 13:00. Pozostałe szkice staną się nieaktualne.</AlertDialogDescription></AlertDialogHeader>
-      <AlertDialogFooter><AlertDialogCancel>Anuluj</AlertDialogCancel><AlertDialogAction onClick={() => { setAcceptedStops({ loading: { ...quoteStops.loading }, unloading: { ...quoteStops.unloading } }); setAccepted(true); setHasAccepted(true); go("s12"); }}>Przyjmij kurs K2</AlertDialogAction></AlertDialogFooter>
+    <AlertDialog open={confirm && active === "s16"} onOpenChange={setConfirm}><AlertDialogContent onCloseAutoFocus={event => { event.preventDefault(); if (accepted) document.querySelector<HTMLHeadingElement>('#s12 h1')?.focus(); else acceptTrigger.current?.focus(); }}>
+      <AlertDialogHeader><AlertDialogTitle>Przyjąć kurs K2?</AlertDialogTitle><AlertDialogDescription>Symulacja: zapisze wycenę {quoteResult.replace(".", ",")} EUR z kursem. Kierowca A · DEMO 001 będzie wolne w Miejscu C od 13:00. Pozostałe szkice staną się nieaktualne.</AlertDialogDescription></AlertDialogHeader>
+      <Field label={loss ? "Powód przyjęcia straty" : "Notatka przyjęcia"} required={loss} optionalText={loss ? undefined : "opcjonalne"} hint="Krótko, bez nazwisk i danych osobowych. Do 500 znaków." error={acceptanceError || undefined}><Textarea value={lossReason} onChange={event => { setLossReason(event.target.value); setAcceptanceError(''); }} maxLength={500}/></Field>
+      <AlertDialogFooter><AlertDialogCancel>Anuluj</AlertDialogCancel><AlertDialogAction onClick={event => { if (!quoteReady || (loss && !lossReason.trim())) { event.preventDefault(); setAcceptanceError('Wpisz powód przyjęcia straty.'); return; } setAcceptedStops({ loading: { ...quoteStops.loading }, unloading: { ...quoteStops.unloading } }); setAccepted(true); setHasAccepted(true); go("s12"); }}>Przyjmij kurs K2</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent></AlertDialog>
   </>;
 }

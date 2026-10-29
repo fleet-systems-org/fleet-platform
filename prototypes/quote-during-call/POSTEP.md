@@ -66,11 +66,11 @@ Each gap gets the simplest version built from tokens and existing components, ma
 
 - G02 zoned date-time field: date and time `Input`s labelled "Czas warszawski".
 - G03 place picker: **closed in Stage 1n**, shared `PlacePicker` after L09 (#62).
-- G08 table sorting: sort buttons in column headers.
+- G08 table sorting: **open after Stage 1o**; shared `DataTable` has no sorting API. No parallel page sorting or header buttons added.
 - G10 warning/success: **closed in Stage 1n**, `Alert neutral` with icon + "Uwaga" and `SuccessMessage` (W1); no new status tokens.
-- G11 trip status words: `Badge` `neutral` with Szkic, Przyjęty, Anulowany, Nieaktualna, Do przeglądu.
-- G12 page frame/navigation/steps: **closed in Stage 1n**, shared `AppFrame` and `StepBar`; narrow Menu composed by page (see remaining limitation).
-- G13 trip sequence, country split and result panel.
+- G11 trip status words: **closed in Stage 1o for s12–s16**, `Badge` `neutral` with Szkic, Przyjęty, Anulowany, Nieaktualna, Do przeglądu.
+- G12 page frame/navigation/steps: **closed in Stage 1n**, shared `AppFrame` and `StepBar`; approved plain navigation list below 768 px (Stage 1n review correction).
+- G13 country split: composed in Stage 1n; cost breakdown and result panel: **closed in Stage 1o**. Trip sequence outside s12–s16 remains for its own scope.
 - G15 route schematic: **closed in Stage 1n**, shared `RouteStops` (N7b supersedes schematic).
 
 Closed: G01 and G04 (#43), G05–G07 (#39); G09 not needed.
@@ -464,3 +464,42 @@ Passed: prototype typecheck/build, repository typecheck/lint, explicit prototype
 ### Stage 1n review correction verification (2026-10-29)
 
 Both requested corrections verified: prototype typecheck/build; repository typecheck/lint/test and test:coverage (202 tests, 100% in all four metrics); explicit prototype ESLint; tokens zero outside eight unchanged N8a values. Review engine unchanged; protected-source diff against main byte-identical to the starting branch. VPS browser: 320/768/1440, no Menu button or horizontal overflow, full K2 path 21.82 EUR, successful map results exclude towns, no-result/unavailable fallback includes company towns, zero runtime/console errors. Replaced 320-s10 and 768-s09 captures and added 1440-s10-wyniki externally. At exactly 768 px the approved AppFrame md breakpoint puts navigation on the left; the plain list above content applies below 768 px. No geometry workaround was introduced. Existing large-bundle warning remains. No production integration/Storybook/cross-browser run. No PR or base merge.
+
+## Stage 1o. Rebuild on design-system components (D1), part 2: s12–s16
+
+Status: implementation verified; publication pending (2026-10-29).
+
+### Goal and changes
+
+Compose the current design-system components without changing shared sources, the application or the review engine. Stage 2 scenarios, new screens, driver/tractor/customer-directory work remain outside this stage.
+
+- s12 retains one cost table (source, amount, share and action-colour bar) beside one summary Card, using ValueWithSource and EvidenceBadge. Certain freight and zero wash have no badge; estimates do. Neutral Badge carries Szkic/Przyjęty. Loss uses Badge loss with Strata and minus; profit has no green signal (N5a/N6a/R11.1/R17.1/P4).
+- s12's explicit synthetic response selector exercises result, loss (30.00 − 38.18 = −8.18 EUR), pending and unavailable. Pending says Liczę wycenę… with LoadingMessage, has no client timeout, hides the result and prevents acceptance; a service error uses ErrorMessage (L08). This is verification of requested states, not the Stage 2 scenario suite.
+- s13 uses ValueWithSource and its shared Popover for exact values, certainty, source, date and reason. Country toll rates match the Stage 1n fixture. Vehicle details reuse the category rows.
+- s14 composes Dialog, DecimalField, Field and Textarea; labelled input and source/reason are required. A valid entry is retained only in local simulation and does not silently recalculate the fixed K2 quote. Dialog preserves input on outside interaction and restores trigger focus on close.
+- s15 composes DataTable and neutral status Badges with two explicitly fictitious drafts. Shared paging controls are used. No recommendation or custom sorting. Full comparison behaviour remains Stage 2.
+- s16 composes AlertDialog with Textarea (optional note, required trimmed reason for a negative rounded result, max 500 characters, no personal data). Cancel initially has focus, Escape/cancel return to the trigger; acceptance keeps the quote, navigates to accepted s12 and displays SuccessMessage (W1).
+- Removed the unrelated private-process sentence from the Stage 1n run log.
+
+### Exact synthetic vehicle costs (FIN-3)
+
+Each category is its daily EUR rate × 7200 / 86400, carried as a BigInt rational cent numerator until publication. Daily rates: 24, 8, 2, 6, 10, 8, 3, 1, 10 EUR; total 72. Each published category is independently rounded half-up: 2.00, 0.67, 0.17, 0.50, 0.83, 0.67, 0.25, 0.08, 0.83 EUR. No largest-remainder allocation and no Number conversion.
+
+The exact aggregate is rounded once: 72 × 7200 / 86400 = **6.00 EUR**. The displayed categories also sum to 6.00, so this fixture needs no reconciliation. The composition renders a reconciliation line when their sum differs from the once-rounded exact aggregate. Covered cost **38.18 EUR** and result **21.82 EUR** remain unchanged. Rates are fictitious, not company configuration or a new financial policy; A10 remains open.
+
+### Closed and remaining gaps
+
+- G11 closed for s12–s16: neutral status Badge, word owned by the page.
+- G13 cost breakdown and summary closed by table/Card/ValueWithSource/EvidenceBadge composition; no new primitive. Country split was covered in Stage 1n. Other screens, including sequence work, are unchanged.
+- DS GAP G08 remains: DataTable exposes columns/rows/paging but no sort state, header control or sort callback. Sorting must be added to the shared component under a separate order; no workaround in this prototype.
+- Shared sources remain unchanged. AppFrame's approved below-xl content-then-panel order is retained. No overrides of shared control interiors were added; inherited button geometry overrides were removed from quote/details tables.
+
+### Checks
+
+Passed: prototype typecheck/build; repository typecheck/lint; explicit prototype ESLint; 202 unit tests; 100% coverage (580 statements, 459 branches, 184 functions, 491 lines), without configuration/exclusion changes. Tokens: only eight unchanged N8a map colours, zero outside the exception. Mechanical detector: zero findings. BigInt fixture assertions and independent Python Decimal check agree on all category amounts and 6.00 total.
+
+Final built-browser pass at actual 1440/1024/768/320 CSS px: s09 → s10 → s09 → s11 → s12 → s13 → s16 → accepted s12; s14 and s15; expanded nine vehicle categories in s12/s13; no horizontal page scroll. Popover/Dialog/AlertDialog keyboard opening, labels, Tab and Escape, initial cancel focus and focus return passed. Loss is −8.18 EUR and requires a reason; accepted loss remains negative. Pending stays until explicit response selection, hides result and acceptance; unavailable state is shown. Runtime/console errors zero. At 320 px page table columns retain readable evidence words without overriding shared controls.
+
+External screenshots (not committed): 1440-s12, 1440-s12-strata, 1440-s13, 1440-s14, 1440-s15, 1440-s16, 1440-s12-przyjeta, 320-s12; extra happy-path captures retained. Build and earlier evidence are preserved in the existing preview folder. Review engine SHA256 unchanged; no edits in protected application/shared source/story folders, and their diff against origin/main equals the starting branch. Privacy scan zero; added text and commit messages contain no private-process references. Product specification status remains unchanged: this is a synthetic prototype, not implemented E01 backend.
+
+Existing Vite large-bundle warning remains. Production integration, Storybook suite and cross-browser checks were not run. Publication evidence is recorded in the run log. No PR or base merge.
