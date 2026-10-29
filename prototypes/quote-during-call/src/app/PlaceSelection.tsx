@@ -42,7 +42,7 @@ function Endpoint({ label, scenario, ownPlaces, onSelect, onSave }: {
     if (scenario !== "results" || !query.trim()) return;
     // A simulated successful response, not a client-side timeout or failure cutoff.
     const response = setTimeout(() => {
-      const matches = [...ownPlaces, ...addresses.filter(address => !ownPlaces.some(place => place.id === address.id)), ...towns].filter(option => normalize(`${option.name} ${option.detail}`).includes(normalize(query)));
+      const matches = [...ownPlaces, ...addresses.filter(address => !ownPlaces.some(place => place.id === address.id))].filter(option => normalize(`${option.name} ${option.detail}`).includes(normalize(query)));
       setStatus(matches.length ? "results" : "notFound");
       setOptions(matches.length ? matches : [...ownPlaces, ...towns]);
     }, 300);

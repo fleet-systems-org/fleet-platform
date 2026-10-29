@@ -455,8 +455,12 @@ D1: screens live here, not as Storybook stories. Merged current main and open #6
 
 G03, G10, G12 and G15 are closed by shared components/composition. G02's shared time control was already adopted; remaining G08, G11/G13 table/status/quote compositions are for part 2 (s12–s16), no new primitive invented here.
 
-DS GAP: AppFrame has no mobile-menu prop (its approved small layout is a plain navigation list). The page composes an existing Button and disclosure CSS below 768 px, preserving shared navigation/entries rather than copying them. AppFrame places its panel after content below 1280 px; this shared order now applies to the quotation panel. A different mobile title/summary/route order needs a later component decision; shared source is untouched.
+Review correction (2026-10-29): below 768 px, AppFrame navigation is a plain list above the content, without a Menu button, disclosure state or page overrides of AppFrame geometry, as approved in Stage 3 batch 5 proposal 4. The former mobile-menu gap is removed because the approved component needs no such prop. L09: successful searches contain saved places and map addresses only; company towns appear only when no address is found or the map is unavailable. Empty-query saved places and fallback lists remain unchanged. AppFrame places its panel after content below 1280 px; this shared order now applies to the quotation panel. A different mobile title/summary/route order needs a later component decision; shared source is untouched.
 
 ### Checks and handoff
 
 - External preview and screenshots were kept outside the repository; client-side availability was not verified.
+
+### Stage 1n review correction verification (2026-10-29)
+
+Both requested corrections verified: prototype typecheck/build; repository typecheck/lint/test and test:coverage (202 tests, 100% in all four metrics); explicit prototype ESLint; tokens zero outside eight unchanged N8a values. Review engine unchanged; protected-source diff against main byte-identical to the starting branch. VPS browser: 320/768/1440, no Menu button or horizontal overflow, full K2 path 21.82 EUR, successful map results exclude towns, no-result/unavailable fallback includes company towns, zero runtime/console errors. Replaced 320-s10 and 768-s09 captures and added 1440-s10-wyniki externally. At exactly 768 px the approved AppFrame md breakpoint puts navigation on the left; the plain list above content applies below 768 px. No geometry workaround was introduced. Existing large-bundle warning remains. No production integration/Storybook/cross-browser run. No PR or base merge.

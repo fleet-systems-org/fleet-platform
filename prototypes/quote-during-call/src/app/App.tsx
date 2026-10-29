@@ -33,7 +33,6 @@ function Link({ to, children }: { to: string; children: ReactNode }) {
 }
 
 export function App() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [routeReady, setRouteReady] = useState(true);
   const [routeState, setRouteState] = useState("results");
   const [entryStep, setEntryStep] = useState(1);
@@ -75,7 +74,7 @@ export function App() {
     go("s09");
   }
   useEffect(() => {
-    const changed = (event: Event) => { setActive((event as CustomEvent<string>).detail); setScreenPicker(false); setMenuOpen(false); };
+    const changed = (event: Event) => { setActive((event as CustomEvent<string>).detail); setScreenPicker(false); };
     document.addEventListener("prototype:screen-change", changed);
     window.__PROTOTYPE_START__();
     const stopLocalizing = localizeReview();
@@ -197,13 +196,11 @@ export function App() {
       {screenNames.map((name, i) => { const id = screenId(i); return <section className="screen" id={id} key={id} aria-label={`${id} · ${name}`}>
         <div className="screen-meta text-meta">{id} · {name}</div><div className="frame">
           {i > 3 ? <>
-            <div className="product-menu"><Button variant="secondary" aria-expanded={menuOpen} aria-controls={`${id}-product`} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? "Zamknij menu" : "Menu"}</Button></div>
             <div id={`${id}-product`} onClick={event => {
               const link = (event.target as HTMLElement).closest('nav a');
               if (link?.getAttribute("href") === "#s09") { event.preventDefault(); reset(); }
-              if (link) setMenuOpen(false);
             }}>
-            <AppFrame className={menuOpen ? "product-menu-open" : ""} navigationLabel="Nawigacja produktu"
+            <AppFrame navigationLabel="Nawigacja produktu"
               items={[{ href: "#s09", label: "Nowa wycena", current: ["s09", "s10", "s11", "s12", "s13", "s16"].includes(id) }, ...(later ? [{ href: "#s07", label: "Kursy aut", current: id === "s07" }, { href: "#s06", label: "Flota", current: id === "s06" }] : [])]}
               later={later ? undefined : { label: "Później", items: ["Kursy aut", "Flota"] }}
               account={<><span className="text-meta">{role === "owner" ? "właściciel" : "dyspozytor"}</span><Button variant="text" onClick={() => { reset(); go("s01"); }}>Wyloguj</Button></>}
