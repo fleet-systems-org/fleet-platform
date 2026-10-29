@@ -1,0 +1,14 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Themes" />
+
+# Themes
+
+Fleet Platform has one theme: light. There is no dark theme and no theme switcher.
+
+| Decision | Source |
+|---|---|
+| Light theme only for now; the dispatcher works in an office on two monitors. | Q1 |
+| Tokens are set on the document root (`:root`), so dialogs, menus and popovers rendered outside a story or a page section get the same values. | Design system rule 9 |
+
+To add a theme later: define the semantic tokens of layer 2 again under a root selector (for example `:root[data-theme="dark"]`), recheck every contrast pair on the Color page in both themes, run the story tests in both themes and add a toolbar switcher that sets the attribute on `document.documentElement`. Components need no change, because they use only semantic utilities.

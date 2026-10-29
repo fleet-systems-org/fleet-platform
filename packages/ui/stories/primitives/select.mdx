@@ -1,0 +1,115 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as SelectStories from "./select.stories";
+
+<Meta of={SelectStories} />
+
+# Select
+
+`import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@fleet-platform/ui/components/select"`
+
+## 1. Purpose
+
+Lets the dispatcher pick one value from a known list without typing it, so the value cannot be misspelt.
+
+## 2. When to use
+
+- A list of more than about five known values: freight currency, truck ("Zestaw 01"), rows per page.
+- A value the server validates against a list, so a typed value would only produce an error.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| Two to five options the dispatcher must compare, such as the wash or weekend question | Radio group | All options stay visible; nothing is preselected (R09, WKD-1) |
+| A place (loading, unloading) | `PlacePicker` (stage 3) | Places are searched, not listed (Q4) |
+| An action, such as "Popraw" or "Anuluj kurs" | Button or a menu (later batch) | A select chooses a value; it does not act |
+
+## 4. Anatomy
+
+Trigger (required: chosen value or placeholder, `IconChevronDown`), list (opens below the trigger, at least the trigger's width), options (text and `IconCheck` on the chosen one), group labels and separators (optional). The visible label comes from `Field`.
+
+## 5. Variants
+
+| Size | Height | When | Source |
+|---|---|---|---|
+| `default` | at least 36 px | Forms | owner decision 2026-10-29 |
+| `compact` | at least 32 px | Inside a 36 px table row, for example rows per page | owner decision 2026-10-29 |
+
+Long values wrap and the trigger grows; nothing is cut off with an ellipsis (WCAG 1.4.10, 1.4.12). Shadow and the 110 ms appearance of the list come with the overlay batch (owner decision 2026-10-29: one light shadow on menus and popovers; Q5b).
+
+<Canvas of={SelectStories.Sizes} />
+<Canvas of={SelectStories.Groups} />
+
+## 6. States
+
+<Canvas of={SelectStories.States} />
+
+| State | Look | Source |
+|---|---|---|
+| Default, nothing chosen | Placeholder in `text-muted` ("Wybierz walutę"); no value is preselected for a required choice | R09, proposal |
+| Hover | Page background | as Button `secondary`, proposal |
+| Focus | 2 px `focus-ring` outline, 2 px offset | T4, WCAG 2.4.7 |
+| Open, highlighted option | Option on page background, underlined | proposal; underline so the highlight is not colour alone (WCAG 1.4.1) |
+| Selected | Value in the trigger; `IconCheck` next to the option in the list | WCAG 1.4.1 |
+| Disabled | Page background, muted text, divider border; the Field hint says when it becomes available | audit finding 14 |
+| Disabled option | Muted text, cannot be chosen; the option text says why ("HUF (brak kursu NBP)") | audit finding 14 |
+| Error | `border-error`, error text with icon from `Field` | Q3 |
+| Loading, pressed | Not applicable: options are known when the screen loads | |
+
+## 7. Behaviour and accessibility
+
+- WAI-ARIA APG Select-Only Combobox through Radix: `Enter`, `Space`, `ArrowDown` open the list; arrows move; `Enter` chooses; `Escape` closes; typing a letter jumps to the matching option; focus returns to the trigger.
+- The trigger is a `button` with `role="combobox"`, named by the `Field` label (`aria-labelledby`), described by the hint and error, `aria-invalid` and `aria-required` from `Field`.
+- While the list is open, the rest of the page is hidden from screen readers and focus stays in the list. The story "Open list with groups" disables the axe rule `aria-hidden-focus` because axe cannot see this focus trap in a static open state.
+- Targets: trigger at least 36 × 36 px, options at least 32 px high (WCAG 2.5.8).
+
+## 8. Content
+
+- Placeholder says the action: "Wybierz walutę". It never replaces the label.
+- Options are nouns as the dispatcher says them; currency codes as written in the contract (EUR, PLN).
+- A disabled option says why in its own text. Long option text wraps; Polish names of places can be long.
+
+## 9. Responsive
+
+- 1440 and 768 px: the trigger takes the width of its Field column.
+- 320 px: full width; long values wrap to two lines.
+
+<Canvas of={SelectStories.LongValueNarrow} />
+
+## 10. API
+
+`Select` (Radix Root): `value`, `defaultValue`, `onValueChange`, `disabled`, `name`, `required` (for the native form value). `SelectTrigger`: `size`. `SelectItem`: `value`, `disabled`. `SelectContent`: `position` (default `popper`), `align` (default `start`).
+
+<ArgTypes of={SelectStories} />
+
+## 11. Code
+
+```tsx
+<Select onValueChange={setCurrency}>
+  <SelectTrigger aria-label="Waluta"><SelectValue placeholder="Wybierz walutę" /></SelectTrigger>
+  <SelectContent><SelectItem value="EUR">EUR</SelectItem><SelectItem value="PLN">PLN</SelectItem></SelectContent>
+</Select>
+```
+
+```tsx
+<Field label="Waluta frachtu" hint="Waluta z umowy z klientem" error={errors.currency} required>
+  <Select value={currency} onValueChange={setCurrency}>
+    <SelectTrigger><SelectValue placeholder="Wybierz walutę" /></SelectTrigger>
+    <SelectContent>{currencies.map(code => <SelectItem key={code} value={code}>{code}</SelectItem>)}</SelectContent>
+  </Select>
+</Field>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Radio group for "Bez mycia" / "Nasze mycie": both answers stay in sight. | A select with "Bez mycia" preselected: a missing answer would look like an answer (R09). |
+| "HUF (brak kursu NBP)" as a disabled option: the reason is in the list. | Silently leaving HUF out: the dispatcher thinks the list is wrong. |
+| A long place name that wraps in the trigger. | An ellipsis that hides which gate was chosen. |
+
+## 13. Related
+
+Confused with: Radio group (few options, all visible), `PlacePicker` (search), a menu (actions). Used in: trip entry (currency, truck), `DataTable` page size, policy configuration.
+
+<Canvas of={SelectStories.ClickAndKeyboard} />

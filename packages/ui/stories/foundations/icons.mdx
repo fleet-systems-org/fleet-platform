@@ -1,0 +1,40 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { IconAlertCircle, IconClock, IconInfoCircle, IconMapPin, IconTruck, IconX } from "@tabler/icons-react";
+
+<Meta title="Foundations/Icons" />
+
+# Icons
+
+One icon set for the whole product: Tabler Icons (`@tabler/icons-react`, MIT licence), outline style. `components.json` sets `iconLibrary: "tabler"`, so components added with the shadcn CLI use the same set. Icons inherit the text colour (`currentColor`).
+
+<Unstyled>
+  <div className="flex flex-col gap-between">
+    <div className="flex flex-wrap gap-between text-body">
+      {[[IconTruck, "IconTruck"], [IconMapPin, "IconMapPin"], [IconClock, "IconClock"], [IconAlertCircle, "IconAlertCircle"], [IconInfoCircle, "IconInfoCircle"], [IconX, "IconX"]].map(([Icon, name]) => (
+        <span key={name} className="flex items-center gap-group"><Icon aria-hidden className="size-4" /><code className="text-code">{name}</code></span>
+      ))}
+    </div>
+    <p className="flex items-center gap-group text-body"><IconTruck aria-hidden className="size-4" />Zestaw 03 zwolni się w Poznaniu, 30.10.2026 14:00</p>
+    <p className="flex items-center gap-group text-body"><IconTruck aria-hidden className="size-5" />Ikona 20 px: ta sama grubość linii co przy 16 px</p>
+  </div>
+</Unstyled>
+
+## Stroke
+
+The line width matches the text it stands next to. The vertical stem of IBM Plex Sans 400 is 80/1000 em (measured in the bundled font file), which is 1.12 px in 14 px body text. `--icon-stroke` holds that value and `src/styles.css` applies it to every Tabler icon with `vector-effect: non-scaling-stroke`, so 16 px and 20 px icons draw the same 1.12 px line. Tabler's default (2 on a 24 px grid, 1.33 px at 16 px) is overridden; do not pass `stroke` to an icon.
+
+| Size | Utility | Use | Source |
+|---|---|---|---|
+| 16 px | `size-4` | Inside text, buttons, badges and messages; matches the 20 px line of body text | Proposal |
+| 20 px | `size-5` | A standalone icon button | Proposal |
+
+| Rule | Source |
+|---|---|
+| Only Tabler Icons. No Lucide (the shadcn default look), no second icon set, no icons drawn by hand. `pnpm lint:tokens` reports imports from other icon libraries. | Owner decision 2026-10-29 |
+| Outline icons only; the filled variants are not used, because they have no line to match the text. | Proposal |
+| An icon carries meaning or is left out; no icons as decoration before every label. | R08.5, Z6 |
+| No emoji instead of icons and no sparkles as a symbol of automation. | G1 |
+| An icon next to a visible word is decorative: `aria-hidden`. | WCAG 1.1.1 |
+| An icon without a visible word (icon button) has an accessible name (`aria-label`) and a tooltip with the same words. | WCAG 4.1.2, WCAG 1.1.1 |
+| An error always shows `IconAlertCircle` and a sentence in `status-error`. | Q3 |
+| A standalone icon button has a target of at least 24 × 24 px. | WCAG 2.5.8 |

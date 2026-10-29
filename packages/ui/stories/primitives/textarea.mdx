@@ -1,0 +1,73 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as TextareaStories from "./textarea.stories";
+
+<Meta of={TextareaStories} />
+
+# Textarea
+
+`import { Textarea } from "@fleet-platform/ui/components/textarea"`
+
+## 1. Purpose
+
+Lets the dispatcher write a short reason in his own words.
+
+## 2. When to use
+
+The loss reason on acceptance (R12), the reason for a correction or cancellation (feature specification, UI), notes.
+
+## 3. When not to use
+
+One value on one line: Input. A choice among known reasons: Radio group.
+
+## 4. Anatomy
+
+Box like Input, three lines high by default (`rows`), value. Always inside `Field` or with `aria-label`.
+
+## 5. Variants
+
+None; set `rows` when more space is expected.
+
+## 6. States
+
+<Canvas of={TextareaStories.States} />
+
+Default, focus, error, disabled as Input. Read-only, loading, selected: not applicable in the planned screens.
+
+## 7. Behaviour and accessibility
+
+Native `<textarea>`: `Enter` adds a line and does not submit. `CrudForm` submits with its own shortcut. The user can resize the height. The text scrolls when longer than the box.
+
+<Canvas of={TextareaStories.Typing} />
+
+## 8. Content
+
+One or two sentences; the hint suggests the length ("Jedno zdanie"). No character limit is enforced (none is specified).
+
+## 9. Responsive
+
+Full width of its column at all widths.
+
+<Canvas of={TextareaStories.LongTextNarrow} />
+
+## 10. API
+
+<ArgTypes of={TextareaStories} />
+
+All native `<textarea>` attributes; `rows` defaults to 3.
+
+## 11. Code
+
+```tsx
+<Field label="Powód przyjęcia ze stratą" hint="Jedno zdanie" required><Textarea /></Field>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Ask for one sentence and say why it is needed. | An empty box with no hint. |
+| Keep the text after a failed save. | Clear the reason when the server rejects the form. |
+
+## 13. Related
+
+Confused with: Input. Used in: acceptance with a loss reason, correction and cancellation (stage 3 patterns).

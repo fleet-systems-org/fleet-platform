@@ -1,0 +1,82 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as InputStories from "./input.stories";
+
+<Meta of={InputStories} />
+
+# Input
+
+`import { Input } from "@fleet-platform/ui/components/input"`
+
+## 1. Purpose
+
+Lets the dispatcher type one short value: a place, an amount, kilometres.
+
+## 2. When to use
+
+Free text or a number on one line: loading town, agreed freight (`inputMode="decimal"`), wash amount, kilometres (`inputMode="numeric"`).
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| More than one sentence | Textarea | The value needs several lines |
+| A choice from a known list (truck, currency) | Select | No typing errors |
+| A place to be found | `PlacePicker` (stage 3) | Place identity (PLACE-*) |
+| Date and time | `ZonedDateTimeField` (stage 3) | Explicit zone (TIME-*) |
+
+## 4. Anatomy
+
+Box with `border-input` and `radius-control`, value, placeholder (optional, an example). Always inside `Field` or with `aria-label`.
+
+## 5. Variants
+
+None. Height 36 px everywhere; 32 px in table rows by passing `className="h-control-compact"` (owner decision 2026-10-29).
+
+<Canvas of={InputStories.Types} />
+
+## 6. States
+
+<Canvas of={InputStories.States} />
+
+Default, focus (`focus-ring` outline), error (`border-error` from `aria-invalid`), read-only (page background), disabled (page background, muted; the hint says when it becomes available). Hover: not used; the border already meets 3 : 1. Loading and selected: not applicable.
+
+## 7. Behaviour and accessibility
+
+Native `<input>`: typing, selection, copy and paste. Name from `Field`'s label or `aria-label`. Decimal amounts stay text (`inputMode="decimal"`), never a JavaScript number (repository rule). A long value scrolls inside the field. Target 36 px high.
+
+## 8. Content
+
+Placeholder only as an example ("np. Płock"). Amounts accept a comma and a space: "1 850,00". Kilometres are whole numbers (owner decision 2026-10-29).
+
+## 9. Responsive
+
+Full width of its column at 1440, 768 and 320 px.
+
+<Canvas of={InputStories.LongValueNarrow} />
+
+## 10. API
+
+<ArgTypes of={InputStories} />
+
+All native `<input>` attributes.
+
+## 11. Code
+
+```tsx
+<Input aria-label="Szukaj miejsca" placeholder="np. Płock" />
+```
+
+```tsx
+<Field label="Kwota mycia (EUR)" required><Input inputMode="decimal" value={wash} onChange={...} /></Field>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| `inputMode="decimal"` and a string value for money. | `type="number"`: drops the comma and converts to a float. |
+| Placeholder "np. Płock" with a visible label. | Placeholder as the only label. |
+
+## 13. Related
+
+Confused with: Textarea and Select. Used in: Field, `CrudForm`, trip entry.

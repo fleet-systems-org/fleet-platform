@@ -1,0 +1,46 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { TextSpacingCheck, TypeRoles } from "../../.storybook/blocks/tokens";
+import * as TypographyStories from "./typography.stories";
+
+<Meta of={TypographyStories} />
+
+# Typography
+
+One typeface, IBM Plex Sans, bundled with the package from `@fontsource/ibm-plex-sans` (SIL Open Font License), weights 400 and 600. It is not loaded from an external CDN.
+
+## Roles
+
+Text is styled by role, never by size. Each role is one class that sets size, line height, weight and, where the role needs it, colour or figure style. Pick the role by what the text is, not by how big it should look.
+
+<Unstyled>
+  <TypeRoles />
+</Unstyled>
+
+`label` and `meta` share values today. They stay separate roles, so a later change to labels does not move source and date text.
+
+## Rules
+
+| Rule | Source |
+|---|---|
+| Use a role class (`text-page-title`, `text-section-title`, `text-body`, `text-table`, `text-body-strong`, `text-label`, `text-meta`, `text-number`). Size and weight utilities such as `text-sm` or `font-semibold` are not used; `pnpm lint:tokens` reports them. | Owner decision 2026-10-29 |
+| IBM Plex Sans, not Inter, Arial or the system font stack. | N2a, R14.1, audit finding 3 |
+| Four sizes behind the roles: 12, 14, 16 and 20 px. | R14.1, N2a, audit finding 6 |
+| Running text and messages (`text-body`) have a line height of at least 1.5 x the font size: 14/21. | Owner decision 2026-10-29; WCAG 1.4.8 |
+| Table rows and single-line values (`text-table`, `text-number`) stay 14/20, so a row keeps its 36 px. | Owner decision 2026-10-29; Q3-1, T3 |
+| No fixed heights, clipping or ellipsis on text containers that would hide text when the user increases text spacing. | WCAG 1.4.12 |
+| Body text is 14 px; the screen is dense but the type is not small. | Q3-1 |
+| One `text-page-title` per screen. | Q3-1 |
+| Amounts, kilometres and times use `text-number` and are right-aligned in columns. | P8, R07.1, R15.1 |
+| Kilometres are shown as whole numbers (667 km); the exact value appears only in the details of `ValueWithSource`. | Owner decision 2026-10-29 (change to EV-4 pending) |
+| Table headers use `text-body-strong`. | P7 (proposal), R14.1 |
+| A label sits above its value in `text-label`; the source of a value follows in `text-meta`. | R07.1, R11.1, P2 |
+| Running text is at most about 65 characters per line (`max-w-measure`). | Audit finding 15 |
+| `text-code` is for this documentation only; the product shows no code. | Proposal |
+
+## Text spacing (WCAG 1.4.12)
+
+Users may override text spacing: line height 1.5 x font size, spacing after paragraphs 2 x font size, letter spacing 0.12 x font size and word spacing 0.16 x font size. Nothing may be clipped, overlap or disappear. The sample below uses the real `Card` and the text roles in a 320 px column; the button applies those four values and reports what the check measures. The same check runs as the story "Text spacing (WCAG 1.4.12)" in `pnpm test:storybook`, and component stories reuse it from `.storybook/text-spacing.ts`.
+
+<Unstyled>
+  <TextSpacingCheck />
+</Unstyled>

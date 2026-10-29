@@ -1,0 +1,97 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as FieldStories from "./field.stories";
+
+<Meta of={FieldStories} />
+
+# Field and Label
+
+`import { Field } from "@fleet-platform/ui/components/field"` · `import { Label } from "@fleet-platform/ui/components/label"`
+
+## 1. Purpose
+
+Tells the dispatcher what to type, in which format, and what is wrong, next to the one control it concerns.
+
+## 2. When to use
+
+- Every form control in trip entry, policy configuration and sign-in: freight, places, wash amount, loss reason.
+- `Label` alone only where `Field` cannot wrap the control, for example inside `CrudForm`.
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| A group of radio buttons | `Field` around a `RadioGroup`: the label names the group through `aria-labelledby` | `<label for>` cannot name a radio group (WAI-ARIA APG Radio Group) |
+| A read-only value in a result | A label above a value (`text-label` + `text-number`) | Nothing to type |
+| A form-wide error, such as no connection | `ErrorMessage` above the buttons | The field did nothing wrong |
+
+## 4. Anatomy
+
+Label (required), "(opcjonalne)" marker (optional fields only), hint (optional), control (required), error with `IconAlertCircle` (when invalid).
+
+## 5. Variants
+
+None. Required is the default in dispatcher forms; an optional field shows its marker in words (proposal: mark the minority). Source: WCAG 3.3.2.
+
+## 6. States
+
+<Canvas of={FieldStories.States} />
+
+| State | Look |
+|---|---|
+| Empty, filled | `border-input` |
+| Focus | 2 px `focus-ring` outline |
+| Error | `border-error`, error text with icon under the control, `aria-invalid` (Q3, WCAG 3.3.1) |
+| Read-only | Page background; the value is shown and can be copied |
+| Disabled | Page background, muted text; the hint says when it becomes available |
+
+## 7. Behaviour and accessibility
+
+- `Field` gives the control its `id`, so clicking the label focuses the control (WCAG 1.3.1).
+- Hint and error are linked with `aria-describedby`; a screen reader reads label, hint and error in that order. A control's own description is appended.
+- Validate when the field is left and on submit, not on every key; after a failed submit the form moves focus to the first invalid field (`CrudForm` does this).
+- `required` reaches the control (native and for assistive technology).
+
+<Canvas of={FieldStories.ValidationOnBlur} />
+
+## 8. Content
+
+- Label: a noun naming the value, with the unit: "Fracht (EUR)", "Dojazd (km)". Up to about 5 words.
+- Hint: the format with an example, "np. 1850,00". The placeholder is an example, never the name.
+- Error: what happened and what to do: "Nie rozpoznano kwoty. Wpisz ją cyframi, np. 1850,00."
+- Hint and error stay within 65 characters per line (`max-w-measure`).
+
+## 9. Responsive
+
+The field fills its column; label, hint and error wrap. At 320 px every field is one column.
+
+<Canvas of={FieldStories.LongTextNarrow} />
+
+## 10. API
+
+<ArgTypes of={FieldStories} />
+
+Controls that join a `Field` call `useFieldControl(props)`; `Input` and `Textarea` already do.
+
+## 11. Code
+
+```tsx
+<Field label="Fracht (EUR)" required><Input inputMode="decimal" /></Field>
+```
+
+```tsx
+<Field label="Fracht (EUR)" hint="Kwota netto, np. 1850,00" error={errors.freight} required>
+  <Input inputMode="decimal" value={freight} onChange={...} onBlur={validateFreight} />
+</Field>
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| Visible label "Fracht (EUR)" above the field. | Placeholder "Fracht" as the only name (WCAG 3.3.2). |
+| "Wpisz ją cyframi, np. 1850,00": says what to do. | "Niepoprawny format": says nothing useful (audit finding 10). |
+| Error under the field it concerns. | Errors only in a list elsewhere on the page. |
+
+## 13. Related
+
+Confused with: a label above a read-only value. Used in: trip entry, policy configuration, sign-in, `CrudForm` (uses `Label` directly).

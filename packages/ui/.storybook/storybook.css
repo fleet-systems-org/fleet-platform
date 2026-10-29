@@ -1,0 +1,16 @@
+@import "../src/styles.css";
+@source "../stories";
+@source "./";
+
+/*
+ * Documentation only. Frozen state previews: the same declarations as the real :hover, :active and :focus-visible
+ * states, also applied when an element carries data-preview-state="hover | active | focus".
+ */
+@custom-variant hover (&:hover, &[data-preview-state~="hover"]);
+@custom-variant active (&:active, &[data-preview-state~="active"]);
+@custom-variant focus-visible (&:focus-visible, &[data-preview-state~="focus"]);
+
+[data-preview-state~="focus"] {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}

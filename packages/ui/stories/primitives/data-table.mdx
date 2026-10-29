@@ -1,0 +1,109 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as TableStories from "./data-table.stories";
+
+<Meta of={TableStories} />
+
+# Data table
+
+`import { DataTable, type DataColumn } from "@fleet-platform/ui/backend/tables/DataTable"`
+
+## 1. Purpose
+
+Lets the dispatcher scan many rows of the same kind, such as trucks or policy revisions, and page through them.
+
+## 2. When to use
+
+- Fleet availability: truck, next free place and time, kilometre check (spec: Fleet, Phase 2; owner decision Q2: a paginated table).
+- Policy configuration: the list of monthly `PolicyRevision` rows (spec: Policy configuration).
+- Any server-paged list; the shared table is required for lists in the back office (AGENTS.md: reuse `DataTable`).
+
+## 3. When not to use
+
+| Situation | Use instead | Why |
+|---|---|---|
+| A few label and value pairs of one trip | A description list in a Card | One record is not a table |
+| A comparison of quoted drafts (DRF-1) | A comparison pattern (stage 3) | Columns are drafts, not records |
+| A timeline of the fleet | Not in the system (Q2: "What is missing") | |
+
+## 4. Anatomy
+
+Scroll region named by the caption (focusable, so a keyboard user can scroll a wide table), hidden `caption`, header row (`text-body-strong`, `border-input` under it), rows of 36 px (`table-row-height`, Q3-1, T3) with `border-divider`, optional actions column, pagination (previous, "Strona 1 z 3", next).
+
+## 5. Variants
+
+None. Row actions are optional (`actions`); a cell may hold text, `text-number` values and a Badge. Numbers and times use `text-number` (tabular figures, P8).
+
+<Canvas of={TableStories.Playground} />
+<Canvas of={TableStories.WithRowActions} />
+
+## 6. States
+
+| State | Look | Source |
+|---|---|---|
+| Loading | `LoadingMessage` instead of rows; pagination disabled; `aria-busy` on the section | Q5b: no spinner |
+| Error | `ErrorMessage` with icon: what failed and what to do | Q3 |
+| Empty | `EmptyState`: why it is empty and what to do | P9, R16.1 |
+| Last or first page | The unavailable direction is disabled; the page text says where the dispatcher is | audit finding 14 |
+| Row hover, selected | Not in the system: rows are not selectable (proposal) | |
+
+<Canvas of={TableStories.Loading} />
+<Canvas of={TableStories.ErrorState} />
+<Canvas of={TableStories.Empty} />
+
+## 7. Behaviour and accessibility
+
+- Native `table` with `caption` and `th scope="col"`, so a screen reader announces the column for each cell (WCAG 1.3.1).
+- The scroll region is a named `region` with `tabIndex={0}`: `Tab` reaches it and the arrow keys scroll it. Only the region carries the name, so there are no two identical landmarks (axe `landmark-unique`; fixed 2026-10-29).
+- Pagination buttons are real buttons, at least 36 × 36 px (WCAG 2.5.8); `Enter` moves the page and focus stays on the button.
+
+<Canvas of={TableStories.Paging} />
+
+## 8. Content
+
+- Column headers are short nouns ("Zestaw", "Wolny w", "Wolny od"); units in the header, not in every cell.
+- Dates and times as `30.10.2026 14:00` in the company time zone (spec: Europe/Warsaw).
+- Kilometres are whole numbers on screen (owner decision 2026-10-29).
+- Empty and error messages follow `Feedback messages`.
+
+## 9. Responsive
+
+- 1440 px: all columns visible.
+- 768 px: the region scrolls horizontally when the columns do not fit.
+- 320 px: the region scrolls; pagination wraps onto two lines (fixed 2026-10-29).
+
+<Canvas of={TableStories.Narrow} />
+
+## 10. API
+
+<ArgTypes of={TableStories} />
+
+`columns`: `{ key, header, cell(row) }[]`; `rows` and `rowKey(row)`; `caption`; `page`, `pageSize`, `total`, `onPageChange(page)`; `loading`, `error`; `actions(row)`; `messages`: every visible text, so the table never holds its own language.
+
+## 11. Code
+
+```tsx
+<DataTable columns={columns} rows={rows} rowKey={row => row.id} caption="Dostępność floty"
+  page={1} pageSize={25} total={0} onPageChange={setPage} messages={messages} />
+```
+
+```tsx
+const columns: DataColumn<Truck>[] = [
+  { key: "truck", header: "Zestaw", cell: row => row.truck },
+  { key: "freeAt", header: "Wolny od", cell: row => <span className="text-number">{row.freeAt}</span> },
+  { key: "kilometres", header: "Kilometry", cell: row => kilometreBadge[row.kilometres] },
+];
+<DataTable {...base} rows={page.rows} total={page.total} loading={loading} error={error}
+  actions={row => <Button size="compact" variant="text">Pokaż kursy: {row.truck}</Button>} />
+```
+
+## 12. Do and don't
+
+| Do | Don't |
+|---|---|
+| One text action per row with the truck in its name ("Pokaż kursy: Zestaw 01"). | A column of buttons (A01). |
+| "Brak danych" as a word in a Badge. | An empty cell: it reads as "nothing to check". |
+| A server-paged table with "Strona 2 z 3". | Loading every truck at once. |
+
+## 13. Related
+
+Confused with: a comparison table (stage 3) and a description list. Used in: fleet availability, policy configuration, history beside the quote (Phase 3). Built from Button, Badge and the feedback messages.

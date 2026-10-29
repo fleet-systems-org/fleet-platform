@@ -1,0 +1,42 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { ColorRoles, ContrastTable } from "../../.storybook/blocks/tokens";
+
+<Meta title="Foundations/Color" />
+
+# Color
+
+Colour has three jobs in Fleet Platform: separate surfaces, mark the one main action and mark a status that also has words. Everything else is ink on paper. Components use only the semantic tokens below, through their Tailwind utilities; raw values (`--ink-*`, `--green-*`, `--red-*`) exist only in `src/styles.css`.
+
+## Rules
+
+| Rule | Source |
+|---|---|
+| One screen highlights one thing; the action colour marks the main action only. | Q3-1 |
+| The action colour is the existing green, not a blue or indigo default. | N3a, G1 |
+| Colour is never the only carrier of meaning: a status always has a word, a loss also has a minus sign, an error also has an icon and a sentence. | WCAG 1.4.1, N5a, Q3 |
+| Red for loss appears only at a trip result, never next to a person. | N5a, K1, brief R01 |
+| The error colour is a different red from loss and is used only for form and system errors. | Q3 |
+| A certain number has no colour; an estimated number gets the "Szacunek" badge; a missing number is a dash with "brak: …", never zero. | brief R02, EV-4, R11.1, R11.2 |
+| Input borders use `border-input` (3:1); `border-divider` is only for decorative lines between rows. | T1, WCAG 1.4.11 |
+| Focus uses `focus-ring`, never the library's default blue. | G1, T4 |
+| No gradients, glows, translucent or blurred surfaces. | G1 |
+| The default Tailwind palette is removed from the theme, so classes such as `bg-zinc-900` do not exist. | Token rule |
+
+## Roles
+
+<Unstyled>
+  <ColorRoles />
+</Unstyled>
+
+## Contrast
+
+Every text and background pair, measured in the rendered document. Text needs 4.5 : 1, interface parts 3 : 1.
+
+<Unstyled>
+  <ContrastTable />
+</Unstyled>
+
+Two pairs are below 3 : 1 on purpose, and neither carries meaning on its own:
+
+- `border-divider` on a panel: a decorative line between rows. Correction already in place: inputs and controls use `border-input` (3,16 : 1).
+- `status-loss-bg` on a panel: the edge of the loss badge. Correction already in place: the badge always shows the word "Strata" and the minus sign in `status-loss-text` (5,93 : 1 on the badge).
