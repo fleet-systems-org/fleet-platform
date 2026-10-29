@@ -4,6 +4,7 @@ import { Badge } from "@fleet-platform/ui/components/badge";
 import { Button } from "@fleet-platform/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@fleet-platform/ui/components/popover";
 import { applyTextSpacing, findTextSpacingFailures } from "../../.storybook/text-spacing";
+import { waitForFocusReturn } from "../../.storybook/overlay";
 
 /** Synthetic example of value details (EV-4): whole kilometres on screen, the exact value only here (R11). */
 function DistanceDetails({ open }: { open?: boolean }) {
@@ -63,7 +64,7 @@ export const Keyboard: Story = {
     await waitFor(() => expect(within(panel).getByText("1 234,567 km")).toBeVisible());
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-    await expect(trigger).toHaveFocus();
+    await waitForFocusReturn(trigger);
     await userEvent.keyboard("{Enter}");
     await screen.findByRole("dialog");
     await userEvent.click(canvasElement);

@@ -5,6 +5,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Field } from "@fleet-platform/ui/components/field";
 import { Textarea } from "@fleet-platform/ui/components/textarea";
 import { applyTextSpacing, findTextSpacingFailures } from "../../.storybook/text-spacing";
+import { waitForFocusReturn } from "../../.storybook/overlay";
 
 // While a modal is open, Radix hides the rest of the page with aria-hidden and traps focus in the dialog, so the hidden
 // trigger cannot receive focus. axe cannot see the trap in a static open state (aria-hidden-focus); same exception as Select.
@@ -87,13 +88,14 @@ export const Keyboard: Story = {
     await expect(within(dialog).getByRole("textbox", { name: "Powód anulowania" })).toHaveFocus();
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-    await expect(trigger).toHaveFocus();
+    await waitForFocusReturn(trigger);
     // The dialog fits the viewport with the overlay's 16 px margin on each side.
     await userEvent.click(trigger);
     const reopened = await screen.findByRole("dialog");
     await expect(reopened.getBoundingClientRect().right).toBeLessThanOrEqual(window.innerWidth - 16);
     await userEvent.click(within(reopened).getByRole("button", { name: "Wróć do kursu" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await waitForFocusReturn(trigger);
     // A click on the scrim keeps the dialog and the typed reason (owner decision 2026-10-29).
     await userEvent.click(trigger);
     const typed = await screen.findByRole("dialog");
@@ -103,6 +105,7 @@ export const Keyboard: Story = {
     await expect(within(typed).getByRole("textbox", { name: "Powód anulowania" })).toHaveValue("Klient odwołał ładunek");
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await waitForFocusReturn(trigger);
   },
 };
 
