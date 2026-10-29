@@ -1,0 +1,25 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { MotionSample } from "../../.storybook/blocks/tokens";
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+Motion only shows that something appeared or changed state. Nothing moves for decoration.
+
+| Token | Value | Utility | Use | Source |
+|---|---|---|---|---|
+| `motion-instant` | 0 ms | `duration-instant` | Every state change in place: hover, selection, validation | Q5b |
+| `motion-overlay` | 110 ms | `duration-overlay` | A dialog, menu or popover appearing | Q5b; IBM Carbon fast-02 |
+| `motion-easing` | cubic-bezier(0.2, 0, 0.38, 0.9) | `ease-standard` | With `motion-overlay` | Q5b; IBM Carbon productive easing |
+
+| Rule | Source |
+|---|---|
+| With `prefers-reduced-motion: reduce`, `motion-overlay` becomes 0 ms; nothing animates. | WCAG 2.3.3 |
+| A value never disappears or resets silently; a change is shown in place ("zmienione, było 120"). | R04.3, Z2 (proposal) |
+| No welcome windows, tours or animations on entry. | B2, R07.4 |
+| Results update as soon as a filter changes; there is no manual refresh button. | R02.3, Z1 (proposal) |
+
+<Unstyled>
+  <MotionSample />
+</Unstyled>

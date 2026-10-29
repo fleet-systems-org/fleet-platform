@@ -1,0 +1,42 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Frame, SpacingExample, SpacingLevels } from "../../.storybook/blocks/tokens";
+
+<Meta title="Foundations/Spacing and layout" />
+
+# Spacing and layout
+
+All spacing sits on a 4 px grid: 4, 8, 12, 16, 24 and 32 px. Choose spacing by the relation between two things, not by eye.
+
+## Relations
+
+<Unstyled>
+  <SpacingLevels />
+</Unstyled>
+
+| Rule | Source |
+|---|---|
+| Closer things belong together: label and value 4 px, items in a group 8 px, groups 16 px, sections 24 px. | T2 |
+| Panels are dense: 12 px inside. | Q3-1 |
+| No values off the 4 px grid and no arbitrary values such as `p-[13px]`. | G1, audit finding 7 |
+| Table rows are 36 px (`h-row`). | Q3-1, T3 |
+
+<Unstyled>
+  <SpacingExample />
+</Unstyled>
+
+## Widths
+
+| Width | Who | Layout | Source |
+|---|---|---|---|
+| 1440 px | Dispatcher at the office, two monitors | Work screens use the full width: the whole fleet is visible without scrolling; text blocks stay within `max-w-measure` | Q3-1, R06.4, brief target group |
+| 768 px | Narrow window beside another program | Forms keep one column of groups; the result panel moves below the form | Proposal |
+| 320 px | Phone or zoomed window | One column, no horizontal page scroll; wide tables scroll inside their own region only | WCAG 1.4.10, audit finding 8 |
+
+There is no maximum width for work screens; only running text has one (65 characters). Breakpoints are the Tailwind defaults; `md` (768 px) is the only one the system relies on (proposal).
+
+<Unstyled>
+  <div className="flex flex-col gap-between">
+    <Frame width={320}><SpacingExample /></Frame>
+    <Frame width={768}><SpacingExample /></Frame>
+  </div>
+</Unstyled>

@@ -1,0 +1,30 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { CircleAlert, Clock, Info, MapPin, Truck, X } from "lucide-react";
+
+<Meta title="Foundations/Icons" />
+
+# Icons
+
+Library: `lucide-react` (ISC licence), the library declared in `components.json`. Icons inherit the text colour (`currentColor`).
+
+<Unstyled>
+  <div className="flex flex-wrap gap-between text-body">
+    {[[Truck, "Truck"], [MapPin, "MapPin"], [Clock, "Clock"], [CircleAlert, "CircleAlert"], [Info, "Info"], [X, "X"]].map(([Icon, name]) => (
+      <span key={name} className="flex items-center gap-group"><Icon aria-hidden className="size-4" /><code>{name}</code></span>
+    ))}
+  </div>
+</Unstyled>
+
+| Size | Utility | Use | Source |
+|---|---|---|---|
+| 16 px | `size-4` | Inside text, buttons, badges and messages; matches the 20 px line of body text | Proposal |
+| 20 px | `size-5` | A standalone icon button | Proposal |
+
+| Rule | Source |
+|---|---|
+| An icon carries meaning or is left out; no icons as decoration before every label. | R08.5, Z6 |
+| No emoji instead of icons and no sparkles as a symbol of automation. | G1 |
+| An icon next to a visible word is decorative: `aria-hidden`. | WCAG 1.1.1 |
+| An icon without a visible word (icon button) has an accessible name (`aria-label`) and a tooltip with the same words. | WCAG 4.1.2, WCAG 1.1.1 |
+| An error always shows the `CircleAlert` icon and a sentence in `status-error`. | Q3 |
+| A standalone icon button has a target of at least 24 × 24 px. | WCAG 2.5.8 |

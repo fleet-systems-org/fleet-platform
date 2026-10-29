@@ -1,0 +1,19 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { ShapeSamples } from "../../.storybook/blocks/tokens";
+
+<Meta title="Foundations/Shape and depth" />
+
+# Shape and depth
+
+<Unstyled>
+  <ShapeSamples />
+</Unstyled>
+
+| Rule | Source |
+|---|---|
+| Two radii: `rounded-control` (4 px) for inputs, buttons and badges; `rounded-panel` (8 px) for panels. | N4b |
+| No pills and no radius above 8 px. | N4b, G1 |
+| Separate content with a 1 px border or a section heading, not with shadows. There are no shadow tokens on work surfaces. | G1, audit decision 4 |
+| No card inside a card: inside a panel, use a section with a heading and a divider line. | Audit finding 4 |
+| Overlays (dialog, menu, popover) are separated by a `border-input` border; whether they also get a shadow is decided with the primitives in stage 2. | Open |
+| The existing `rounded-xl` (12 px) on `Card` is kept until the owner approves the change proposed in stage 2. | Existing token |

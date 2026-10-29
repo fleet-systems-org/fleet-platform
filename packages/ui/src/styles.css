@@ -1,8 +1,133 @@
 @import "tailwindcss";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/600.css";
 @source "../../app/src";
 @source "./";
 
+/*
+ * Design tokens. This is the only file that may hold raw colour, size or time values.
+ * Layer 1 (raw): --ink-*, --paper-*, --white, --green-*, --red-*, --type-*, --space-*, --radius-*, --duration-*.
+ * Layer 2 (semantic): named by purpose; components use only these, through the Tailwind theme below.
+ * Layer 3 (component): only where a component needs its own value.
+ * Source codes: R##.# reference feature, A##/G1/B# antireference, N#/Q#/T#/P# owner decision or
+ * proposal from the reference and token tables, D##/R## product brief decision or rule, EV-# specification rule.
+ * Only a light theme exists (owner decision Q1, 2026-10-29).
+ */
+
+:root {
+  /* Layer 1: raw palette. Values unchanged from the original repository tokens unless noted. */
+  --ink-900: #172c28;
+  --ink-600: #52645d;
+  --ink-400: #86948f; /* T1: darkest step of the divider tone that passes 3:1 as an input border */
+  --ink-200: #d9e2dd;
+  --paper-50: #f8faf9;
+  --white: #ffffff;
+  --green-800: #205b49;
+  --red-700: #a2191f; /* N5a: loss badge text */
+  --red-600: #da1e28; /* Q3 proposal: error colour, distinct from loss */
+  --red-100: #ffd7d9; /* N5a: loss badge background */
+
+  /* Layer 1: raw type scale, size / line height (R14.1, N2a) */
+  --type-12: 12px;
+  --type-12-leading: 16px;
+  --type-14: 14px;
+  --type-14-leading: 20px;
+  --type-16: 16px;
+  --type-16-leading: 24px;
+  --type-20: 20px;
+  --type-20-leading: 28px;
+
+  /* Layer 1: raw spacing on a 4 px grid (G1, T2), radii (N4b), motion (Q5b) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-4: 4px;
+  --radius-8: 8px;
+  --duration-0: 0ms;
+  --duration-110: 110ms;
+  --easing-productive: cubic-bezier(0.2, 0, 0.38, 0.9);
+
+  /* Layer 2: surfaces and text */
+  --surface-page: var(--paper-50); /* existing page background */
+  --surface-panel: var(--white); /* R06.1 trip bar, R07.1 result bar, R08.4 side panel */
+  --text-default: var(--ink-900); /* values, names, routes */
+  --text-muted: var(--ink-600); /* R07.1 small label above a value */
+  --text-on-action: var(--white); /* text on action-primary */
+
+  /* Layer 2: action, borders, focus */
+  --action-primary: var(--green-800); /* N3a: the existing green stays the action colour */
+  --border-divider: var(--ink-200); /* R08.1, R14.1: lines between rows and sections; decorative only */
+  --border-input: var(--ink-400); /* T1: input border, 3:1 against both surfaces */
+  --focus-ring: var(--action-primary); /* G1, T4: not the library default blue-500 */
+
+  /* Layer 2: status */
+  --status-loss-text: var(--red-700); /* N5a, K1: trip result only, never a person (R01) */
+  --status-loss-bg: var(--red-100); /* N5a: loss badge background only */
+  --status-error: var(--red-600); /* Q3: form and system errors, always with an icon and words */
+  --badge-estimate-text: var(--ink-900); /* R11.1, B3, P4: the word "Szacunek" */
+  --badge-estimate-bg: var(--ink-200); /* R11.1, B3, P4 */
+
+  /* Layer 2: typography (R14.1, N2a, P8) */
+  --font-family-base: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Layer 2: spacing relations (Q3-1, T2) */
+  --space-tight: var(--space-1); /* label to value */
+  --space-group: var(--space-2); /* items in one group */
+  --space-panel: var(--space-3); /* inside a panel */
+  --space-between: var(--space-4); /* between groups */
+  --space-section: var(--space-6); /* between screen sections */
+
+  /* Layer 2: motion (Q5b); the shape tokens radius-control and radius-panel live in the theme block below */
+  --motion-instant: var(--duration-0); /* state changes in place */
+  --motion-overlay: var(--duration-110); /* dialogs, menus, popovers appearing */
+  --motion-easing: var(--easing-productive);
+
+  /* Layer 2: layout */
+  --measure-text: 65ch; /* audit finding 15: running text stays readable */
+
+  /* Layer 3: component tokens */
+  --table-row-height: 36px; /* Q3-1, R08.1, T3 */
+
+  /* Existing shadcn names kept as aliases (no values changed) */
+  --background: var(--surface-page);
+  --foreground: var(--text-default);
+  --card: var(--surface-panel);
+  --primary: var(--action-primary);
+  --primary-foreground: var(--text-on-action);
+  --muted-foreground: var(--text-muted);
+  --border: var(--border-divider);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-overlay: var(--duration-0); /* WCAG 2.3.3: no movement when the user asks for less */
+  }
+}
+
 @theme inline {
+  /* Remove the default Tailwind palette so classes such as bg-zinc-900 cannot be used (rule: values come from tokens). */
+  --color-*: initial;
+  --radius-*: initial;
+
+  --color-page: var(--surface-page);
+  --color-panel: var(--surface-panel);
+  --color-default: var(--text-default);
+  --color-muted: var(--text-muted);
+  --color-on-action: var(--text-on-action);
+  --color-action: var(--action-primary);
+  --color-divider: var(--border-divider);
+  --color-input: var(--border-input);
+  --color-focus: var(--focus-ring);
+  --color-loss: var(--status-loss-text);
+  --color-loss-subtle: var(--status-loss-bg);
+  --color-error: var(--status-error);
+  --color-estimate: var(--badge-estimate-text);
+  --color-estimate-subtle: var(--badge-estimate-bg);
+
+  /* Existing utility names used by current components */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -11,23 +136,42 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
-  --radius-xl: 0.75rem;
-}
 
-:root {
-  --background: #f8faf9;
-  --foreground: #172c28;
-  --card: #ffffff;
-  --primary: #205b49;
-  --primary-foreground: #ffffff;
-  --muted-foreground: #52645d;
-  --border: #d9e2dd;
+  --font-sans: var(--font-family-base);
+
+  --text-label: var(--type-12);
+  --text-label--line-height: var(--type-12-leading);
+  --text-body: var(--type-14);
+  --text-body--line-height: var(--type-14-leading);
+  --text-heading: var(--type-16);
+  --text-heading--line-height: var(--type-16-leading);
+  --text-page: var(--type-20);
+  --text-page--line-height: var(--type-20-leading);
+
+  --spacing-tight: var(--space-tight);
+  --spacing-group: var(--space-group);
+  --spacing-panel: var(--space-panel);
+  --spacing-between: var(--space-between);
+  --spacing-section: var(--space-section);
+  --spacing-row: var(--table-row-height);
+  --spacing-measure: var(--measure-text);
+
+  --radius-control: var(--radius-4); /* N4b: inputs, buttons, badges */
+  --radius-panel: var(--radius-8); /* N4b: panels, result bar */
+  --radius-xl: 0.75rem; /* existing; used by the current Card, review in stage 2 */
+
+  --duration-instant: var(--motion-instant);
+  --duration-overlay: var(--motion-overlay);
+  --ease-standard: var(--motion-easing);
 }
 
 @layer base {
   * { @apply border-border; }
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: Arial, Helvetica, sans-serif;
+    @apply bg-background text-foreground antialiased font-sans text-body;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus-ring); /* T4, WCAG 2.4.7 */
+    outline-offset: 2px;
   }
 }

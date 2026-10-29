@@ -20,7 +20,11 @@
     "db:check": "dotenv -e .env -- pnpm --filter @fleet-platform/db check",
     "db:debug": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm debug",
     "db:migrate": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm migration:up",
-    "db:migration:create": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm migration:create"
+    "db:migration:create": "dotenv -e .env -- pnpm --filter @fleet-platform/db orm migration:create",
+    "storybook": "pnpm --filter @fleet-platform/ui storybook",
+    "build-storybook": "pnpm --filter @fleet-platform/ui build-storybook",
+    "test:storybook": "pnpm --filter @fleet-platform/ui test:storybook",
+    "lint:tokens": "node packages/ui/scripts/check-tokens.ts"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "12.2.1",
