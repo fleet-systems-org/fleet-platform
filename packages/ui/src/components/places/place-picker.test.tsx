@@ -102,9 +102,10 @@ it("says when it is searching, found nothing or cannot reach the map provider", 
   fireEvent.focus(box);
   expect(screen.getByRole("status").textContent).toBe("Szukam…");
   expect(visibleOptions()).toEqual([]);
-  view.rerender(<Field label="Miejsce załadunku" required><PlacePicker status="notFound" options={[a]} labels={labels} /></Field>);
+  // Nothing found still lists what the page passes: saved places and the company's towns (L09).
+  view.rerender(<Field label="Miejsce załadunku" required><PlacePicker status="notFound" options={[a, d]} labels={labels} /></Field>);
   expect(screen.getByText("Nie znaleziono miejsca.", { selector: "[data-slot=place-picker-message]" })).toBeTruthy();
-  expect(visibleOptions()).toEqual([]);
+  expect(visibleOptions()).toHaveLength(2);
   view.rerender(<Field label="Miejsce załadunku" required><PlacePicker status="unavailable" options={[a]} labels={labels} /></Field>);
   expect(screen.getByText(labels.unavailable, { selector: "[data-slot=place-picker-message]" })).toBeTruthy();
   expect(visibleOptions()).toHaveLength(1);
@@ -113,15 +114,19 @@ it("says when it is searching, found nothing or cannot reach the map provider", 
   expect(document.querySelector("[data-slot=place-picker-message]")).toBeNull();
 });
 
-it("offers adding a place under the box and works outside a Field", () => {
+it("offers saving a chosen map address as a place in one action, and works outside a Field (L09)", () => {
   const onAddPlace = vi.fn();
   const view = render(<PlacePicker status="idle" options={[]} labels={labels} defaultValue={a} onAddPlace={onAddPlace} aria-label="Miejsce" />);
   const box = screen.getByRole("combobox", { name: "Miejsce" }) as HTMLInputElement;
   expect(box.value).toBe("Miejsce A");
+  // A saved place is already a place; nothing chosen has nothing to save.
+  expect(screen.queryByRole("button", { name: "Dodaj miejsce…" })).toBeNull();
   fireEvent.keyDown(box, { key: "ArrowDown" });
   fireEvent.change(box, { target: { value: "x" } });
+  expect(screen.queryByRole("button", { name: "Dodaj miejsce…" })).toBeNull();
+  view.rerender(<PlacePicker key="address" status="idle" options={[]} labels={labels} defaultValue={b} onAddPlace={onAddPlace} aria-label="Miejsce" />);
   fireEvent.click(screen.getByRole("button", { name: "Dodaj miejsce…" }));
-  expect(onAddPlace).toHaveBeenCalledOnce();
-  view.rerender(<PlacePicker status="idle" options={[]} labels={labels} onAddPlace={onAddPlace} disabled aria-label="Miejsce" />);
+  expect(onAddPlace).toHaveBeenCalledWith(b);
+  view.rerender(<PlacePicker key="address" status="idle" options={[]} labels={labels} defaultValue={b} onAddPlace={onAddPlace} disabled aria-label="Miejsce" />);
   expect((screen.getByRole("button", { name: "Dodaj miejsce…" }) as HTMLButtonElement).disabled).toBe(true);
 });

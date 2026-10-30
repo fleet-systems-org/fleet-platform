@@ -18,6 +18,12 @@ const found: PlaceOption[] = [
   { id: "d1", kind: "town", name: "Miasto D", detail: "Region Północ", country: "PL", needsConfirmation: true },
   { id: "d2", kind: "town", name: "Miasto D", detail: "Region Południe", country: "PL", needsConfirmation: true },
 ];
+/** The company's towns: offered with saved places when the map provider finds nothing or fails (L09). */
+export const companyTowns: PlaceOption[] = [
+  { id: "town-a", kind: "town", name: "Miasto A", country: "PL" },
+  { id: "town-b", kind: "town", name: "Stadt B", country: "DE" },
+  { id: "town-c", kind: "town", name: "Město C", country: "CZ" },
+];
 /** Unicode, case, diacritics, spaces and punctuation are ignored when matching, as for town aliases (PLACE-2). */
 const normalize = (text: string) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
 
@@ -28,6 +34,7 @@ function LoadingPlace({ provider = "works", delay = 300 }: { provider?: Provider
   const [status, setStatus] = useState<PlaceSearchStatus>("idle");
   const [options, setOptions] = useState(saved);
   const [chosen, setChosen] = useState<PlaceOption | null>(null);
+  const [version, setVersion] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const search = (query: string) => {
     clearTimeout(timer.current);
@@ -35,17 +42,19 @@ function LoadingPlace({ provider = "works", delay = 300 }: { provider?: Provider
     if (key === "") { setStatus("idle"); setOptions(saved); return; }
     setStatus("searching");
     timer.current = setTimeout(() => {
-      const ownMatches = saved.filter(option => normalize(option.name).includes(key));
+      const ownMatches = [...saved, ...companyTowns].filter(option => normalize(option.name).includes(key));
       if (provider === "unavailable") { setStatus("unavailable"); setOptions(ownMatches); return; }
       const matches = found.filter(option => normalize(option.name).includes(key))
         .map(option => (normalize(option.name) === key && option.name.toLowerCase() !== query.trim().toLowerCase() ? { ...option, typedAs: query.trim() } : option));
       setStatus(matches.length > 0 ? "results" : "notFound");
-      setOptions(matches);
+      setOptions(matches.length > 0 ? matches : ownMatches);
     }, delay);
   };
   return <div className="grid max-w-measure gap-group">
     <Field label="Miejsce załadunku" hint="Adres albo miasto, np. Miejsce A" required>
-      <PlacePicker status={status} options={options} labels={labels} onQueryChange={search} onSelect={setChosen} onAddPlace={() => undefined} />
+      {/* Saving a map address makes it a saved place; the page shows the saved place in a fresh picker. */}
+      <PlacePicker key={version} defaultValue={chosen} status={status} options={options} labels={labels} onQueryChange={search} onSelect={setChosen}
+        onAddPlace={option => { setChosen({ ...option, kind: "place" }); setVersion(value => value + 1); }} />
     </Field>
     <output className="text-meta">{chosen ? `Wybrane: ${chosen.id} (${chosen.kind})` : "Nic nie wybrano"}</output>
   </div>;
@@ -84,7 +93,7 @@ export const States: Story = {
     <Field label="Wybrane miejsce" required><PlacePicker status="idle" options={[]} labels={labels} defaultValue={saved[0]} /></Field>
     <Field label="Wybrane samo miasto" required><PlacePicker status="idle" options={[]} labels={labels} defaultValue={found[4]} /></Field>
     <Field label="Błąd" error="Wybierz miejsce załadunku z listy." required><PlacePicker status="idle" options={[]} labels={labels} /></Field>
-    <Field label="Zablokowany" hint="Dostępne po wybraniu auta" required><PlacePicker status="idle" options={[]} labels={labels} disabled onAddPlace={() => undefined} /></Field>
+    <Field label="Zablokowany" hint="Dostępne po wybraniu auta" required><PlacePicker status="idle" options={[]} labels={labels} disabled /></Field>
   </div>,
 };
 
@@ -126,6 +135,28 @@ export const Unavailable: Story = {
     await expect(await canvas.findByText(labels.unavailable, { selector: "[data-slot=place-picker-message]" })).toBeVisible();
     await userEvent.click(canvas.getByRole("option", { name: /Miejsce A/ }));
     await expect(canvas.getByText("Wybrane: a (place)")).toBeVisible();
+    // Without the map a town from the company's list is still a choice, named as a town only (L09); nothing can be added.
+    const box = canvas.getByRole("combobox", { name: "Miejsce załadunku" });
+    await userEvent.clear(box);
+    await userEvent.type(box, "stadt");
+    await userEvent.click(await canvas.findByRole("option", { name: /Stadt B/ }));
+    await expect(canvas.getByText("Wybrane: town-b (town)")).toBeVisible();
+    await expect(canvas.queryByRole("button", { name: labels.addPlace })).toBeNull();
+  },
+};
+
+export const AddFromMap: Story = {
+  name: "Test: a map address is saved as a place in one action (L09)",
+  render: () => <LoadingPlace delay={50} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByRole("combobox", { name: "Miejsce załadunku" }), "miejsce c");
+    await userEvent.click(await canvas.findByRole("option", { name: /Miejsce C/ }));
+    await expect(canvas.getByText("Wybrane: c (address)")).toBeVisible();
+    await userEvent.click(canvas.getByRole("button", { name: labels.addPlace }));
+    await expect(canvas.getByText("Wybrane: c (place)")).toBeVisible();
+    await expect(canvas.getByRole("combobox", { name: "Miejsce załadunku" })).toHaveAccessibleDescription(expect.stringContaining("Zapisane miejsce"));
+    await expect(canvas.queryByRole("button", { name: labels.addPlace })).toBeNull();
   },
 };
 
