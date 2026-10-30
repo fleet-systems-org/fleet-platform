@@ -452,7 +452,7 @@ Owner decision D1 (2026-10-29, supersedes the screen part of Q4 "screens are sto
 
 ## Next step
 
-Publish the clickable E01 prototype through the Storybook build in this pull request, stacked on #62. Screens remain in the prototype (D1); the build serves `/prototypes/quote-during-call/`. Stage 4 follows separately: teaching pages and the E01 epic page linking to that prototype. G08 remains open: DataTable has no sorting API. No stage 4 pages are included here.
+Publish the clickable E01 prototype through the Storybook build in this pull request. Screens remain in the prototype (D1); the build serves `/prototypes/quote-during-call/`. Stage 4 follows separately: teaching pages and the E01 epic page linking to that prototype. G08 remains open: DataTable has no sorting API. No stage 4 pages are included here.
 
 ## N2b: ordinary text weight (2026-10-29)
 

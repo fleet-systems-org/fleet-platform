@@ -39,3 +39,11 @@ Not claimed: production E01 implementation, provider/authentication integration,
 ## Outcome
 
 Ready for a stacked pull request on design-system-e01-screens-1 (#62), without changing #62/#63 or merging. G08 remains open: DataTable has no sorting API. Stage 4 teaching pages and the E01 epic page are separate follow-up work. Production specification statuses remain unchanged.
+
+## PR #64 review follow-up (2026-10-30)
+
+- Scope: CI prototype screenshot publication and the UI next-step description only.
+- Fetched origin and merged origin/main before editing (three missing base commits; no conflicts).
+- Moved the built prototype checks from integration to Storybook, reusing its Chromium installation. Added the same pinned upload-artifact action, always-run condition, path, missing-file policy and retention as integration, with the distinct name integration-evidence-prototype.
+- Removed the obsolete stacked-on-#62 wording from UI Next step; stage 4 stays separate.
+- Local validation passed: `pnpm lint`, `pnpm typecheck`, `pnpm test:coverage` (580/580 statements, 459/459 branches, 184/184 functions, 491/491 lines, all 100%), `pnpm build` and `git diff --check`. Remote CI and artifact verification pending below.
