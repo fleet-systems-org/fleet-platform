@@ -46,4 +46,12 @@ Ready for a stacked pull request on design-system-e01-screens-1 (#62), without c
 - Fetched origin and merged origin/main before editing (three missing base commits; no conflicts).
 - Moved the built prototype checks from integration to Storybook, reusing its Chromium installation. Added the same pinned upload-artifact action, always-run condition, path, missing-file policy and retention as integration, with the distinct name integration-evidence-prototype.
 - Removed the obsolete stacked-on-#62 wording from UI Next step; stage 4 stays separate.
-- Local validation passed: `pnpm lint`, `pnpm typecheck`, `pnpm test:coverage` (580/580 statements, 459/459 branches, 184/184 functions, 491/491 lines, all 100%), `pnpm build` and `git diff --check`. Remote CI and artifact verification pending below.
+- Local validation passed: `pnpm lint`, `pnpm typecheck`, `pnpm test:coverage` (580/580 statements, 459/459 branches, 184/184 functions, 491/491 lines, all 100%), `pnpm build` and `git diff --check`. Remote verification is recorded below.
+
+### Remote verification
+
+- Normal push published code commit `e156bb9f20f98c9cf6c51909f4e2e625b9bbefe1` to `prototype/quote-during-call`; no force push and no PR merge.
+- CI run [41065641544](https://github.com/fleet-systems-org/fleet-platform/actions/runs/41065641544): all seven jobs passed, including Storybook and integration.
+- `gh run download 41065641544 -n integration-evidence-prototype` succeeded. The downloaded artifact contains all four prototype PNGs, including `storybook-prototype-sign-in-1440.png` (valid PNG, 1440×1158, 377253 bytes) and `storybook-prototype-sign-in-320.png` (valid PNG, 320×1352, 39522 bytes). File signatures and widths were checked directly.
+- The integration job separately uploaded `integration-evidence`; artifact names do not collide.
+- This evidence-only log update is published separately; the same required checks must pass on the final PR head.
