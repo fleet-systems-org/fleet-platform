@@ -16,6 +16,8 @@ fleet-platform is a micro-ERP for trading and transport companies, starting with
 
 ## Engineering standards
 
+- Work on `packages/ui` components, Storybook stories and tokens must also follow [packages/ui/AGENTS.md](packages/ui/AGENTS.md).
+
 - Follow [.ai/specs/engineering-standards.md](.ai/specs/engineering-standards.md) fully for every new feature and use its technical review checklist. Concept names and target folders remain provisional until feature requirements confirm them.
 - Reuse the implemented `makeCrudRoute` (CRUD only), `apiHandler` (business operations), `apiCall`, `CrudForm`, `DataTable` and feedback components. Reject hand-written CRUD routes and copied infrastructure in review. Trusted company scope must reach every repository query; changes to isolation require two-tenant tests.
 - Every new feature must have 100% unit-test coverage: statements, branches, functions and lines, all at 100%, measured by `pnpm test:coverage` over `packages/*/src` and `scripts/`. A pull request that lowers coverage below 100% is incomplete and must not be merged. Do not meet the threshold by excluding files, adding ignore comments or lowering thresholds; any exclusion requires the owner's explicit approval recorded in the pull request.
