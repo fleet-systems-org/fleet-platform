@@ -22,6 +22,9 @@ const checks: { name: string; pattern: RegExp }[] = [
 ];
 
 function files(path: string): string[] {
+  // Vite output is generated and git-ignored; scan the prototype sources separately.
+  const generated = resolve(root, "packages/ui/.storybook/public/prototypes");
+  if (path === generated || path.startsWith(`${generated}/`)) return [];
   const stats = statSync(path, { throwIfNoEntry: false });
   if (!stats) return [];
   if (stats.isFile()) return extensions.test(path) ? [path] : [];

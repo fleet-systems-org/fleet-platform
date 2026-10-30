@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import { shareTenths, shareText, vehicleCosts } from '../src/app/cost-shares';
+import { cents, decimal } from '../src/app/model';
+assert.deepEqual(['18.00', '10.00', '6.00', '4.00', '0.18', '0.00'].map(value => shareText(shareTenths(value, '38.18'))), ['47,1', '26,2', '15,7', '10,5', '0,5', '0,0']);
+assert.equal(vehicleCosts.reduce((sum, row) => sum + cents(row.value), 0n), 600n);
+assert.equal(vehicleCosts.length, 9);
+assert.equal(shareTenths('0.00', '0.00'), 0n);
+assert.equal(shareText(shareTenths('1.00', '3.00')), '33,3');
+assert.equal(shareTenths('9007199254740993.00', '18014398509481986.00'), 500n);
+assert.equal(shareTenths('0.01', '0.16'), 63n);
+console.log('Cost shares: fixture, vehicle sum, zero, rounding and large BigInt assertions passed.');
+
+const countryAmounts = ['2.40', '1.60', '15.00', '9.00'];
+const countryShares = countryAmounts.map(value => shareTenths(value, '38.18'));
+assert.deepEqual(countryShares, [63n, 42n, 393n, 236n]);
+assert.deepEqual(countryShares.map(shareText), ['6,3', '4,2', '39,3', '23,6']);
+const exactCountryTotal = countryAmounts.reduce((sum, value) => sum + cents(value), 0n);
+assert.equal(exactCountryTotal, 2800n);
+assert.equal(shareTenths(decimal(exactCountryTotal), '38.18'), 733n);
+assert.equal(shareText(shareTenths(decimal(exactCountryTotal), '38.18')), '73,3');
+assert.equal(countryShares.reduce((sum, share) => sum + share, 0n), 734n);
+console.log('Country whole-cost shares: 6,3 / 4,2 / 39,3 / 23,6; exact total 73,3 passed.');
