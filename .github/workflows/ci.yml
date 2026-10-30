@@ -65,6 +65,11 @@ jobs:
         run: pnpm exec agent-browser install --with-deps
       # Builds the application, then starts PostgreSQL through Testcontainers (Docker on the runner).
       - run: pnpm test:integration
+      - name: Install Chromium for the built prototype check
+        run: pnpm --filter @fleet-platform/ui exec playwright install --with-deps chromium
+      - run: pnpm exec tsx prototypes/quote-during-call/scripts/check-cost-shares.ts
+      - run: pnpm build-storybook
+      - run: pnpm --filter @fleet-platform/ui test:prototype
       # Screenshot per test (passed or failed) and the application log, also when tests fail.
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()

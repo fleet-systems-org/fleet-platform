@@ -452,7 +452,7 @@ Owner decision D1 (2026-10-29, supersedes the screen part of Q4 "screens are sto
 
 ## Next step
 
-L08 and L09 are decided. Next: the clickable prototype (`prototypes/quote-during-call`, rebuilt on the current components) comes to `main` in its own pull request and Storybook serves its build at `/prototypes/quote-during-call/`. Then stage 4, built to the structure recorded under "owner instruction for stages 3 and 4", with the E01 epic page linking to the prototype's screen states. Stage 5 follows.
+Publish the clickable E01 prototype through the Storybook build in this pull request, stacked on #62. Screens remain in the prototype (D1); the build serves `/prototypes/quote-during-call/`. Stage 4 follows separately: teaching pages and the E01 epic page linking to that prototype. G08 remains open: DataTable has no sorting API. No stage 4 pages are included here.
 
 ## N2b: ordinary text weight (2026-10-29)
 

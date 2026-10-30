@@ -9,6 +9,7 @@
     ".storybook/**/*.d.ts",
     "stories/**/*.ts",
     "stories/**/*.tsx",
-    "scripts/**/*.ts"
+    "scripts/**/*.ts",
+    "integration/**/*.ts"
   ]
 }
