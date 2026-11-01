@@ -15,9 +15,10 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006 --no-open --no-version-updates",
-    "build-storybook": "storybook build -o storybook-static",
+    "build-storybook": "pnpm --filter @fleet-platform/prototype-quote-during-call build && storybook build -o storybook-static",
     "test:storybook": "vitest run --config vitest.storybook.config.ts",
-    "lint:tokens": "node scripts/check-tokens.ts"
+    "lint:tokens": "node scripts/check-tokens.ts",
+    "test:prototype": "playwright test --config playwright.prototype.config.ts"
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans": "5.3.0",

@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 const source = (path: string) => fileURLToPath(new URL(`../src/${path}`, import.meta.url));
 
 const config: StorybookConfig = {
+  staticDirs: ["./public"],
   stories: ["../stories/**/*.mdx", "../stories/**/*.stories.@(ts|tsx)"],
   addons: [
     { name: "@storybook/addon-docs", options: { mdxPluginOptions: { mdxCompileOptions: { remarkPlugins: [remarkGfm] } } } },

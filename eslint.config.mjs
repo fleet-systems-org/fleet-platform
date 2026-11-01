@@ -33,5 +33,5 @@ export default defineConfig([
     ["next", "react", "react-dom", "awilix"]),
   packageBoundary(["packages/ui/**/*.{ts,tsx}"], ["app", "db", "core"],
     ["@mikro-orm/*", "awilix", "server-only"]),
-  globalIgnores(["**/.next/**", "**/dist/**", "**/next-env.d.ts", "**/storybook-static/**"]),
+  globalIgnores(["**/.next/**", "**/dist/**", "**/next-env.d.ts", "**/storybook-static/**", "**/.storybook/public/prototypes/**"]),
 ]);

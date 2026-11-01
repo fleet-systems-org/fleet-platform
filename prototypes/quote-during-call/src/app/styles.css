@@ -1,0 +1,197 @@
+@import "@fleet-platform/ui/styles.css";
+@source "./";
+/* Review navigation remains outside the product frame. */
+.doc-toolbar { position: relative; border-bottom: 1px solid var(--border-divider); background: var(--surface-panel); padding: var(--space-panel); display: flex; flex-direction: column; gap: var(--space-group); }
+.doc { padding: var(--space-section); }
+.stack { display: flex; flex-direction: column; gap: var(--space-between); }
+.actions, .proto-toolbar, .segmented { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-group); }
+.screen-content { padding: var(--space-section); }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--measure-text)), 1fr)); gap: var(--space-between); }
+.screen-picker { display: flex; flex-direction: column; max-height: 65vh; overflow-y: auto; gap: var(--space-tight); }
+.screen-nav a { color: var(--action-primary); text-decoration: underline; padding: var(--space-tight); }
+.screen-meta, .notes { padding: var(--space-panel); }
+.screen { margin-bottom: var(--space-section); }
+/* DS GAP G13: result bar and chronological sequence without a new design-system component. */
+.result-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: var(--space-section); }
+.figure { display: flex; flex-direction: column; align-items: start; gap: var(--space-tight); }
+.cost-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-group); border-bottom: 1px solid var(--border-divider); padding-block: var(--space-group); }
+.cost-row dd { text-align: right; }
+.cost-row .figure { flex-direction: row; flex-wrap: wrap; justify-content: end; align-items: center; gap: var(--space-panel); }
+.sequence { border-bottom: 1px solid var(--border-divider); padding-bottom: var(--space-panel); display: flex; flex-direction: column; align-items: start; gap: var(--space-group); }
+/* Review engine controls use the same existing tokens; engine mechanics remain unchanged. */
+.doc-toolbar button, .anno-panel button, .proto-back { cursor: pointer; font-family: var(--font-family-base); font-size: var(--type-14); line-height: var(--type-14-leading); min-height: var(--control-height); padding: var(--space-tight) var(--space-panel); border: 1px solid var(--border-input); border-radius: var(--radius-4); background: var(--surface-panel); color: var(--text-default); }
+.doc-toolbar button[aria-pressed="true"], .doc-toolbar .btn-primary, .anno-panel .btn-primary { background: var(--action-primary); color: var(--text-on-action); }
+
+#s01 .screen-content { padding: 0; }
+
+.screen-picker[hidden] { display: none; }
+/* Stage 1b layout: existing spacing and typography tokens only. */
+.screen-content { padding-bottom: calc(var(--space-section) * 4); }
+.two-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-section); align-items: start; }
+.amount-left { text-align: left; }
+.compact-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.compact-table caption { text-align: left; color: var(--text-muted); padding-block: var(--space-group); }
+.compact-table th, .compact-table td { padding: var(--space-group); border-bottom: 1px solid var(--border-divider); text-align: right; }
+.compact-table th:first-child { text-align: left; }
+.compact-table th, .compact-table tfoot { font-weight: var(--weight-600); }
+.place-results { border: 1px solid var(--border-input); border-radius: var(--radius-4); }
+.place-results li { padding: var(--space-panel); cursor: pointer; }
+.place-results [aria-selected="true"] { background: var(--badge-estimate-bg); }
+@media (max-width: 48rem) {
+  .two-columns { grid-template-columns: minmax(0, 1fr); }
+  .doc, .screen-content { padding-inline: var(--space-group); }
+  .compact-table th, .compact-table td { padding-inline: var(--space-tight); }
+}
+/* DS PROPOSAL: amount input left-aligned; DecimalField className belongs to its wrapper. */
+.amount-left input { text-align: left; }
+
+
+/* Title first, then summary on mobile; summary stays on the right on desktop. */
+.summary-totals { border-top: 1px solid var(--border-divider); padding-top: var(--space-between); }
+.summary-totals > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-group); padding-block: var(--space-tight); }
+.summary-totals dd { font-variant-numeric: tabular-nums; }
+.quote-cost-table { table-layout: fixed; }
+.quote-cost-table th:first-child { width: 24%; }
+.quote-cost-table .cost-source { width: 32%; }
+.quote-cost-table .cost-amount { width: 24%; }
+.quote-cost-table td, .quote-cost-table th { vertical-align: top; }
+.quote-cost-table .cost-source, .cost-source-mobile { overflow-wrap: anywhere; }
+.cost-source-mobile { display: none; }
+.share-cell { display: flex; gap: var(--space-tight); align-items: center; }
+.share-cell > span:first-child { white-space: nowrap; }
+.share-track { display: block; flex: 1; min-width: var(--space-group); height: var(--space-1); background: var(--border-divider); }
+.share-track > span { display: block; height: 100%; background: var(--action-primary); }
+.vehicle-detail { background: var(--surface-page); }
+.vehicle-detail th { padding-left: var(--space-panel); }
+@media (max-width: 48rem) {
+  .quote-cost-table .cost-source { display: none; }
+  .cost-source-mobile { display: block; margin-top: var(--space-tight); }
+  .quote-cost-table th:first-child { width: 34%; }
+  .quote-cost-table .cost-amount { width: 40%; }
+}
+
+.stop-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-between); }
+.step-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-group); }
+.step-answer { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.step-collapsed { flex-wrap: nowrap; align-items: center; }
+.step-collapsed > :not(.step-answer) { flex-shrink: 0; }
+.more-places { align-self: flex-start; padding-inline: 0; margin-top: calc(-1 * var(--space-group)); }
+.entry-waiting { color: var(--text-muted); }
+.stack[hidden] { display: none; }
+/* AppFrame owns product geometry, including the plain navigation list below 768 px. */
+@media (max-width: 47.999rem) {
+  .stop-fields { grid-template-columns: minmax(0, 1fr); }
+  .step-collapsed { flex-wrap: wrap; }
+}
+.scenario-select { min-height: var(--control-height); max-width: 100%; border: 1px solid var(--border-input); border-radius: var(--radius-4); padding: var(--space-group); background: var(--surface-panel); color: var(--text-default); }
+
+/* Suggestions do not move a following action when blur closes them during a click. */
+.search-field { position: relative; }
+.search-field .place-results { position: absolute; top: 100%; left: 0; right: 0; z-index: var(--z-index-product-overlay); background: var(--surface-panel); }
+
+/* EV-4: the details table exposes evidence inline; narrow rows retain column labels. */
+.value-details-table { table-layout: fixed; }
+.value-details-table th, .value-details-table td { text-align: left; vertical-align: top; }
+@media (min-width: 48.001rem) {
+.value-details-table > thead > tr > th:nth-child(1) { width: 16%; }
+.value-details-table > thead > tr > th:nth-child(2) { width: 32%; }
+.value-details-table > thead > tr > th:nth-child(3) { width: 20%; }
+.value-details-table > thead > tr > th:nth-child(4) { width: 14%; }
+.value-details-table > thead > tr > th:nth-child(5) { width: 18%; }
+}
+.value-details-table .exact-value { text-align: right; }
+.value-details-table .vehicle-source-detail { padding: var(--space-group); }
+@media (max-width: 48rem) {
+  .value-details-table, .value-details-table tbody, .value-details-table tr, .value-details-table th, .value-details-table td { display: block; width: 100%; }
+  .value-details-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .value-details-table tr { padding-block: var(--space-group); border-bottom: 1px solid var(--border-divider); }
+  .value-details-table th, .value-details-table td { border: 0; }
+  .value-details-table td[data-label]::before { content: attr(data-label); display: block; color: var(--text-muted); font-size: var(--type-12); line-height: var(--type-12-leading); }
+  .value-details-table .exact-value { text-align: left; }
+  .value-details-table .vehicle-source-detail table { display: table; }
+  .value-details-table .vehicle-source-detail thead { position: static; display: table-header-group; width: auto; height: auto; overflow: visible; clip-path: none; }
+  .value-details-table .vehicle-source-detail tbody { display: table-row-group; }
+  .value-details-table .vehicle-source-detail tr { display: table-row; }
+  .value-details-table .vehicle-source-detail th, .value-details-table .vehicle-source-detail td { display: table-cell; width: auto; border-bottom: 1px solid var(--border-divider); }
+  .value-details-table .vehicle-source-detail .cost-source { display: none; }
+}
+.value-details-table tr[hidden] { display: none; }
+
+.value-details-table .source-date { white-space: nowrap; }
+
+/* N7e / R20.1: grouped route costs reuse the quotation's share bars. */
+.country-cost-table { table-layout: fixed; }
+.country-cost-table th:first-child { width: 30%; }
+.country-cost-table th:last-child { width: 18%; }
+.country-cost-table th, .country-cost-table td { vertical-align: top; overflow-wrap: anywhere; }
+.country-group, .country-cost-table tfoot { background: var(--surface-panel); font-weight: var(--weight-600); }
+.country-meta { display: none; font-weight: var(--weight-500); }
+@media (max-width: 48rem) {
+  .country-cost-table .country-detail { display: none; }
+  .country-meta { display: block; margin-top: var(--space-tight); }
+  .country-cost-table th:first-child { width: 46%; }
+  .country-cost-table th:last-child { width: 32%; }
+}
+/* Preserve the engine's h1 focus target, with an outline for keyboard navigation. */
+h1[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+
+/* N8a: the existing office system sign-in; the map is the approved decoration. */
+.sign-in-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 100svh; background: var(--surface-page); }
+/* N8a: owner-approved exception to R08.5 */
+.sign-in-map {
+  --map-bg: oklch(0.16 0.03 264);
+  --map-text: oklch(0.985 0.002 247.839);
+  --map-land: oklch(0.22 0.035 262);
+  --map-coast: oklch(0.32 0.045 258);
+  --map-road: oklch(0.38 0.05 250);
+  --map-route: oklch(0.72 0.16 55);
+  --map-headlights: oklch(0.96 0.08 92);
+  --map-taillights: oklch(0.63 0.23 29);
+  position: relative; overflow: hidden; background: var(--map-bg); color: var(--map-text);
+}
+.sign-in-company { position: relative; padding: calc(var(--space-section) * 2); font-size: var(--type-20); line-height: var(--type-20-leading); font-weight: var(--weight-600); }
+.sign-in-map-perspective { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; perspective: 800px; }
+.sign-in-map svg { width: 100%; min-width: 48rem; flex-shrink: 0; scale: 1.5; rotate: x 50deg; translate: 0 4rem; }
+.sign-in-land { fill: var(--map-land); stroke: var(--map-coast); }
+.sign-in-roads { stroke: var(--map-road); }
+.sign-in-route-glow path { stroke: var(--map-route); }
+.sign-in-route-glow circle { fill: var(--map-route); }
+.sign-in-headlights { stroke: var(--map-headlights); }
+.sign-in-taillights { stroke: var(--map-taillights); }
+.sign-in-city { fill: var(--map-headlights); }
+.sign-in-map-fade-top { position: absolute; inset: 0 0 auto; height: 50%; background: linear-gradient(to bottom, var(--map-bg) 55%, transparent); }
+.sign-in-map-fade-bottom { position: absolute; inset: auto 0 0; height: 16rem; background: linear-gradient(to top, var(--map-bg), color-mix(in oklab, var(--map-bg) 80%, transparent), transparent); }
+.sign-in-panel { position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--space-section); padding: calc(var(--space-section) * 3) calc(var(--space-section) * 2); min-width: 0; }
+.sign-in-badge { position: absolute; top: var(--space-section); right: var(--space-section); max-width: 100%; white-space: normal; }
+.sign-in-password-field { display: flex; flex-direction: column; gap: var(--space-tight); }
+.sign-in-form { width: 100%; max-width: calc(var(--space-section) * 16); margin-block: auto; }
+.sign-in-form h1 { margin-bottom: var(--space-group); }
+.sign-in-form button { white-space: normal; height: auto; min-height: var(--control-height); }
+.sign-in-form form > button, .sign-in-form > button { width: 100%; }
+.sign-in-password-label { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-group); }
+.sign-in-password { position: relative; }
+.sign-in-password input { padding-right: calc(var(--control-height) + var(--space-group)); }
+.sign-in-password button { position: absolute; inset-block: 0; right: 0; width: var(--control-height); padding: var(--space-group); }
+.sign-in-check { display: flex; align-items: center; gap: var(--space-group); }
+.sign-in-check input { appearance: auto; width: var(--space-between); height: var(--space-between); accent-color: var(--action-primary); flex-shrink: 0; }
+.sign-in-mobile-company { display: none; }
+@media (max-width: 63.999rem) {
+  .sign-in-layout { grid-template-columns: minmax(0, 1fr); }
+  .sign-in-map { display: none; }
+  .sign-in-panel { padding: calc(var(--space-section) * 3) var(--space-between); }
+  .sign-in-mobile-company { display: block; margin-bottom: var(--space-section); font-weight: var(--weight-600); }
+  .sign-in-badge { right: var(--space-between); left: var(--space-between); width: fit-content; }
+}
+
+/* N7f/R21.1: native radio semantics, local prototype-only vehicle tiles. */
+.vehicle-options { border: 0; padding: 0; margin: 0; min-width: 0; }
+.vehicle-options legend { padding: 0; margin-bottom: var(--space-group); }
+.vehicle-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-group); }
+.vehicle-tile { position: relative; display: flex; flex-direction: column; gap: var(--space-tight); min-width: 0; padding: var(--space-group) var(--space-panel); border: 1px solid var(--border-divider); border-radius: 8px; background: var(--surface-panel); cursor: pointer; }
+.vehicle-tile:has(input:checked) { border-color: var(--action-primary); box-shadow: inset 0 0 0 1px var(--action-primary); }
+.vehicle-tile:has(input:focus-visible) { outline: 2px solid var(--action-primary); outline-offset: 2px; }
+.vehicle-tile input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.vehicle-driver { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--type-16); font-weight: var(--weight-600); }
+.vehicle-tractor { font-variant-numeric: tabular-nums; }
+.vehicle-availability { font-size: var(--type-12); line-height: var(--type-12-leading); }
+@media (min-width: 48rem) { .vehicle-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
