@@ -44,3 +44,12 @@ export const valueLabels = {
   details: "Szczegóły", exactValue: "Dokładna wartość", certainty: "Pewność", source: "Źródło",
   sourceDate: "Data źródła", reason: "Powód",
 };
+export const tableMessages = { loading: "Wczytuję…", empty: "Brak danych", previous: "Poprzednia", next: "Następna", actions: "Działania", page: (page: number, pages: number) => `Strona ${page} z ${pages}` };
+// Page-owned wording of the shared time field's results (TIME-1).
+export const timeErrors: Record<string, string> = {
+  empty: "Wpisz datę DD.MM.RRRR i godzinę GG:MM.", missingDate: "Wpisz datę DD.MM.RRRR.", missingTime: "Wpisz godzinę GG:MM.",
+  invalidDate: "Wpisz poprawną datę DD.MM.RRRR.", invalidTime: "Wpisz poprawną godzinę GG:MM.",
+  nonexistent: "Tej godziny nie ma: zegar przestawia się do przodu. Wybierz inną godzinę.",
+  ambiguous: "Ta godzina występuje dwa razy: wybierz, przed czy po cofnięciu zegara.",
+};
+export const dateLabels = { date: "Data", dateFormat: "DD.MM.RRRR", time: "Godzina", timeFormat: "GG:MM", occurrence: "Którą godzinę wybierasz?", earlier: "przed cofnięciem zegara", later: "po cofnięciu zegara" };

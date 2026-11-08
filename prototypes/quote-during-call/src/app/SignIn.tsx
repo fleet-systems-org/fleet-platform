@@ -6,8 +6,21 @@ import { Field } from "@fleet-platform/ui/components/field";
 import { Input } from "@fleet-platform/ui/components/input";
 import { Alert } from "@fleet-platform/ui/components/alert";
 import { MAPA } from "./europe-map";
+import { StateNotice } from "./StateNotice";
 
-export function SignIn({ newComputer, onSignedIn }: { newComputer: boolean; onSignedIn: () => void }) {
+// Fictitious demo accounts of the screen map; W2 signs in through the office system, so logins stand in for e-mails.
+export const demoAccounts = [
+  { login: "dyspozytor@firma-demo.example", role: "dispatcher", note: "dyspozytor" },
+  { login: "wlasciciel@firma-demo.example", role: "owner", note: "właściciel" },
+  { login: "odwolany@firma-demo.example", role: "", note: "odebrany dostęp" },
+  { login: "biuro@firma-demo.example", role: "", note: "wspólna skrzynka" },
+  { login: "zaproszony@firma-demo.example", role: "", note: "zaproszenie nie występuje przy W2" },
+  { login: "ktos@inna.example", role: "", note: "spoza domeny" },
+] as const;
+// s01.3 and s01.4 deliberately share one message: it never says what was wrong (Access, sc. 22).
+export const genericSignInError = "Nie udało się zalogować. Sprawdź login i hasło albo poproś administratora o dostęp.";
+
+export function SignIn({ stateId, newComputer, onSignedIn }: { stateId: string; newComputer: boolean; onSignedIn: (login: string) => string | null }) {
   const [state, setState] = useState<"login" | "request" | "computer">("login");
   const [login, setLogin] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -54,14 +67,18 @@ export function SignIn({ newComputer, onSignedIn }: { newComputer: boolean; onSi
         <p className="sign-in-mobile-company">Firma Demo</p>
         {state === "login" ? <>
           <h1 ref={heading} tabIndex={-1} className="text-page-title">Zaloguj się</h1>
+          <StateNotice stateId={stateId}/>
           <form className="stack" noValidate onSubmit={event => {
             event.preventDefault();
             const form = event.currentTarget;
             const password = form.elements.namedItem("demo-password") as HTMLInputElement;
             if (!login.trim() || !password.value.trim()) { setError("Podaj login i hasło."); return; }
+            if (stateId === "s01.6") { setError("Za dużo prób logowania. Spróbuj ponownie za kilka minut."); return; }
             // Only presence is checked. Passwords never enter React state or persistence.
             password.value = ""; setShowPassword(false); setError("");
-            if (newComputer) setState("computer"); else onSignedIn();
+            if (newComputer) { setState("computer"); return; }
+            const refused = onSignedIn(login.trim().toLocaleLowerCase("pl"));
+            if (refused) setError(refused);
           }}>
             <Field label="Login" required><Input name="demo-login" autoComplete="username" value={login} onChange={event => setLogin(event.target.value)} aria-invalid={!!error} aria-describedby={error ? "sign-in-error" : undefined} /></Field>
             <div className="sign-in-password-field">
@@ -72,9 +89,12 @@ export function SignIn({ newComputer, onSignedIn }: { newComputer: boolean; onSi
             </div>
             <label className="sign-in-check"><input type="checkbox" name="remember" />Zapamiętaj mnie</label>
             {error && <Alert id="sign-in-error" variant="error" title={error} />}
-            <Button type="submit">Zaloguj</Button>
+            <Button type="submit" disabled={stateId === "s01.2"}>Zaloguj</Button>
             <p className="text-meta">Hasło nie jest sprawdzane ani zapisywane. Nie wpisuj prawdziwego hasła.</p>
           </form>
+          <section className="stack" aria-label="Konta demo"><p className="text-label">Konta demo · kliknij, aby wpisać login</p>
+            <ul className="stack">{demoAccounts.map(account => <li key={account.login}><Button type="button" variant="text" onClick={() => { setLogin(account.login); setError(""); }}>{account.login}</Button> <span className="text-meta">{account.note}</span></li>)}</ul>
+          </section>
         </> : state === "request" ? <>
           <h1 ref={heading} tabIndex={-1} className="text-page-title">Nie pamiętasz hasła?</h1>
           <p>Hasła nadaje administrator. Podaj login — zapiszemy prośbę, a administrator ustawi Ci nowe hasło tymczasowe.</p>
@@ -86,8 +106,8 @@ export function SignIn({ newComputer, onSignedIn }: { newComputer: boolean; onSi
         </> : <div className="stack" role="status">
           <h1 ref={heading} tabIndex={-1} className="text-page-title">Ten komputer czeka na zatwierdzenie</h1>
           <p>Hasło jest poprawne. To pierwsze logowanie na tym komputerze, więc administrator musi go raz zatwierdzić. Po zatwierdzeniu kliknij „Sprawdź ponownie” — kolejne logowania na tym komputerze będą wymagały tylko hasła.</p>
-          <p className="text-meta">Zalogowano jako: dyspozytor</p>
-          <Button onClick={onSignedIn}>Sprawdź ponownie</Button><Button variant="secondary" onClick={back}>Wyloguj</Button>
+          <p className="text-meta">Login: {login}</p>
+          <Button onClick={() => { const refused = onSignedIn(login.trim().toLocaleLowerCase("pl")); if (refused) { back(); setError(refused); } }}>Sprawdź ponownie</Button><Button variant="secondary" onClick={back}>Wyloguj</Button>
         </div>}
       </div>
     </div>

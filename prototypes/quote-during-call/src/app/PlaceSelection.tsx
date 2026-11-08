@@ -24,12 +24,12 @@ const addresses: PlaceOption[] = [
   { id: "c", kind: "address", name: "Miejsce C", detail: "Ukázková 3, Miasto C", country: "CZ" },
   { id: "e", kind: "address", name: "Miejsce E", detail: "Beispielweg 5, Miasto E", country: "CH" },
 ];
-type Scenario = "results" | "notFound" | "unavailable" | "searching";
+export type Scenario = "results" | "notFound" | "unavailable" | "searching";
 const normalize = (text: string) => text.trim().toLocaleLowerCase("pl");
 
 // Page-owned synthetic server responses. The picker only renders options/status (L08, L09).
-function Endpoint({ label, scenario, ownPlaces, onSelect, onSave }: {
-  label: string; scenario: Scenario; ownPlaces: PlaceOption[];
+function Endpoint({ label, scenario, ownPlaces, extra, onSelect, onSave }: {
+  label: string; scenario: Scenario; ownPlaces: PlaceOption[]; extra: PlaceOption[];
   onSelect: (option: PlaceOption | null) => void; onSave: (option: PlaceOption) => void;
 }) {
   const [query, setQuery] = useState("");
@@ -42,12 +42,12 @@ function Endpoint({ label, scenario, ownPlaces, onSelect, onSave }: {
     if (scenario !== "results" || !query.trim()) return;
     // A simulated successful response, not a client-side timeout or failure cutoff.
     const response = setTimeout(() => {
-      const matches = [...ownPlaces, ...addresses.filter(address => !ownPlaces.some(place => place.id === address.id))].filter(option => normalize(`${option.name} ${option.detail}`).includes(normalize(query)));
+      const matches = [...ownPlaces, ...addresses.filter(address => !ownPlaces.some(place => place.id === address.id)), ...extra].filter(option => normalize(`${option.name} ${option.detail} ${option.typedAs ?? ""}`).includes(normalize(query)));
       setStatus(matches.length ? "results" : "notFound");
       setOptions(matches.length ? matches : [...ownPlaces, ...towns]);
     }, 300);
     return () => clearTimeout(response);
-  }, [query, scenario, ownPlaces]);
+  }, [query, scenario, ownPlaces, extra]);
   return <div className="stack"><Field label={label} required>
     <PlacePicker key={version} defaultValue={chosen} labels={labels} options={scenario === "results" ? (query.trim() ? options : ownPlaces) : [...ownPlaces, ...towns]} status={scenario === "results" ? status : scenario}
       onQueryChange={text => { setQuery(text); setStatus(text.trim() ? "searching" : "idle"); setMessage(""); }} onSelect={option => { setChosen(option); onSelect(option); setMessage(""); }}
@@ -58,18 +58,29 @@ function Endpoint({ label, scenario, ownPlaces, onSelect, onSave }: {
   </div>;
 }
 
-export function PlaceSelection({ onApply }: { onApply: (loading: PlaceOption, unloading: PlaceOption) => void }) {
-  const [scenario, setScenario] = useState<Scenario>("results");
+// Scenario and ambiguous candidates come from the review bar (s10 state), not from product controls.
+export function PlaceSelection({ scenario, extra, onApply }: { scenario: Scenario; extra: PlaceOption[]; onApply: (loading: PlaceOption, unloading: PlaceOption) => void }) {
   const [ownPlaces, setOwnPlaces] = useState(saved);
   const [loading, setLoading] = useState<PlaceOption | null>(null);
   const [unloading, setUnloading] = useState<PlaceOption | null>(null);
   return <div className="stack"><p className="text-meta">Symulacja wyszukiwarki. Wszystkie adresy i miasta są fikcyjne. Przykład K2: Miejsce B → Miejsce C.</p>
-    <Field label="Symulowana odpowiedź mapy"><select aria-label="Symulowana odpowiedź mapy" className="scenario-select" value={scenario} onChange={event => { setScenario(event.target.value as Scenario); setLoading(null); setUnloading(null); }}>
-      <option value="results">Adresy znalezione</option><option value="notFound">Brak wyników</option><option value="unavailable">Mapa niedostępna</option><option value="searching">Szukam…</option>
-    </select></Field>
-    {(["Załadunek", "Rozładunek"] as const).map((word, index) => <Endpoint key={`${scenario}-${word}`} label={`Miejsce ${index === 0 ? "załadunku" : "rozładunku"}`} scenario={scenario} ownPlaces={ownPlaces}
+    {(["Załadunek", "Rozładunek"] as const).map((word, index) => <Endpoint key={`${scenario}-${word}`} label={`Miejsce ${index === 0 ? "załadunku" : "rozładunku"}`} scenario={scenario} ownPlaces={ownPlaces} extra={extra}
       onSelect={index === 0 ? setLoading : setUnloading} onSave={place => setOwnPlaces(values => [...values.filter(value => value.id !== place.id), place])}/>)}
-    <p className="text-meta">Wybierz oba punkty. Inne pary niż B → C można wpisać; ich wycena dojdzie w etapie 2.</p>
+    <p className="text-meta">Wybierz oba punkty. Inne pary niż B → C można wpisać; wycenę ma tylko przykład B → C.</p>
     <Button disabled={!loading || !unloading} onClick={() => { if (loading && unloading) onApply(loading, unloading); }}>Zastosuj miejsca</Button>
   </div>;
+}
+
+// s10.3–s10.5: candidates that a person must confirm (BND-4, PLACE-2, D35). Fictitious places only.
+export function placeScenario(stateId: string): { scenario: Scenario; extra: PlaceOption[] } {
+  const scenario: Scenario = stateId === "s10.2" ? "searching" : stateId === "s10.6" ? "notFound" : stateId === "s10.7" ? "unavailable" : "results";
+  const extra: Record<string, PlaceOption[]> = {
+    "s10.3": [{ id: "b-second", kind: "address", name: "Miejsce B", detail: "Druga brama, Miasto B · wynik niejednoznaczny", country: "DE", needsConfirmation: true }],
+    "s10.4": [
+      { id: "d-alfa", kind: "town", name: "Miasto D", detail: "Region Alfa · Szacunek", country: "PL", needsConfirmation: true },
+      { id: "d-delta", kind: "town", name: "Miasto D", detail: "Region Delta · Szacunek", country: "PL", needsConfirmation: true },
+    ],
+    "s10.5": [{ id: "b-alias", kind: "place", name: "Miejsce B", detail: "Propozycja aliasu z faktur; bez automatycznego scalania", country: "DE", typedAs: "Miejsce-B", needsConfirmation: true }],
+  };
+  return { scenario, extra: extra[stateId] ?? [] };
 }

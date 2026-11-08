@@ -7,11 +7,11 @@ Working log for the clickable prototype of #21 (E01-S01). Flow, screens and assu
 | Stage | Status |
 |---|---|
 | 0. Plan | done 2026-10-29, approved |
-| 1. Skeleton and happy path | done, waiting for owner review |
-| 2. States, roles and scenarios | not started |
+| 1. Skeleton and happy path | done, accepted by the owner (PR #64, 2026-11-08) |
+| 2. States, roles and scenarios | done, waiting for owner review (2026-11-08) |
 | 3. Honesty notes and verification | not started |
 
-Branch `prototype/e01-clickable` from `main` 266e9e4.
+Stage 1 branch `prototype/e01-clickable` from `main` 266e9e4 (merged through PR #64). Stage 2 branch `prototype/quote-during-call-stage-2` from `main` 1d38422.
 
 ## Stage 0. Plan (approved 2026-10-29)
 
@@ -505,3 +505,50 @@ External screenshots (not committed): 1440-s12, 1440-s12-strata, 1440-s13, 1440-
 Existing Vite large-bundle warning remains. Production integration, Storybook suite and cross-browser checks were not run. Publication evidence is recorded in the run log. No PR or base merge.
 
 - External preview and screenshots were kept outside the repository; client-side availability was not verified.
+
+## Stage 2. States, roles and scenarios
+
+Status: **done, waiting for owner review** (2026-11-08). Stage 3 not started. Where a later owner decision recorded in Stages 1b–1o differs from the screen map or the grey prototype revision-002, the decision wins (owner instruction, 2026-11-08).
+
+### Delivered
+
+- **Every state of s01–s19 reachable.** `src/app/states.ts` lists all 153 states of the approved screen map with a kind: visible in the content, produced by interaction, a product message above the content, or a message that replaces it. The review bar's "Scenariusze" panel has a "Stan ekranu" select for the current screen with a hint on how the state shows. Map controls p04–p18 are states in that select, with their control ID in the label. The in-screen response selectors of s10, s11 and s12 moved to the review bar (rule 5); the product frame no longer contains scenario controls.
+- **Decisions that override the map:** W2 sign-in (Stage 1h): s02–s04 and p04/p05 list their map states marked "nie występuje przy W2"; s01 keeps login, password request and new-computer approval and adds s01.2–s01.6. S07-1: s06, s07 and s19 are Phase 2, s17 Phase 3; direct entry in Phase 1 shows a "comes in Phase N" notice. N7f: driver/tractor labels replace the map's "Auto 01–06"; their map roles keep the same IDs (DEMO 002 no trips or start, DEMO 003 start point only, DEMO 004 weekend, DEMO 005 review flag, DEMO 006 country outside the bulletin). N7d/AppFrame navigation unchanged.
+- **Demo accounts and switching (p02, p03).** Six fictitious logins under the s01 form fill the login field. The owner and dispatcher accounts sign in; revoked, shared-mailbox, invited and outside-domain accounts get one generic message identical to a wrong login (s01.3/s01.4, sc. 22). Passwords are checked only for presence and never stored. p02 switches between not signed in, dispatcher, owner and revoked; p03 between an active, expired and revoked session. Sign-out returns to s01.
+- **Access gates.** Without an active session every product screen shows "Zaloguj się" with a link to s01, and s01 shows the s01.5 message; after sign-in the user returns to the screen they came from. s05: the dispatcher opening the owner rates address (review-bar button "Otwórz adres stawek (s20)") sees "Ta strona wymaga roli właściciela." with a way back; the owner is told s20–s22 are outside the prototype. AUTH-4/s12.22: in s13 the dispatcher sees only the labour total; the owner also sees the approved daily rate.
+- **Data survives errors.** Product content stays mounted behind the sign-in gate, so an entry survives an expired session (s09.16). The s09 save error (s09.13), plan conflict (s09.15), vehicle-start conflict (s08.5), fill-gap conflict (s14.6), correction conflict (s18.5) and acceptance refusals (s16.5, s16.6, s16.8) keep every typed value; the acceptance note also survives closing and reopening the dialog.
+- **p19 has three values:** Phase 1; Phase 2 adds Flota (start screen after sign-in), Kursy aut and Kontrola km; Phase 3 adds Podobne kursy beside the quote. After acceptance in Phase 2 the quote offers both Kursy auta (S07-1) and Wróć do floty (map §1a). p01 sets the demo clock and selects the states it names (weekend → s09.9, s12.7; clock change → s09.6, s08.4).
+- **New screens from design-system components:** s06 fleet (DataTable with paging, neutral Badges, Wyceń opens s09 with the vehicle), s08 vehicle start (Select, ZonedDateTimeField; saving updates the vehicle's availability in s09), s17 similar trips (map history fixture; PLN stays PLN; reverse direction omitted), s18 correction and cancellation (AlertDialog, required reason; cancellation marks K2 Anulowany in s12 and s07), s19 km check (words, never a green badge).
+- **Live behaviour in s09–s16:** "Nasze mycie" requires amount and date with named errors (time optional) and the map fixture 5,00 EUR gives 43,18 / 16,82 EUR; empty freight gives costs without a result; freight 255,00 PLN converts at the fictitious 4,250000 rate to 60,00 EUR as an estimate; unloading before loading is rejected; changing a field after quoting marks the quote "Nieaktualna" and disables acceptance; leaving with unsaved changes asks for confirmation (s09.14); s12 incomplete states hide the result and acceptance and name what is missing; zero result needs no reason; s14 rejects other number notation with an example and non-positive prices without clamping; s15 shows a single-draft empty state, an incomplete draft and discarding a never-accepted draft.
+- Money stays decimal text; results are freight minus covered cost in integer cents (BigInt). No new numbers outside the screen map's fixtures except fictitious labels already used in Stage 1. A verification hook `window.__PROTOTYPE_STATE__(screen, state)` has the same effect as the review-bar select.
+
+### Validation
+
+| Check | Result |
+|---|---|
+| Prototype typecheck and build | passed |
+| Repository typecheck, lint | passed |
+| Repository unit tests | passed: 41 files, 202 tests |
+| Prototype ESLint | passed |
+| Token scan of app sources | only the 8 approved N8a map values |
+| Protected source diff | empty |
+| All 153 states, 1440 px | passed |
+| All 153 states, 320 px | passed |
+| Flows in the browser | passed |
+
+The state sweep set each state, opened its screen and checked that the state's product message is shown, that the page has no horizontal scroll and that no runtime error occurs; it ran at 1440 px and at an emulated 320 px viewport. Browser flows checked: refused and accepted sign-in, owner/dispatcher s05 gate and labour visibility, expired session during entry and return with the entry intact, "Nasze mycie" path to 43,18 / 16,82 EUR, stale quote after a change, acceptance refused with the note kept and focus returned to the trigger, successful acceptance, cancellation with and without a reason, Phase 2 navigation, fleet paging and Wyceń, vehicle start error and save. Console errors and warnings: none.
+
+Not run: Storybook build with the prototype, exhaustive keyboard audit, Stage 3 navigation tests and per-screen notes, production integration tests and coverage (no production source changed).
+
+### Design-system observations
+
+- DataTable at 320 px keeps its columns and scrolls horizontally inside its own container, so the s06 row action is reached by scrolling the table. The prototype does not restyle the shared table. A narrow-table layout is a proposal for the design system.
+- G08 (sorting) remains open; s15 has no sorting.
+
+### Questions for the specification
+
+1. s09.9: the weekend question uses the specification's single-weekend example (DEMO 004); the K2 quote has no weekend, so the answer does not change K2. Should a weekend fixture get its own quote path?
+2. s12.11: what exactly should the dispatcher read when a threshold is unset (L14)? The prototype says "poproś właściciela o ustawienie progu".
+3. s16.5: the overlapping trip K4 and its times are illustrative; the map has no overlap fixture.
+
+Next: owner review of Stage 2; Stage 3 requires the owner's "dalej".

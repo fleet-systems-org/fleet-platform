@@ -4,7 +4,7 @@ import { Alert } from "@fleet-platform/ui/components/alert";
 import { Field } from "@fleet-platform/ui/components/field";
 import { Input } from "@fleet-platform/ui/components/input";
 import { shareTenths, shareText, shareWidth } from "./cost-shares";
-import { coveredCost, decimal } from "./model";
+import { cents, coveredCost, decimal } from "./model";
 
 // Synthetic EUR/km at scale 6. Country costs are distance × rate, never an allocated segment amount (SRC-4).
 const segments = [
@@ -15,11 +15,11 @@ const publish = (micro: bigint) => (micro + 5000n) / 10000n; // FIN-3 half-up fo
 const money = (cents: bigint) => decimal(cents).replace(".", ",");
 const validKm = (text: string) => /^\d+$/.test(text) && text.length <= 5;
 
-function CountryRow({ label, km, fuel, toll, group = false, total = false, manual = false }: {
-  label: string; km: bigint; fuel: bigint; toll: bigint; group?: boolean; total?: boolean; manual?: boolean;
+function CountryRow({ label, km, fuel, toll, covered, group = false, total = false, manual = false }: {
+  label: string; km: bigint; fuel: bigint; toll: bigint; covered: string; group?: boolean; total?: boolean; manual?: boolean;
 }) {
   const totalCents = publish(fuel + toll);
-  const share = shareTenths(decimal(totalCents), coveredCost);
+  const share = shareTenths(decimal(totalCents), covered);
   const reconciliation = totalCents - publish(fuel) - publish(toll);
   return <tr className={group ? "country-group" : undefined}>
     <th scope={group ? "rowgroup" : "row"}>{label}<span className="country-meta text-meta">{String(km)} km · paliwo {money(publish(fuel))} · myto {money(publish(toll))}{manual ? " · wpis ręczny · Szacunek" : ""}</span>{reconciliation !== 0n && <span className="block text-meta">Uzgodnienie zaokrągleń: {money(reconciliation)} EUR</span>}</th>
@@ -29,7 +29,7 @@ function CountryRow({ label, km, fuel, toll, group = false, total = false, manua
   </tr>;
 }
 
-export function CountryCosts({ manual = false, onReady }: { manual?: boolean; onReady: (ready: boolean) => void }) {
+export function CountryCosts({ manual = false, covered = coveredCost, onReady }: { manual?: boolean; covered?: string; onReady: (ready: boolean) => void }) {
   const [distances, setDistances] = useState<Record<string, string>>({});
   const ready = !manual || segments.every((segment, index) => segment.rows.every(row => distances[`${index}-${row.country}`] === row.km));
   useEffect(() => { onReady(ready); }, [onReady, ready]);
@@ -50,11 +50,11 @@ export function CountryCosts({ manual = false, onReady }: { manual?: boolean; on
       </Field>))}</div></>}
     {!complete ? <p>Brak kilometrów. Uzupełnij każdy kraj; brak danych nie oznacza zera.</p> : <><table className="compact-table country-cost-table"><caption>Kwoty netto · EUR · Szacunek</caption>
       <thead><tr><th scope="col">Kraj</th><th scope="col" className="country-detail">km</th><th scope="col" className="country-detail">Paliwo</th><th scope="col" className="country-detail">Myto</th><th scope="col">Razem</th><th scope="col">Udział</th></tr></thead>
-      {calculated.map(segment => <tbody key={segment.title}><CountryRow label={segment.title} km={sum(segment.rows, "km")} fuel={sum(segment.rows, "fuel")} toll={sum(segment.rows, "toll")} group/>
-        {segment.rows.map(row => <CountryRow key={row.country} label={row.country} km={row.km!} fuel={row.fuel!} toll={row.toll!} manual={manual}/>)}</tbody>)}
-      <tfoot><CountryRow label="Cały kurs" km={sum(allRows, "km")} fuel={sum(allRows, "fuel")} toll={sum(allRows, "toll")} total/></tfoot>
+      {calculated.map(segment => <tbody key={segment.title}><CountryRow covered={covered} label={segment.title} km={sum(segment.rows, "km")} fuel={sum(segment.rows, "fuel")} toll={sum(segment.rows, "toll")} group/>
+        {segment.rows.map(row => <CountryRow covered={covered} key={row.country} label={row.country} km={row.km!} fuel={row.fuel!} toll={row.toll!} manual={manual}/>)}</tbody>)}
+      <tfoot><CountryRow covered={covered} label="Cały kurs" km={sum(allRows, "km")} fuel={sum(allRows, "fuel")} toll={sum(allRows, "toll")} total/></tfoot>
     </table>{publish(exact) !== displayed && <p className="text-meta">Uzgodnienie zaokrągleń: {money(publish(exact) - displayed)} EUR. Suma liczona raz z wartości dokładnych: {money(publish(exact))} EUR.</p>}</>}
-    <p className="text-meta">Udział w całym koszcie przykładu K2: 38,18 EUR. Pozostałe koszty: 10,18 EUR. Inne km nie zmieniają stałej wyceny K2; przycisk Wyceń wymaga km przykładu.</p>
+    <p className="text-meta">Udział w całym koszcie przykładu K2: {covered.replace(".", ",")} EUR. Pozostałe koszty: {money(cents(covered) - 2800n)} EUR. Inne km nie zmieniają stałej wyceny K2; przycisk Wyceń wymaga km przykładu.</p>
     <p className="text-meta">Stawki fikcyjne EUR/km: paliwo dojazd 0,100000, z ładunkiem 0,200000; myto PL 0,100400, DE 0,099400, CZ 0,101000. Koszt = km × stawka. Każda suma zaokrąglona raz z dokładnych wartości (FIN-3).</p>
     <p className="text-meta">12.11.2026, 11:00–13:00 (Warszawa), bez weekendu. Bez usług mapowych.</p>
   </Card>;
